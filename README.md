@@ -116,3 +116,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - MariaDB team 
 # Local development test
 // Test comment
+// Simplified hook test
