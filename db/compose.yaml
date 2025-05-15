@@ -1,0 +1,17 @@
+version: '3'
+services:
+  mariadb:
+    container_name: mariadb
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+      - PUID=1027
+      - PGID=65536
+      - MYSQL_ROOT_PASSWORD=BenYoungHill#24
+      - MYSQL_DATABASE=vaderflix
+      - MYSQL_USER=vaderflix
+      - MYSQL_PASSWORD=DarthVader2024
+    volumes:
+      - /volume1/docker/projects/vader-flix-webapp/db/data:/var/lib/mysql
+    ports:
+      - 3306:3306
