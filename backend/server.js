@@ -12,12 +12,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Database
-const db = require("./models");
-db.sequelize.sync({ alter: true }).then(() => {
-  console.log("Database synchronized");
-}).catch(err => {
-  console.log("Failed to sync database: " + err.message);
-});
+try {
+  const db = require("./models");
+  db.sequelize.sync({ alter: true }).then(() => {
+    console.log("Database synchronized");
+  }).catch(err => {
+    console.log("Failed to sync database: " + err.message);
+  });
+} catch (error) {
+  console.log("Database connection skipped:", error.message);
+}
 
 // Simple route
 app.get('/', (req, res) => {
