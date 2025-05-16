@@ -6,52 +6,71 @@ const PlexLibrary = () => {
     const [libraries, setLibraries] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedServer, setSelectedServer] = useState(null);
 
     useEffect(() => {
-        console.log('PlexLibrary component mounted');
-        fetchLibraries();
+        fetchServers();
     }, []);
 
-    const fetchLibraries = async () => {
+    const fetchServers = async () => {
         try {
             setLoading(true);
-            console.log('Fetching Plex servers...');
-            
-            // First, get the server information
-            const serverResponse = await axios.get('https://plex.tv/api/servers', {
+            const response = await axios.get('https://plex.tv/api/servers', {
                 headers: PlexTokenService.getHeaders()
             });
-            console.log('Server response:', serverResponse.data);
-
-            if (!serverResponse.data.MediaContainer.Server) {
+            
+            // Parse XML response
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(response.data, "text/xml");
+            const servers = Array.from(xmlDoc.getElementsByTagName('Server'));
+            
+            if (servers.length === 0) {
                 throw new Error('No Plex servers found');
             }
 
-            const server = serverResponse.data.MediaContainer.Server[0];
-            const serverUrl = `http://${server.localAddresses.split(',')[0]}:${server.port}`;
-            console.log('Server URL:', serverUrl);
+            // Find the most recently updated server
+            const latestServer = servers.reduce((latest, current) => {
+                const latestUpdated = parseInt(latest.getAttribute('updatedAt'));
+                const currentUpdated = parseInt(current.getAttribute('updatedAt'));
+                return currentUpdated > latestUpdated ? current : latest;
+            });
 
-            // Then fetch libraries from the server
-            console.log('Fetching libraries from server...');
-            const librariesResponse = await axios.get(`${serverUrl}/library/sections`, {
+            const serverUrl = `${latestServer.getAttribute('scheme')}://${latestServer.getAttribute('address')}:${latestServer.getAttribute('port')}`;
+            setSelectedServer(serverUrl);
+            await fetchLibraries(serverUrl);
+        } catch (err) {
+            console.error('Error fetching servers:', err);
+            setError('Failed to fetch Plex servers: ' + err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchLibraries = async (serverUrl) => {
+        try {
+            setLoading(true);
+            const response = await axios.get(`${serverUrl}/library/sections`, {
                 headers: PlexTokenService.getHeaders()
             });
-            console.log('Libraries response:', librariesResponse.data);
 
-            if (!librariesResponse.data.MediaContainer.Directory) {
-                throw new Error('No libraries found');
-            }
+            // Parse XML response
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(response.data, "text/xml");
+            const libraryElements = xmlDoc.getElementsByTagName('Directory');
+            
+            const libraries = Array.from(libraryElements).map(lib => ({
+                key: lib.getAttribute('key'),
+                title: lib.getAttribute('title'),
+                type: lib.getAttribute('type'),
+                count: lib.getAttribute('count'),
+                updatedAt: lib.getAttribute('updatedAt')
+            }));
 
-            setLibraries(librariesResponse.data.MediaContainer.Directory);
+            setLibraries(libraries);
             setError(null);
         } catch (err) {
-            console.error('Plex API Error:', err);
-            console.error('Error details:', {
-                message: err.message,
-                response: err.response?.data,
-                status: err.response?.status
-            });
-            setError('Failed to fetch libraries: ' + (err.response?.data?.error || err.message));
+            console.error('Error fetching libraries:', err);
+            setError('Failed to fetch libraries: ' + err.message);
         } finally {
             setLoading(false);
         }
@@ -61,9 +80,14 @@ const PlexLibrary = () => {
         <div className="plex-library">
             <div className="header">
                 <h1>Plex Libraries</h1>
-                <button onClick={fetchLibraries} disabled={loading}>
-                    {loading ? 'Refreshing...' : 'Refresh'}
-                </button>
+                {selectedServer && (
+                    <div className="server-info">
+                        <span>Connected to: {selectedServer}</span>
+                        <button onClick={() => fetchLibraries(selectedServer)} disabled={loading}>
+                            {loading ? 'Refreshing...' : 'Refresh'}
+                        </button>
+                    </div>
+                )}
             </div>
 
             {error && (
@@ -85,6 +109,7 @@ const PlexLibrary = () => {
                             <div className="library-info">
                                 <p>Type: {library.type}</p>
                                 <p>Items: {library.count}</p>
+                                <p>Last Updated: {new Date(parseInt(library.updatedAt) * 1000).toLocaleString()}</p>
                             </div>
                         </div>
                     ))}
@@ -103,6 +128,17 @@ const PlexLibrary = () => {
                     justify-content: space-between;
                     align-items: center;
                     margin-bottom: 30px;
+                }
+
+                .server-info {
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                }
+
+                .server-info span {
+                    color: #666;
+                    font-size: 14px;
                 }
 
                 h1 {
