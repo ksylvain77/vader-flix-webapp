@@ -98,6 +98,7 @@ const PlexTokenTest = () => {
                     padding: 20px;
                     border: 1px solid #ccc;
                     border-radius: 8px;
+                    background-color: #ffffff;
                 }
 
                 .connection-status {
@@ -105,6 +106,8 @@ const PlexTokenTest = () => {
                     padding: 10px;
                     background-color: ${isConnected ? '#e6ffe6' : '#ffe6e6'};
                     border-radius: 4px;
+                    color: ${isConnected ? '#006600' : '#cc0000'};
+                    font-weight: bold;
                 }
 
                 .token-section {
@@ -112,6 +115,7 @@ const PlexTokenTest = () => {
                     padding: 15px;
                     background-color: #f5f5f5;
                     border-radius: 4px;
+                    border: 1px solid #ddd;
                 }
 
                 code {
@@ -121,6 +125,8 @@ const PlexTokenTest = () => {
                     color: #fff;
                     border-radius: 4px;
                     overflow-x: auto;
+                    font-family: monospace;
+                    margin: 10px 0;
                 }
 
                 .test-section {
@@ -134,6 +140,12 @@ const PlexTokenTest = () => {
                     border: none;
                     border-radius: 4px;
                     cursor: pointer;
+                    font-size: 16px;
+                    transition: background-color 0.2s;
+                }
+
+                button:hover {
+                    background-color: #0056b3;
                 }
 
                 button:disabled {
@@ -143,18 +155,27 @@ const PlexTokenTest = () => {
 
                 .error-message {
                     margin: 20px 0;
-                    padding: 10px;
-                    background-color: #ffe6e6;
+                    padding: 15px;
+                    background-color: #fff3f3;
                     border: 1px solid #ff9999;
                     border-radius: 4px;
                     color: #cc0000;
+                    font-weight: bold;
                 }
 
                 .token-info {
                     margin: 20px 0;
-                    padding: 15px;
-                    background-color: #f5f5f5;
+                    padding: 20px;
+                    background-color: #f8f9fa;
+                    border: 1px solid #ddd;
                     border-radius: 4px;
+                }
+
+                .token-info h3 {
+                    margin-top: 0;
+                    color: #333;
+                    border-bottom: 2px solid #007bff;
+                    padding-bottom: 10px;
                 }
 
                 pre {
@@ -163,6 +184,23 @@ const PlexTokenTest = () => {
                     padding: 15px;
                     border-radius: 4px;
                     overflow-x: auto;
+                    font-family: 'Courier New', Courier, monospace;
+                    font-size: 14px;
+                    line-height: 1.5;
+                    margin: 0;
+                    white-space: pre-wrap;
+                    word-wrap: break-word;
+                }
+
+                h2 {
+                    color: #333;
+                    margin-bottom: 20px;
+                    text-align: center;
+                }
+
+                h3 {
+                    color: #444;
+                    margin-bottom: 15px;
                 }
             `}</style>
         </div>
