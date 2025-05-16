@@ -91,7 +91,7 @@ const PlexTokenTest = () => {
                 </div>
             )}
 
-            <style jsx>{`
+            <style>{`
                 .plex-token-test {
                     max-width: 800px;
                     margin: 20px auto;
