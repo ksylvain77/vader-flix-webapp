@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import WebSocketExample from './components/WebSocketExample';
+import PlexTokenTest from './components/PlexTokenTest';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       </header>
       <main>
         <WebSocketExample />
+        <PlexTokenTest />
       </main>
     </div>
   );
