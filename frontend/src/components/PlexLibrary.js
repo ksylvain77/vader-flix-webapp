@@ -35,7 +35,12 @@ const PlexLibrary = () => {
                 return currentUpdated > latestUpdated ? current : latest;
             });
 
-            const serverUrl = `${latestServer.getAttribute('scheme')}://${latestServer.getAttribute('address')}:${latestServer.getAttribute('port')}`;
+            // Use local address if available, otherwise fall back to public address
+            const localAddresses = latestServer.getAttribute('localAddresses').split(',');
+            const serverAddress = localAddresses.length > 0 ? localAddresses[0] : latestServer.getAttribute('address');
+            const serverUrl = `${latestServer.getAttribute('scheme')}://${serverAddress}:${latestServer.getAttribute('port')}`;
+            
+            console.log('Using server URL:', serverUrl);
             setSelectedServer(serverUrl);
             await fetchLibraries(serverUrl);
         } catch (err) {
