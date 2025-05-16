@@ -9,7 +9,7 @@ class WebSocketService {
 
     connect() {
         const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const wsHost = process.env.REACT_APP_WS_HOST || 'localhost:3000';
+        const wsHost = window.location.hostname + ':3000';
         const wsUrl = `${wsProtocol}//${wsHost}/ws`;
 
         this.ws = new WebSocket(wsUrl);
