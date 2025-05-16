@@ -136,27 +136,26 @@ const PlexLibrary = () => {
                 throw new Error('Invalid response format for library items');
             }
 
-            if (!response.data.MediaContainer.Metadata) {
-                throw new Error('No items found in library');
-            }
-
-            const items = response.data.MediaContainer.Metadata.map(item => {
-                console.log('Processing item:', item);
-                return {
-                    key: item.ratingKey,
-                    title: item.title,
-                    year: item.year,
-                    type: item.type,
-                    thumb: item.thumb,
-                    summary: item.summary,
-                    // TV Show specific fields (will be undefined for movies)
-                    episodeCount: item.leafCount,
-                    seasonCount: item.childCount,
-                    // Movie specific fields (will be undefined for TV shows)
-                    duration: item.duration,
-                    rating: item.rating
-                };
-            });
+            // Handle empty library as a normal state
+            const items = response.data.MediaContainer.Metadata 
+                ? response.data.MediaContainer.Metadata.map(item => {
+                    console.log('Processing item:', item);
+                    return {
+                        key: item.ratingKey,
+                        title: item.title,
+                        year: item.year,
+                        type: item.type,
+                        thumb: item.thumb,
+                        summary: item.summary,
+                        // TV Show specific fields (will be undefined for movies)
+                        episodeCount: item.leafCount,
+                        seasonCount: item.childCount,
+                        // Movie specific fields (will be undefined for TV shows)
+                        duration: item.duration,
+                        rating: item.rating
+                    };
+                })
+                : [];
 
             console.log('Processed items:', items);
             setLibraryItems(items);
@@ -227,39 +226,46 @@ const PlexLibrary = () => {
                 </div>
             )}
 
-            {selectedLibrary && libraryItems.length > 0 && (
+            {selectedLibrary && (
                 <div className="library-items">
                     <h2>{selectedLibrary.title} Content</h2>
-                    <div className="items-grid">
-                        {libraryItems.map((item) => (
-                            <div key={item.key} className="item-card">
-                                {item.thumb && (
-                                    <img 
-                                        src={`${selectedServer}${item.thumb}?X-Plex-Token=${PlexTokenService.getToken()}`} 
-                                        alt={item.title}
-                                        className="item-thumbnail"
-                                    />
-                                )}
-                                <div className="item-info">
-                                    <h3>{item.title}</h3>
-                                    {item.year && <p>Year: {item.year}</p>}
-                                    {item.type === 'show' && (
-                                        <>
-                                            {item.seasonCount && <p>Seasons: {item.seasonCount}</p>}
-                                            {item.episodeCount && <p>Episodes: {item.episodeCount}</p>}
-                                        </>
+                    {libraryItems.length > 0 ? (
+                        <div className="items-grid">
+                            {libraryItems.map((item) => (
+                                <div key={item.key} className="item-card">
+                                    {item.thumb && (
+                                        <img 
+                                            src={`${selectedServer}${item.thumb}?X-Plex-Token=${PlexTokenService.getToken()}`} 
+                                            alt={item.title}
+                                            className="item-thumbnail"
+                                        />
                                     )}
-                                    {item.type === 'movie' && item.duration && (
-                                        <p>Duration: {Math.floor(item.duration / 60000)} minutes</p>
-                                    )}
-                                    {item.rating && <p>Rating: {item.rating}</p>}
-                                    {item.summary && (
-                                        <p className="item-summary">{item.summary}</p>
-                                    )}
+                                    <div className="item-info">
+                                        <h3>{item.title}</h3>
+                                        {item.year && <p>Year: {item.year}</p>}
+                                        {item.type === 'show' && (
+                                            <>
+                                                {item.seasonCount && <p>Seasons: {item.seasonCount}</p>}
+                                                {item.episodeCount && <p>Episodes: {item.episodeCount}</p>}
+                                            </>
+                                        )}
+                                        {item.type === 'movie' && item.duration && (
+                                            <p>Duration: {Math.floor(item.duration / 60000)} minutes</p>
+                                        )}
+                                        {item.rating && <p>Rating: {item.rating}</p>}
+                                        {item.summary && (
+                                            <p className="item-summary">{item.summary}</p>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="empty-library">
+                            <p>No items found in this library.</p>
+                            <p>Add some content to your Plex server to see it here.</p>
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -437,6 +443,24 @@ const PlexLibrary = () => {
                     margin-top: 10px;
                     color: #666;
                     font-size: 14px;
+                }
+
+                .empty-library {
+                    text-align: center;
+                    padding: 40px;
+                    background: #f8f9fa;
+                    border-radius: 8px;
+                    margin-top: 20px;
+                }
+
+                .empty-library p {
+                    color: #666;
+                    margin: 10px 0;
+                }
+
+                .empty-library p:first-child {
+                    font-size: 18px;
+                    font-weight: 500;
                 }
 
                 @media (max-width: 768px) {
