@@ -16,7 +16,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "GENERATE_SOURCEMAP=false react-scripts build",
+    "build": "GENERATE_SOURCEMAP=false WDS_SOCKET_PORT=0 WDS_SOCKET_HOST=0 react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "get-plex-token": "node scripts/getPlexToken.js"
