@@ -14,13 +14,32 @@ const PlexLibrary = () => {
     const fetchLibraries = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('https://plex.tv/api/v2/libraries', {
+            // First, get the server information
+            const serverResponse = await axios.get('https://plex.tv/api/servers', {
                 headers: PlexTokenService.getHeaders()
             });
-            setLibraries(response.data.MediaContainer.Directory);
+
+            if (!serverResponse.data.MediaContainer.Server) {
+                throw new Error('No Plex servers found');
+            }
+
+            const server = serverResponse.data.MediaContainer.Server[0];
+            const serverUrl = `http://${server.localAddresses.split(',')[0]}:${server.port}`;
+
+            // Then fetch libraries from the server
+            const librariesResponse = await axios.get(`${serverUrl}/library/sections`, {
+                headers: PlexTokenService.getHeaders()
+            });
+
+            if (!librariesResponse.data.MediaContainer.Directory) {
+                throw new Error('No libraries found');
+            }
+
+            setLibraries(librariesResponse.data.MediaContainer.Directory);
             setError(null);
         } catch (err) {
-            setError('Failed to fetch libraries: ' + err.message);
+            console.error('Plex API Error:', err);
+            setError('Failed to fetch libraries: ' + (err.response?.data?.error || err.message));
         } finally {
             setLoading(false);
         }
@@ -53,7 +72,7 @@ const PlexLibrary = () => {
                             <h2>{library.title}</h2>
                             <div className="library-info">
                                 <p>Type: {library.type}</p>
-                                <p>Items: {library.size}</p>
+                                <p>Items: {library.count}</p>
                             </div>
                         </div>
                     ))}
