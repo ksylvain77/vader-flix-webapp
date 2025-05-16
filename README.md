@@ -7,6 +7,7 @@ A modern streaming platform built with Node.js, Express, and MariaDB, containeri
 - User authentication and authorization
 - Media streaming capabilities
 - Content request system
+- Real-time WebSocket communication
 - RESTful API architecture
 - Secure database management
 - Docker containerization
