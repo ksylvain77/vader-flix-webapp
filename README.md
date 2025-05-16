@@ -11,8 +11,9 @@ A modern streaming platform built with Node.js, Express, and MariaDB, containeri
 - RESTful API architecture
 - Secure database management
 - Docker containerization
-- testing hooks
-- testing hooks again
+- Plex media server integration
+- Global search across all media libraries
+- Real-time search filtering
 
 <!-- Last hook test: 2024-05-16 14:55 EDT -->
 <!-- Hook test: 2024-05-16 15:00 EDT -->
@@ -28,6 +29,8 @@ A modern streaming platform built with Node.js, Express, and MariaDB, containeri
 - **Authentication**: JWT
 - **Containerization**: Docker (via Synology Container Manager)
 - **API**: RESTful
+- **Frontend**: React.js
+- **Media Integration**: Plex Media Server
 
 ## 📋 Prerequisites
 
@@ -92,6 +95,12 @@ vader-flix-webapp/
 │   ├── data/
 │   └── compose.yaml
 └── frontend/
+    ├── src/
+    │   ├── components/
+    │   │   └── PlexLibrary.js
+    │   └── services/
+    │       └── plexTokenService.js
+    └── compose.yaml
 ```
 
 ## 🔐 Security
