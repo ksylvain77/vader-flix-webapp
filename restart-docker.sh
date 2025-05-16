@@ -39,33 +39,33 @@ fi
 log "Task triggered successfully at $(date)"
 echo "Task triggered successfully at $(date)"
 
-# Poll to check when the container is up
+# Wait a short time before starting to check
 echo "Waiting for containers to start..."
-MAX_WAIT=30  # Maximum wait time in seconds
+sleep 5
+
+# Poll to check when the container is up
+MAX_WAIT=45  # Maximum wait time in seconds
 WAIT_STEP=5  # Check every 5 seconds
 
-for (( elapsed=0; elapsed<=$MAX_WAIT; elapsed+=$WAIT_STEP )); do
-  # Sleep first to give it time to start
-  sleep $WAIT_STEP
+for (( elapsed=5; elapsed<=$MAX_WAIT; elapsed+=$WAIT_STEP )); do
   log "Checking container status after $elapsed seconds..."
   
-  # We'll use a trick to check status without needing sudo password
-  # Use a "quiet" docker API query that just counts containers
-  CONTAINER_COUNT=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "curl -s --unix-socket /var/run/docker.sock http:/v1.24/containers/json?filters=\{%22name%22:\{%22vader-flix%22:true\}\} | grep -o '\"Id\"' | wc -l" 2>/dev/null)
+  # Use a more reliable check method
+  CONTAINER_CHECK=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "ls -l /var/run/docker.sock && ps aux | grep -v grep | grep vader-flix" 2>&1)
   
-  # If error or zero containers, continue waiting
-  if [ -z "$CONTAINER_COUNT" ] || [ "$CONTAINER_COUNT" -eq 0 ]; then
-    log "Containers not yet ready, continuing to wait..."
-    continue
+  # If we see the container name in processes, it's likely running
+  if echo "$CONTAINER_CHECK" | grep -q "vader-flix"; then
+    END_TIME=$(date +%s)
+    DURATION=$((END_TIME - START_TIME))
+    log "Containers started successfully after $DURATION seconds"
+    echo "Containers started successfully after $DURATION seconds"
+    log "Container process info: $(echo "$CONTAINER_CHECK" | grep "vader-flix")"
+    log "========== Script completed at $(date) =========="
+    exit 0
   fi
   
-  # If we get here, containers are running
-  END_TIME=$(date +%s)
-  DURATION=$((END_TIME - START_TIME))
-  log "Containers started successfully after $DURATION seconds"
-  echo "Containers started successfully after $DURATION seconds"
-  log "========== Script completed at $(date) =========="
-  exit 0
+  log "Containers not yet ready, continuing to wait..."
+  sleep $WAIT_STEP
 done
 
 # If we get here, we timed out
