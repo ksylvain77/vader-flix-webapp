@@ -1,7 +1,33 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { io } from 'socket.io-client';
 import TokenTest from './components/TokenTest';
 
 function App() {
+  useEffect(() => {
+    const socket = io('http://192.168.50.92:3000', {
+      transports: ['websocket'],
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000
+    });
+
+    socket.on('connect', () => {
+      console.log('Connected to WebSocket server');
+    });
+
+    socket.on('connect_error', (error) => {
+      console.error('WebSocket connection error:', error);
+    });
+
+    socket.on('disconnect', (reason) => {
+      console.log('Disconnected from WebSocket server:', reason);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
   return (
     <div className="App">
       <header className="App-header" style={{ padding: "20px", textAlign: "center" }}>
