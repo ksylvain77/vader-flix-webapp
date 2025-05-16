@@ -1,6 +1,8 @@
 # 🧱 Vader Flix Aesthetic Vision (v2)
 **Theme:** *Imperial Brutalism meets Star Wars Command Console*
 
+> **Note:** This is a reference document for the final styling phase of the project. All core functionality and integrations should be completed before implementing these aesthetic changes.
+
 ---
 
 ## 🎨 Color System
@@ -43,7 +45,7 @@
 - Previews grayscale until hover
 
 ### Modals
-- Fade in with “hyperspace blink”
+- Fade in with "hyperspace blink"
 - Red-lit `X` close button
 - Panel-styled content
 
@@ -72,7 +74,7 @@
 - **Search Bar**: Styled as targeting computer
 - **Scrollbars**: Slim red bars, thicken on hover
 - **Notifications**: Slide from top-right w/ sound
-- **404 Page**: “These aren’t the droids...” + sandstorm
+- **404 Page**: "These aren't the droids..." + sandstorm
 
 ---
 

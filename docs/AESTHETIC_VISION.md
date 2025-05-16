@@ -1,5 +1,7 @@
 # Vader Flix Aesthetic Vision
 
+> **Note:** This is a reference document for the final styling phase of the project. All core functionality and integrations should be completed before implementing these aesthetic changes.
+
 ## Theme: Imperial/Dark Side
 
 ### Color Palette
