@@ -49,27 +49,42 @@ const PlexLibrary = () => {
     const fetchLibraries = async (serverUrl) => {
         try {
             setLoading(true);
+            console.log('Fetching libraries from:', serverUrl);
             const response = await axios.get(`${serverUrl}/library/sections`, {
                 headers: PlexTokenService.getHeaders()
             });
+            console.log('Library response:', response.data);
 
             // Parse XML response
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(response.data, "text/xml");
-            const libraryElements = xmlDoc.getElementsByTagName('Directory');
+            console.log('Parsed XML:', xmlDoc);
             
-            const libraries = Array.from(libraryElements).map(lib => ({
-                key: lib.getAttribute('key'),
-                title: lib.getAttribute('title'),
-                type: lib.getAttribute('type'),
-                count: lib.getAttribute('count'),
-                updatedAt: lib.getAttribute('updatedAt')
-            }));
+            const libraryElements = xmlDoc.getElementsByTagName('Directory');
+            console.log('Found library elements:', libraryElements.length);
+            
+            const libraries = Array.from(libraryElements).map(lib => {
+                const library = {
+                    key: lib.getAttribute('key'),
+                    title: lib.getAttribute('title'),
+                    type: lib.getAttribute('type'),
+                    count: lib.getAttribute('count'),
+                    updatedAt: lib.getAttribute('updatedAt')
+                };
+                console.log('Parsed library:', library);
+                return library;
+            });
 
+            console.log('Final libraries array:', libraries);
             setLibraries(libraries);
             setError(null);
         } catch (err) {
             console.error('Error fetching libraries:', err);
+            console.error('Error details:', {
+                message: err.message,
+                response: err.response?.data,
+                status: err.response?.status
+            });
             setError('Failed to fetch libraries: ' + err.message);
         } finally {
             setLoading(false);
