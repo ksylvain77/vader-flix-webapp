@@ -7,25 +7,41 @@ require('dotenv').config();
 const app = express();
 const server = http.createServer(app);
 
+// CORS configuration
+const corsOptions = {
+    origin: ['http://192.168.50.92:3001', 'http://localhost:3001'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token'],
+    credentials: true
+};
+
+// Apply CORS to Express app
+app.use(cors(corsOptions));
+
 // Socket.IO setup with CORS
 const io = new Server(server, {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
-    }
+    cors: corsOptions,
+    pingTimeout: 60000,
+    pingInterval: 25000
 });
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
     console.log('Client connected:', socket.id);
     
+    // Send a test message to verify connection
+    socket.emit('test', { message: 'Connection established' });
+    
     socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
+    });
+
+    socket.on('error', (error) => {
+        console.error('Socket error:', error);
     });
 });
 
 // Middleware
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -51,4 +67,5 @@ require('./routes/request.routes')(app);
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
+    console.log('CORS enabled for:', corsOptions.origin);
 });
