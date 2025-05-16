@@ -18,6 +18,8 @@ A modern streaming platform built with Node.js, Express, and MariaDB, containeri
 <!-- Hook test: 2024-05-16 15:00 EDT -->
 <!-- Hook test: 2024-05-16 15:05 EDT -->
 
+<!-- 2024-05-16 17:45: Testing Plex API hook integration -->
+
 ## 🛠️ Tech Stack
 
 - **Backend**: Node.js, Express.js
