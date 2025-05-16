@@ -10,6 +10,8 @@ services:
       - PGID=65536
       - NODE_ENV=production
       - REACT_APP_API_URL=http://192.168.50.92:3000
+      - GENERATE_SOURCEMAP=false
+      - CI=false
     volumes:
       - /volume1/docker/projects/vader-flix-webapp/frontend:/app
     ports:
@@ -18,5 +20,6 @@ services:
       bash -c "
         npm install &&
         npm run build &&
-        npx serve -s build -l 3000
+        cd build &&
+        npx serve -s . -l 3000
       "
