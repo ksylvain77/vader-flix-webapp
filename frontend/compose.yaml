@@ -8,9 +8,8 @@ services:
     environment:
       - PUID=1027
       - PGID=65536
-      - NODE_ENV=development
+      - NODE_ENV=production
       - REACT_APP_API_URL=http://192.168.50.92:3000
-      - WDS_SOCKET_PORT=0
     volumes:
       - /volume1/docker/projects/vader-flix-webapp/frontend:/app
     ports:
@@ -18,7 +17,6 @@ services:
     command: >
       bash -c "
         npm install &&
-        npm install -g serve &&
         npm run build &&
-        serve -s build -l 3000
+        npx serve -s build -l 3000
       "
