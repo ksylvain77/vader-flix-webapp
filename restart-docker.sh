@@ -12,7 +12,7 @@ log() {
   echo "$1" | tee -a $LOG_FILE
 }
 
-# Define Docker paths
+# Define Docker paths based on Synology NAS
 DOCKER_PATH="/usr/local/bin/docker"
 COMPOSE_PATH="/usr/local/bin/docker-compose"
 
@@ -21,7 +21,7 @@ log "- NAS IP: $NAS_IP"
 log "- NAS User: $NAS_USER"
 log "- NAS SSH Port: $NAS_SSH_PORT"
 log "- Project Path: $NAS_PROJECT_PATH"
-log "- Expected Docker Compose File: $BACKEND_DOCKER_COMPOSE_FILE"
+log "- Container Prefix: $CONTAINER_NAME_PREFIX"
 
 # Check if we need to use sudo for Docker commands
 log "Testing Docker access with and without sudo..."
@@ -55,72 +55,46 @@ fi
 
 log "Using ${CMD_PREFIX}for Docker commands"
 
-# Look for Docker Compose files in the backend directory and project root
-log "Scanning for Docker Compose files..."
-SSH_OUTPUT=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "find $NAS_PROJECT_PATH $NAS_PROJECT_PATH/backend -name \"*docker-compose*.yml\" -o -name \"*compose*.yml\" 2>/dev/null || echo 'No compose files found'")
-log "Found compose files: $SSH_OUTPUT"
+# Define both compose files with the correct extension (.yaml instead of .yml)
+BACKEND_COMPOSE_FILE="$NAS_PROJECT_PATH/backend/compose.yaml"
+DB_COMPOSE_FILE="$NAS_PROJECT_PATH/db/compose.yaml"
 
-# Parse the output to find compose files
-if [[ "$SSH_OUTPUT" == *"No compose files found"* ]]; then
-  log "No Docker Compose files found in project directories"
-  
-  # Check if there's a docker-compose.yml file with a different name
-  log "Looking for other YAML files that might be compose files..."
-  SSH_OUTPUT=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "find $NAS_PROJECT_PATH $NAS_PROJECT_PATH/backend -name \"*.yml\" -o -name \"*.yaml\" 2>/dev/null || echo 'No YAML files found'")
-  log "Found YAML files: $SSH_OUTPUT"
-  
-  if [[ "$SSH_OUTPUT" == *"No YAML files found"* ]]; then
-    log "ERROR: No YAML files found in project directories"
-    echo "ERROR: No Docker Compose files found. See log for details."
-    exit 1
-  fi
+# Restart backend containers
+log "Stopping backend containers..."
+BACKEND_STOP=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "cd $NAS_PROJECT_PATH/backend && ${CMD_PREFIX}$COMPOSE_PATH -f compose.yaml down" 2>&1)
+log "Backend stop output: $BACKEND_STOP"
+
+log "Starting backend containers..."
+BACKEND_START=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "cd $NAS_PROJECT_PATH/backend && ${CMD_PREFIX}$COMPOSE_PATH -f compose.yaml up -d" 2>&1)
+BACKEND_STATUS=$?
+log "Backend start output: $BACKEND_START"
+log "Backend exit status: $BACKEND_STATUS"
+
+if [ $BACKEND_STATUS -ne 0 ]; then
+  log "WARNING: Error starting backend containers"
+  echo "WARNING: Error starting backend containers. See log for details."
+else
+  log "Backend containers started successfully"
+  echo "Backend containers started successfully"
 fi
 
-# Try to determine the best compose file to use
-COMPOSE_FILES=($SSH_OUTPUT)
-if [ ${#COMPOSE_FILES[@]} -eq 0 ]; then
-  log "ERROR: No compose files found"
-  echo "ERROR: No compose files found. See log for details."
-  exit 1
-fi
+# Restart database containers
+log "Stopping database containers..."
+DB_STOP=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "cd $NAS_PROJECT_PATH/db && ${CMD_PREFIX}$COMPOSE_PATH -f compose.yaml down" 2>&1)
+log "Database stop output: $DB_STOP"
 
-# Default to the first file found
-COMPOSE_FILE=${COMPOSE_FILES[0]}
+log "Starting database containers..."
+DB_START=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "cd $NAS_PROJECT_PATH/db && ${CMD_PREFIX}$COMPOSE_PATH -f compose.yaml up -d" 2>&1)
+DB_STATUS=$?
+log "Database start output: $DB_START"
+log "Database exit status: $DB_STATUS"
 
-# But prefer one with 'backend' in the path if available
-for file in "${COMPOSE_FILES[@]}"; do
-  if [[ "$file" == *"backend"* ]]; then
-    COMPOSE_FILE=$file
-    break
-  fi
-done
-
-log "Selected compose file: $COMPOSE_FILE"
-echo "Using compose file: $COMPOSE_FILE"
-
-# Stop containers
-log "Stopping containers..."
-STOP_OUTPUT=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "cd $(dirname "$COMPOSE_FILE") && ${CMD_PREFIX}$COMPOSE_PATH down" 2>&1)
-STOP_STATUS=$?
-log "Stop command exit code: $STOP_STATUS"
-log "Stop command output: $STOP_OUTPUT"
-
-if [ $STOP_STATUS -ne 0 ]; then
-  log "Warning: Error stopping containers. Will attempt to start anyway."
-  echo "Warning: Error stopping containers. Will attempt to start anyway."
-fi
-
-# Start containers
-log "Starting containers..."
-START_OUTPUT=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "cd $(dirname "$COMPOSE_FILE") && ${CMD_PREFIX}$COMPOSE_PATH up -d" 2>&1)
-START_STATUS=$?
-log "Start command exit code: $START_STATUS"
-log "Start command output: $START_OUTPUT"
-
-if [ $START_STATUS -ne 0 ]; then
-  log "ERROR: Failed to start containers"
-  echo "ERROR: Failed to start containers. See log for details."
-  exit 1
+if [ $DB_STATUS -ne 0 ]; then
+  log "WARNING: Error starting database containers"
+  echo "WARNING: Error starting database containers. See log for details."
+else
+  log "Database containers started successfully"
+  echo "Database containers started successfully"
 fi
 
 log "Containers restarted at $(date)"
