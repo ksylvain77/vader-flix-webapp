@@ -89,7 +89,6 @@ const PlexLibrary = () => {
                 <h1>Plex Libraries</h1>
                 {selectedServer && (
                     <div className="server-info">
-                        <span>Connected to: {selectedServer}</span>
                         <button onClick={() => fetchLibraries(selectedServer)} disabled={loading}>
                             {loading ? 'Refreshing...' : 'Refresh'}
                         </button>
