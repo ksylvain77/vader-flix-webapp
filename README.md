@@ -15,11 +15,7 @@ A modern streaming platform built with Node.js, Express, and MariaDB, containeri
 - Global search across all media libraries
 - Real-time search filtering
 
-<!-- Last hook test: 2024-05-16 14:55 EDT -->
-<!-- Hook test: 2024-05-16 15:00 EDT -->
-<!-- Hook test: 2024-05-16 15:05 EDT -->
 
-<!-- 2024-05-16 17:45: Testing Plex API hook integration -->
 
 ## 🛠️ Tech Stack
 
@@ -46,21 +42,26 @@ A modern streaming platform built with Node.js, Express, and MariaDB, containeri
    cd vader-flix-webapp
    ```
 
-2. **Start the Database**
+2. **Start the Application**
    ```bash
-   cd db
-   docker-compose up -d
+   ./restart-docker.sh
    ```
-   Note: This project uses Synology Container Manager for Docker orchestration, but the compose files are compatible with standard Docker Compose.
+   This script will:
+   - Start the MariaDB database
+   - Start the backend API server
+   - Start the frontend application
+   - Configure all necessary environment variables
 
-3. **Start the Backend**
-   ```bash
-   cd backend
-   docker-compose up -d
-   ```
+3. **Access the Application**
+   - Frontend: `http://localhost:3001`
+   - Backend API: `http://localhost:3000`
 
-4. **Access the API**
-   The API will be available at `http://localhost:3000`
+Note: The `restart-docker.sh` script uses the following configuration:
+- NAS IP: 192.168.50.92
+- NAS User: kevin
+- NAS SSH Port: 22
+- Project Path: /volume1/docker/projects/vader-flix-webapp
+- Container Prefix: vader-flix
 
 ## 🔧 Environment Variables
 
@@ -132,9 +133,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Express.js team
 - Docker team
 - MariaDB team 
-# Local development test
-// Test comment
-// Simplified hook test
+
+
 
 ## 🧪 Running Tests
 
