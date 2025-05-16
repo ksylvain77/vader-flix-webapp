@@ -63,7 +63,7 @@ const PlexLibrary = () => {
                 key: lib.key,
                 title: lib.title,
                 type: lib.type,
-                count: lib.count,
+                count: lib.size || '0',
                 updatedAt: lib.updatedAt
             }));
 
@@ -113,7 +113,7 @@ const PlexLibrary = () => {
                             </div>
                             <h2>{library.title}</h2>
                             <div className="library-info">
-                                <p>Type: {library.type}</p>
+                                <p>Type: {library.type === 'movie' ? 'Movies' : 'TV Shows'}</p>
                                 <p>Items: {library.count}</p>
                                 <p>Last Updated: {new Date(parseInt(library.updatedAt) * 1000).toLocaleString()}</p>
                             </div>
