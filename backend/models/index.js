@@ -1,4 +1,10 @@
-const dbConfig = require("../config/db.config.js");
+const path = require('path');
+let dbConfig;
+if (process.env.NODE_ENV === 'test') {
+  dbConfig = require(path.join(__dirname, '../config/db.config.test.js'));
+} else {
+  dbConfig = require('../config/db.config.js');
+}
 const Sequelize = require("sequelize");
 
 const sequelize = new Sequelize(
