@@ -66,16 +66,41 @@ const PlexLibrary = () => {
                 throw new Error('Invalid response format from Plex server');
             }
 
+            // First, get the basic library information
             const libraries = response.data.MediaContainer.Directory.map(lib => ({
                 key: lib.key,
                 title: lib.title,
                 type: lib.type,
-                count: lib.size || '0',
+                count: '0', // We'll update this in a moment
                 updatedAt: lib.updatedAt
             }));
 
-            console.log('Final libraries array:', libraries);
-            setLibraries(libraries);
+            // Now fetch the item count for each library
+            const librariesWithCounts = await Promise.all(libraries.map(async (lib) => {
+                try {
+                    const endpoint = lib.type === 'show' ? 'all?includeCollections=1' : 'all';
+                    const itemsResponse = await axios.get(`${serverUrl}/library/sections/${lib.key}/${endpoint}`, {
+                        headers: {
+                            ...PlexTokenService.getHeaders(),
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (itemsResponse.data.MediaContainer && itemsResponse.data.MediaContainer.Metadata) {
+                        return {
+                            ...lib,
+                            count: itemsResponse.data.MediaContainer.Metadata.length.toString()
+                        };
+                    }
+                    return lib;
+                } catch (err) {
+                    console.error(`Error fetching count for library ${lib.title}:`, err);
+                    return lib;
+                }
+            }));
+
+            console.log('Final libraries array with counts:', librariesWithCounts);
+            setLibraries(librariesWithCounts);
             setError(null);
         } catch (err) {
             console.error('Error fetching libraries:', err);
