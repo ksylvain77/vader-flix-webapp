@@ -121,9 +121,7 @@ const PlexLibrary = () => {
             setSelectedLibrary(library);
             console.log('Fetching items for library:', library);
             
-            // For TV Shows, we need to use a different endpoint structure
-            const endpoint = library.type === 'show' ? 'all?includeCollections=1' : 'all';
-            const url = `${selectedServer}/library/sections/${library.key}/${endpoint}`;
+            const url = `${selectedServer}/library/sections/${library.key}/all`;
             console.log('Fetching from URL:', url);
             
             const response = await axios.get(url, {
@@ -138,47 +136,26 @@ const PlexLibrary = () => {
                 throw new Error('Invalid response format for library items');
             }
 
-            // Log the full MediaContainer structure
-            console.log('MediaContainer structure:', {
-                size: response.data.MediaContainer.size,
-                totalSize: response.data.MediaContainer.totalSize,
-                allowSync: response.data.MediaContainer.allowSync,
-                art: response.data.MediaContainer.art,
-                content: response.data.MediaContainer.content,
-                identifier: response.data.MediaContainer.identifier,
-                librarySectionID: response.data.MediaContainer.librarySectionID,
-                librarySectionTitle: response.data.MediaContainer.librarySectionTitle,
-                librarySectionUUID: response.data.MediaContainer.librarySectionUUID,
-                mediaTagPrefix: response.data.MediaContainer.mediaTagPrefix,
-                mediaTagVersion: response.data.MediaContainer.mediaTagVersion,
-                Metadata: response.data.MediaContainer.Metadata ? response.data.MediaContainer.Metadata.length : 0
-            });
-
-            // Both TV Shows and Movies use Metadata array
             if (!response.data.MediaContainer.Metadata) {
                 throw new Error('No items found in library');
             }
 
             const items = response.data.MediaContainer.Metadata.map(item => {
                 console.log('Processing item:', item);
-                const processedItem = {
+                return {
                     key: item.ratingKey,
                     title: item.title,
                     year: item.year,
                     type: item.type,
                     thumb: item.thumb,
-                    summary: item.summary
+                    summary: item.summary,
+                    // TV Show specific fields (will be undefined for movies)
+                    episodeCount: item.leafCount,
+                    seasonCount: item.childCount,
+                    // Movie specific fields (will be undefined for TV shows)
+                    duration: item.duration,
+                    rating: item.rating
                 };
-
-                // Add TV show specific fields
-                if (library.type === 'show') {
-                    processedItem.episodeCount = item.leafCount;
-                    processedItem.seasonCount = item.childCount;
-                    processedItem.seasons = item.leafCount || 0;
-                    processedItem.episodes = item.childCount || 0;
-                }
-
-                return processedItem;
             });
 
             console.log('Processed items:', items);
@@ -272,6 +249,10 @@ const PlexLibrary = () => {
                                             {item.episodeCount && <p>Episodes: {item.episodeCount}</p>}
                                         </>
                                     )}
+                                    {item.type === 'movie' && item.duration && (
+                                        <p>Duration: {Math.floor(item.duration / 60000)} minutes</p>
+                                    )}
+                                    {item.rating && <p>Rating: {item.rating}</p>}
                                     {item.summary && (
                                         <p className="item-summary">{item.summary}</p>
                                     )}
