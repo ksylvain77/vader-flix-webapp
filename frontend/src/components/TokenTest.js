@@ -8,6 +8,8 @@ function TokenTest() {
     try {
         token = PlexTokenService.getToken();
         headers = PlexTokenService.getHeaders();
+        // Deliberately throw an error to test error handling
+        throw new Error('Test error in TokenTest component');
     } catch (error) {
         console.error('Error retrieving Plex token:', error);
         return (
