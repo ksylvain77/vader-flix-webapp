@@ -1,8 +1,16 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
+    const navigate = useNavigate();
+    
     const services = [
-        { name: 'Plex', icon: '🎬', color: '#E5A00D' },
+        { 
+            name: 'Plex', 
+            icon: '🎬', 
+            color: '#E5A00D',
+            onClick: () => navigate('/plex')
+        },
         { name: 'Sonarr', icon: '📺', color: '#2196F3' },
         { name: 'Radarr', icon: '🎥', color: '#4CAF50' },
         { name: 'Prowlarr', icon: '🔍', color: '#9C27B0' },
@@ -19,6 +27,7 @@ const Dashboard = () => {
                         key={service.name} 
                         className="service-card"
                         style={{ borderColor: service.color }}
+                        onClick={service.onClick}
                     >
                         <div className="service-icon" style={{ backgroundColor: service.color }}>
                             {service.icon}
@@ -59,6 +68,7 @@ const Dashboard = () => {
                     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
                     border: 2px solid;
                     transition: transform 0.2s, box-shadow 0.2s;
+                    cursor: pointer;
                 }
 
                 .service-card:hover {
