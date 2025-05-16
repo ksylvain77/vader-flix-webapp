@@ -96,13 +96,16 @@ const PlexLibrary = () => {
             setSelectedLibrary(library);
             console.log('Fetching items for library:', library);
             
-            // For TV Shows, we need to use a different endpoint
-            const endpoint = library.type === 'show' ? 'all' : 'all';
+            // For TV Shows, we need to use a different endpoint structure
+            const endpoint = library.type === 'show' ? 'all?includeCollections=1' : 'all';
             const url = `${selectedServer}/library/sections/${library.key}/${endpoint}`;
             console.log('Fetching from URL:', url);
             
             const response = await axios.get(url, {
-                headers: PlexTokenService.getHeaders()
+                headers: {
+                    ...PlexTokenService.getHeaders(),
+                    'Accept': 'application/json'
+                }
             });
             console.log('Raw library items response:', response.data);
 
@@ -126,26 +129,47 @@ const PlexLibrary = () => {
                 Metadata: response.data.MediaContainer.Metadata ? response.data.MediaContainer.Metadata.length : 0
             });
 
-            if (!response.data.MediaContainer.Metadata) {
-                throw new Error('No items found in library');
+            // For TV Shows, we need to handle the response differently
+            if (library.type === 'show') {
+                if (!response.data.MediaContainer.Directory) {
+                    throw new Error('No TV shows found in library');
+                }
+                const items = response.data.MediaContainer.Directory.map(item => {
+                    console.log('Processing TV show:', item);
+                    return {
+                        key: item.ratingKey,
+                        title: item.title,
+                        year: item.year,
+                        type: item.type,
+                        thumb: item.thumb,
+                        summary: item.summary,
+                        episodeCount: item.leafCount,
+                        seasonCount: item.childCount,
+                        seasons: item.leafCount || 0,
+                        episodes: item.childCount || 0
+                    };
+                });
+                console.log('Processed TV shows:', items);
+                setLibraryItems(items);
+            } else {
+                // Handle movies as before
+                if (!response.data.MediaContainer.Metadata) {
+                    throw new Error('No items found in library');
+                }
+                const items = response.data.MediaContainer.Metadata.map(item => {
+                    console.log('Processing movie:', item);
+                    return {
+                        key: item.ratingKey,
+                        title: item.title,
+                        year: item.year,
+                        type: item.type,
+                        thumb: item.thumb,
+                        summary: item.summary
+                    };
+                });
+                console.log('Processed movies:', items);
+                setLibraryItems(items);
             }
-
-            const items = response.data.MediaContainer.Metadata.map(item => {
-                console.log('Processing item:', item);
-                return {
-                    key: item.ratingKey,
-                    title: item.title,
-                    year: item.year,
-                    type: item.type,
-                    thumb: item.thumb,
-                    summary: item.summary,
-                    episodeCount: item.leafCount,
-                    seasonCount: item.childCount
-                };
-            });
-
-            console.log('Processed library items:', items);
-            setLibraryItems(items);
             setError(null);
         } catch (err) {
             console.error('Error fetching library items:', err);
