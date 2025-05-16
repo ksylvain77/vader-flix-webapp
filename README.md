@@ -12,6 +12,7 @@ A modern streaming platform built with Node.js, Express, and MariaDB, containeri
 - Secure database management
 - Docker containerization
 - testing hooks
+- testing hooks again
 
 ## 🛠️ Tech Stack
 
