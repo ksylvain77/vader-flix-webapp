@@ -1,6 +1,5 @@
 import React from 'react';
 import './App.css';
-import WebSocketExample from './components/WebSocketExample';
 import PlexTokenTest from './components/PlexTokenTest';
 
 function App() {
@@ -11,7 +10,6 @@ function App() {
         <p>Your personal media dashboard</p>
       </header>
       <main>
-        <WebSocketExample />
         <PlexTokenTest />
       </main>
     </div>
