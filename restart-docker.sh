@@ -32,20 +32,22 @@ echo "Task triggered successfully at $(date)"
 # Wait a short time before starting to check
 echo "Waiting for containers to start..."
 sleep 5
-# Poll to check when the container is up
+# Poll to check when the containers are up
 MAX_WAIT=45 # Maximum wait time in seconds
 WAIT_STEP=5 # Check every 5 seconds
 for (( elapsed=5; elapsed<=$MAX_WAIT; elapsed+=$WAIT_STEP )); do
 log "Checking container status after $elapsed seconds..."
-# Use port check instead of process check
-CONTAINER_CHECK=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "netstat -an | grep LISTEN | grep :3000" 2>&1)
-# If we see the port open, container is running
-if [ -n "$CONTAINER_CHECK" ]; then
+# Check both backend and frontend ports
+BACKEND_CHECK=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "netstat -an | grep LISTEN | grep :3000" 2>&1)
+FRONTEND_CHECK=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "netstat -an | grep LISTEN | grep :3001" 2>&1)
+# If we see both ports open, containers are running
+if [ -n "$BACKEND_CHECK" ] && [ -n "$FRONTEND_CHECK" ]; then
 END_TIME=$(date +%s)
 DURATION=$((END_TIME - START_TIME))
 log "Containers started successfully after $DURATION seconds"
 echo "Containers started successfully after $DURATION seconds"
-log "Container port info: $(echo "$CONTAINER_CHECK" | grep ":3000")"
+log "Backend port info: $(echo "$BACKEND_CHECK" | grep ":3000")"
+log "Frontend port info: $(echo "$FRONTEND_CHECK" | grep ":3001")"
 log "========== Script completed at $(date) =========="
 exit 0
 fi
