@@ -158,6 +158,16 @@ const PlexLibrary = () => {
 
             console.log('Processed items:', items);
             setLibraryItems(items);
+
+            // Update the library count in the libraries array
+            setLibraries(prevLibraries => 
+                prevLibraries.map(lib => 
+                    lib.key === library.key 
+                        ? { ...lib, count: items.length.toString() }
+                        : lib
+                )
+            );
+
             setError(null);
         } catch (err) {
             console.error('Error fetching library items:', err);
