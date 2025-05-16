@@ -1,5 +1,7 @@
+// Test component for PlexTokenService
 import React from 'react';
 import PlexTokenService from '../services/plexTokenService';
+// This is a forced change to test git tracking
 
 function TokenTest() {
     const token = PlexTokenService.getToken();
