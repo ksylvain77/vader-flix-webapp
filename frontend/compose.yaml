@@ -9,9 +9,16 @@ services:
       - PUID=1027
       - PGID=65536
       - NODE_ENV=development
-      - REACT_APP_API_URL=http://vader-flix-backend:3000
+      - REACT_APP_API_URL=http://192.168.50.92:3000
+      - WDS_SOCKET_PORT=0
     volumes:
       - /volume1/docker/projects/vader-flix-webapp/frontend:/app
     ports:
       - 3001:3000
-    command: bash -c "npm install && npm start"
+    command: >
+      bash -c "
+        npm install &&
+        npm install -g serve &&
+        npm run build &&
+        serve -s build -l 3000
+      "
