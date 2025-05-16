@@ -94,30 +94,66 @@ const PlexLibrary = () => {
         try {
             setLoading(true);
             setSelectedLibrary(library);
-            console.log('Fetching items for library:', library.title);
+            console.log('Fetching items for library:', library);
             
-            const response = await axios.get(`${selectedServer}/library/sections/${library.key}/all`, {
+            // For TV Shows, we need to use a different endpoint
+            const endpoint = library.type === 'show' ? 'all' : 'all';
+            const url = `${selectedServer}/library/sections/${library.key}/${endpoint}`;
+            console.log('Fetching from URL:', url);
+            
+            const response = await axios.get(url, {
                 headers: PlexTokenService.getHeaders()
             });
-            console.log('Library items response:', response.data);
+            console.log('Raw library items response:', response.data);
 
-            if (!response.data.MediaContainer || !response.data.MediaContainer.Metadata) {
+            if (!response.data.MediaContainer) {
                 throw new Error('Invalid response format for library items');
             }
 
-            const items = response.data.MediaContainer.Metadata.map(item => ({
-                key: item.ratingKey,
-                title: item.title,
-                year: item.year,
-                type: item.type,
-                thumb: item.thumb
-            }));
+            // Log the full MediaContainer structure
+            console.log('MediaContainer structure:', {
+                size: response.data.MediaContainer.size,
+                totalSize: response.data.MediaContainer.totalSize,
+                allowSync: response.data.MediaContainer.allowSync,
+                art: response.data.MediaContainer.art,
+                content: response.data.MediaContainer.content,
+                identifier: response.data.MediaContainer.identifier,
+                librarySectionID: response.data.MediaContainer.librarySectionID,
+                librarySectionTitle: response.data.MediaContainer.librarySectionTitle,
+                librarySectionUUID: response.data.MediaContainer.librarySectionUUID,
+                mediaTagPrefix: response.data.MediaContainer.mediaTagPrefix,
+                mediaTagVersion: response.data.MediaContainer.mediaTagVersion,
+                Metadata: response.data.MediaContainer.Metadata ? response.data.MediaContainer.Metadata.length : 0
+            });
 
-            console.log('Library items:', items);
+            if (!response.data.MediaContainer.Metadata) {
+                throw new Error('No items found in library');
+            }
+
+            const items = response.data.MediaContainer.Metadata.map(item => {
+                console.log('Processing item:', item);
+                return {
+                    key: item.ratingKey,
+                    title: item.title,
+                    year: item.year,
+                    type: item.type,
+                    thumb: item.thumb,
+                    summary: item.summary,
+                    episodeCount: item.leafCount,
+                    seasonCount: item.childCount
+                };
+            });
+
+            console.log('Processed library items:', items);
             setLibraryItems(items);
             setError(null);
         } catch (err) {
             console.error('Error fetching library items:', err);
+            console.error('Error details:', {
+                message: err.message,
+                response: err.response?.data,
+                status: err.response?.status
+            });
             setError('Failed to fetch library items: ' + err.message);
         } finally {
             setLoading(false);
@@ -183,6 +219,15 @@ const PlexLibrary = () => {
                                 <div className="item-info">
                                     <h3>{item.title}</h3>
                                     {item.year && <p>Year: {item.year}</p>}
+                                    {item.type === 'show' && (
+                                        <>
+                                            {item.seasonCount && <p>Seasons: {item.seasonCount}</p>}
+                                            {item.episodeCount && <p>Episodes: {item.episodeCount}</p>}
+                                        </>
+                                    )}
+                                    {item.summary && (
+                                        <p className="item-summary">{item.summary}</p>
+                                    )}
                                 </div>
                             </div>
                         ))}
@@ -356,6 +401,12 @@ const PlexLibrary = () => {
 
                 .item-info p {
                     margin: 5px 0;
+                    color: #666;
+                    font-size: 14px;
+                }
+
+                .item-summary {
+                    margin-top: 10px;
                     color: #666;
                     font-size: 14px;
                 }
