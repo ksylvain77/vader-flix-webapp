@@ -27,7 +27,7 @@ exports.create = (req, res) => {
   // Save Media in the database
   Media.create(media)
     .then(data => {
-      res.send(data);
+      res.status(201).send(data);
     })
     .catch(err => {
       res.status(500).send({

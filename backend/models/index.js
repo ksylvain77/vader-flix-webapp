@@ -1,7 +1,7 @@
 const path = require('path');
 let dbConfig;
 if (process.env.NODE_ENV === 'test') {
-  dbConfig = require(path.join(__dirname, '../config/db.config.test.js'));
+  dbConfig = require(path.join(__dirname, '../config/db.config.testconfig.js'));
 } else {
   dbConfig = require('../config/db.config.js');
 }
