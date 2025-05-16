@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import PlexTokenTest from './components/PlexTokenTest';
+import Dashboard from './components/Dashboard';
 
 function App() {
   return (
@@ -10,7 +10,7 @@ function App() {
         <p>Your personal media dashboard</p>
       </header>
       <main>
-        <PlexTokenTest />
+        <Dashboard />
       </main>
     </div>
   );
