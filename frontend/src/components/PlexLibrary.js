@@ -129,47 +129,35 @@ const PlexLibrary = () => {
                 Metadata: response.data.MediaContainer.Metadata ? response.data.MediaContainer.Metadata.length : 0
             });
 
-            // For TV Shows, we need to handle the response differently
-            if (library.type === 'show') {
-                if (!response.data.MediaContainer.Directory) {
-                    throw new Error('No TV shows found in library');
-                }
-                const items = response.data.MediaContainer.Directory.map(item => {
-                    console.log('Processing TV show:', item);
-                    return {
-                        key: item.ratingKey,
-                        title: item.title,
-                        year: item.year,
-                        type: item.type,
-                        thumb: item.thumb,
-                        summary: item.summary,
-                        episodeCount: item.leafCount,
-                        seasonCount: item.childCount,
-                        seasons: item.leafCount || 0,
-                        episodes: item.childCount || 0
-                    };
-                });
-                console.log('Processed TV shows:', items);
-                setLibraryItems(items);
-            } else {
-                // Handle movies as before
-                if (!response.data.MediaContainer.Metadata) {
-                    throw new Error('No items found in library');
-                }
-                const items = response.data.MediaContainer.Metadata.map(item => {
-                    console.log('Processing movie:', item);
-                    return {
-                        key: item.ratingKey,
-                        title: item.title,
-                        year: item.year,
-                        type: item.type,
-                        thumb: item.thumb,
-                        summary: item.summary
-                    };
-                });
-                console.log('Processed movies:', items);
-                setLibraryItems(items);
+            // Both TV Shows and Movies use Metadata array
+            if (!response.data.MediaContainer.Metadata) {
+                throw new Error('No items found in library');
             }
+
+            const items = response.data.MediaContainer.Metadata.map(item => {
+                console.log('Processing item:', item);
+                const processedItem = {
+                    key: item.ratingKey,
+                    title: item.title,
+                    year: item.year,
+                    type: item.type,
+                    thumb: item.thumb,
+                    summary: item.summary
+                };
+
+                // Add TV show specific fields
+                if (library.type === 'show') {
+                    processedItem.episodeCount = item.leafCount;
+                    processedItem.seasonCount = item.childCount;
+                    processedItem.seasons = item.leafCount || 0;
+                    processedItem.episodes = item.childCount || 0;
+                }
+
+                return processedItem;
+            });
+
+            console.log('Processed items:', items);
+            setLibraryItems(items);
             setError(null);
         } catch (err) {
             console.error('Error fetching library items:', err);
