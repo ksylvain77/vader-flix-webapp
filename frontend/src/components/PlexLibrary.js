@@ -10,10 +10,18 @@ const PlexLibrary = () => {
     const [selectedLibrary, setSelectedLibrary] = useState(null);
     const [libraryItems, setLibraryItems] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
+    const [allItems, setAllItems] = useState([]);
 
     useEffect(() => {
         fetchServers();
     }, []);
+
+    // Fetch all items when libraries are loaded
+    useEffect(() => {
+        if (selectedServer && libraries.length > 0) {
+            fetchAllItems();
+        }
+    }, [selectedServer, libraries]);
 
     const fetchServers = async () => {
         try {
@@ -116,75 +124,52 @@ const PlexLibrary = () => {
         }
     };
 
-    const fetchLibraryItems = async (library) => {
+    const fetchAllItems = async () => {
         try {
             setLoading(true);
-            setSelectedLibrary(library);
-            console.log('Fetching items for library:', library);
-            
-            const url = `${selectedServer}/library/sections/${library.key}/all`;
-            console.log('Fetching from URL:', url);
-            
-            const response = await axios.get(url, {
-                headers: {
-                    ...PlexTokenService.getHeaders(),
-                    'Accept': 'application/json'
+            const allItemsPromises = libraries.map(async (library) => {
+                const url = `${selectedServer}/library/sections/${library.key}/all`;
+                const response = await axios.get(url, {
+                    headers: {
+                        ...PlexTokenService.getHeaders(),
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.data.MediaContainer || !response.data.MediaContainer.Metadata) {
+                    return [];
                 }
+
+                return response.data.MediaContainer.Metadata.map(item => ({
+                    key: item.ratingKey,
+                    title: item.title,
+                    year: item.year,
+                    type: item.type,
+                    thumb: item.thumb,
+                    summary: item.summary,
+                    libraryTitle: library.title,
+                    // TV Show specific fields
+                    episodeCount: item.leafCount,
+                    seasonCount: item.childCount,
+                    // Movie specific fields
+                    duration: item.duration,
+                    rating: item.rating
+                }));
             });
-            console.log('Raw library items response:', response.data);
 
-            if (!response.data.MediaContainer) {
-                throw new Error('Invalid response format for library items');
-            }
-
-            // Handle empty library as a normal state
-            const items = response.data.MediaContainer.Metadata 
-                ? response.data.MediaContainer.Metadata.map(item => {
-                    console.log('Processing item:', item);
-                    return {
-                        key: item.ratingKey,
-                        title: item.title,
-                        year: item.year,
-                        type: item.type,
-                        thumb: item.thumb,
-                        summary: item.summary,
-                        // TV Show specific fields (will be undefined for movies)
-                        episodeCount: item.leafCount,
-                        seasonCount: item.childCount,
-                        // Movie specific fields (will be undefined for TV shows)
-                        duration: item.duration,
-                        rating: item.rating
-                    };
-                })
-                : [];
-
-            console.log('Processed items:', items);
-            setLibraryItems(items);
-
-            // Update the library count in the libraries array
-            setLibraries(prevLibraries => 
-                prevLibraries.map(lib => 
-                    lib.key === library.key 
-                        ? { ...lib, count: items.length.toString() }
-                        : lib
-                )
-            );
-
-            setError(null);
+            const itemsArrays = await Promise.all(allItemsPromises);
+            const allItems = itemsArrays.flat();
+            console.log('All items loaded:', allItems);
+            setAllItems(allItems);
         } catch (err) {
-            console.error('Error fetching library items:', err);
-            console.error('Error details:', {
-                message: err.message,
-                response: err.response?.data,
-                status: err.response?.status
-            });
-            setError('Failed to fetch library items: ' + err.message);
+            console.error('Error fetching all items:', err);
+            setError('Failed to fetch items: ' + err.message);
         } finally {
             setLoading(false);
         }
     };
 
-    const filteredItems = libraryItems.filter(item => 
+    const filteredItems = allItems.filter(item => 
         item.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
@@ -193,25 +178,23 @@ const PlexLibrary = () => {
             <div className="header">
                 <h1>Plex Libraries</h1>
                 <div className="header-controls">
-                    {selectedLibrary && (
-                        <div className="search-container">
-                            <input
-                                type="text"
-                                placeholder="Search in library..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="search-input"
-                            />
-                            {searchQuery && (
-                                <button 
-                                    className="clear-search"
-                                    onClick={() => setSearchQuery('')}
-                                >
-                                    ×
-                                </button>
-                            )}
-                        </div>
-                    )}
+                    <div className="search-container">
+                        <input
+                            type="text"
+                            placeholder="Search all libraries..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="search-input"
+                        />
+                        {searchQuery && (
+                            <button 
+                                className="clear-search"
+                                onClick={() => setSearchQuery('')}
+                            >
+                                ×
+                            </button>
+                        )}
+                    </div>
                     {selectedServer && (
                         <div className="server-info">
                             <button onClick={() => fetchLibraries(selectedServer)} disabled={loading}>
@@ -231,82 +214,74 @@ const PlexLibrary = () => {
             {loading ? (
                 <div className="loading">Loading libraries...</div>
             ) : (
-                <div className="libraries-grid">
-                    {libraries.map((library) => (
-                        <div 
-                            key={library.key} 
-                            className={`library-card ${selectedLibrary?.key === library.key ? 'selected' : ''}`}
-                            onClick={() => {
-                                setSearchQuery(''); // Clear search when switching libraries
-                                fetchLibraryItems(library);
-                            }}
-                        >
-                            <div className="library-icon">
-                                {library.type === 'movie' ? '🎬' : '📺'}
-                            </div>
-                            <h2>{library.title}</h2>
-                            <div className="library-info">
-                                <p>Type: {library.type === 'movie' ? 'Movies' : 'TV Shows'}</p>
-                                <p>Items: {library.count}</p>
-                                <p>Last Updated: {new Date(parseInt(library.updatedAt) * 1000).toLocaleString()}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {selectedLibrary && (
-                <div className="library-items">
-                    <h2>{selectedLibrary.title} Content</h2>
-                    {libraryItems.length > 0 ? (
-                        <>
-                            {searchQuery && (
-                                <div className="search-results-info">
-                                    {filteredItems.length === 0 ? (
-                                        <p>No items found matching "{searchQuery}"</p>
-                                    ) : (
-                                        <p>Found {filteredItems.length} item{filteredItems.length !== 1 ? 's' : ''} matching "{searchQuery}"</p>
-                                    )}
+                <>
+                    <div className="libraries-grid">
+                        {libraries.map((library) => (
+                            <div 
+                                key={library.key} 
+                                className={`library-card ${selectedLibrary?.key === library.key ? 'selected' : ''}`}
+                                onClick={() => {
+                                    setSelectedLibrary(library);
+                                    setLibraryItems(allItems.filter(item => item.libraryTitle === library.title));
+                                }}
+                            >
+                                <div className="library-icon">
+                                    {library.type === 'movie' ? '🎬' : '📺'}
                                 </div>
-                            )}
-                            <div className="items-grid">
-                                {filteredItems.map((item) => (
-                                    <div key={item.key} className="item-card">
-                                        {item.thumb && (
-                                            <img 
-                                                src={`${selectedServer}${item.thumb}?X-Plex-Token=${PlexTokenService.getToken()}`} 
-                                                alt={item.title}
-                                                className="item-thumbnail"
-                                            />
-                                        )}
-                                        <div className="item-info">
-                                            <h3>{item.title}</h3>
-                                            {item.year && <p>Year: {item.year}</p>}
-                                            {item.type === 'show' && (
-                                                <>
-                                                    {item.seasonCount && <p>Seasons: {item.seasonCount}</p>}
-                                                    {item.episodeCount && <p>Episodes: {item.episodeCount}</p>}
-                                                </>
-                                            )}
-                                            {item.type === 'movie' && item.duration && (
-                                                <p>Duration: {Math.floor(item.duration / 60000)} minutes</p>
-                                            )}
-                                            {item.rating && <p>Rating: {item.rating}</p>}
-                                            {item.summary && (
-                                                <p className="item-summary">{item.summary}</p>
-                                            )}
-                                        </div>
-                                    </div>
-                                ))}
+                                <h2>{library.title}</h2>
+                                <div className="library-info">
+                                    <p>Type: {library.type === 'movie' ? 'Movies' : 'TV Shows'}</p>
+                                    <p>Items: {library.count}</p>
+                                    <p>Last Updated: {new Date(parseInt(library.updatedAt) * 1000).toLocaleString()}</p>
+                                </div>
                             </div>
-                        </>
-                    ) : (
-                        <div className="empty-library">
-                            <p>No items found in this library.</p>
-                            <p>Add some content to your Plex server to see it here.</p>
+                        ))}
+                    </div>
+
+                    <div className="library-items">
+                        <h2>Search Results</h2>
+                        {searchQuery && (
+                            <div className="search-results-info">
+                                {filteredItems.length === 0 ? (
+                                    <p>No items found matching "{searchQuery}"</p>
+                                ) : (
+                                    <p>Found {filteredItems.length} item{filteredItems.length !== 1 ? 's' : ''} matching "{searchQuery}"</p>
+                                )}
+                            </div>
+                        )}
+                        <div className="items-grid">
+                            {(searchQuery ? filteredItems : allItems).map((item) => (
+                                <div key={item.key} className="item-card">
+                                    {item.thumb && (
+                                        <img 
+                                            src={`${selectedServer}${item.thumb}?X-Plex-Token=${PlexTokenService.getToken()}`} 
+                                            alt={item.title}
+                                            className="item-thumbnail"
+                                        />
+                                    )}
+                                    <div className="item-info">
+                                        <h3>{item.title}</h3>
+                                        <p className="library-label">{item.libraryTitle}</p>
+                                        {item.year && <p>Year: {item.year}</p>}
+                                        {item.type === 'show' && (
+                                            <>
+                                                {item.seasonCount && <p>Seasons: {item.seasonCount}</p>}
+                                                {item.episodeCount && <p>Episodes: {item.episodeCount}</p>}
+                                            </>
+                                        )}
+                                        {item.type === 'movie' && item.duration && (
+                                            <p>Duration: {Math.floor(item.duration / 60000)} minutes</p>
+                                        )}
+                                        {item.rating && <p>Rating: {item.rating}</p>}
+                                        {item.summary && (
+                                            <p className="item-summary">{item.summary}</p>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    )}
-                </div>
+                    </div>
+                </>
             )}
 
             <style>{`
@@ -564,6 +539,13 @@ const PlexLibrary = () => {
                 .search-results-info p {
                     margin: 0;
                     color: #666;
+                }
+
+                .library-label {
+                    color: #E5A00D;
+                    font-size: 14px;
+                    margin: 5px 0;
+                    font-weight: 500;
                 }
 
                 @media (max-width: 768px) {
