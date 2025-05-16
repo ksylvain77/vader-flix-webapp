@@ -4,8 +4,19 @@ import PlexTokenService from '../services/plexTokenService';
 // This is a forced change to test git tracking
 
 function TokenTest() {
-    const token = PlexTokenService.getToken();
-    const headers = PlexTokenService.getHeaders();
+    let token, headers;
+    try {
+        token = PlexTokenService.getToken();
+        headers = PlexTokenService.getHeaders();
+    } catch (error) {
+        console.error('Error retrieving Plex token:', error);
+        return (
+            <div style={{ padding: '20px', color: 'red' }}>
+                <h2>Error Retrieving Plex Token</h2>
+                <p>{error.message}</p>
+            </div>
+        );
+    }
 
     return (
         <div style={{ padding: '20px' }}>
