@@ -8,16 +8,20 @@ const PlexLibrary = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        console.log('PlexLibrary component mounted');
         fetchLibraries();
     }, []);
 
     const fetchLibraries = async () => {
         try {
             setLoading(true);
+            console.log('Fetching Plex servers...');
+            
             // First, get the server information
             const serverResponse = await axios.get('https://plex.tv/api/servers', {
                 headers: PlexTokenService.getHeaders()
             });
+            console.log('Server response:', serverResponse.data);
 
             if (!serverResponse.data.MediaContainer.Server) {
                 throw new Error('No Plex servers found');
@@ -25,11 +29,14 @@ const PlexLibrary = () => {
 
             const server = serverResponse.data.MediaContainer.Server[0];
             const serverUrl = `http://${server.localAddresses.split(',')[0]}:${server.port}`;
+            console.log('Server URL:', serverUrl);
 
             // Then fetch libraries from the server
+            console.log('Fetching libraries from server...');
             const librariesResponse = await axios.get(`${serverUrl}/library/sections`, {
                 headers: PlexTokenService.getHeaders()
             });
+            console.log('Libraries response:', librariesResponse.data);
 
             if (!librariesResponse.data.MediaContainer.Directory) {
                 throw new Error('No libraries found');
@@ -39,6 +46,11 @@ const PlexLibrary = () => {
             setError(null);
         } catch (err) {
             console.error('Plex API Error:', err);
+            console.error('Error details:', {
+                message: err.message,
+                response: err.response?.data,
+                status: err.response?.status
+            });
             setError('Failed to fetch libraries: ' + (err.response?.data?.error || err.message));
         } finally {
             setLoading(false);
