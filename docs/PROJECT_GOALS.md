@@ -73,6 +73,39 @@ Create a unified media management and delivery system that integrates Plex, Sona
 - [ ] Download monitoring
 - [ ] System health monitoring
 
+### Admin Dashboard
+- [ ] Container Health Monitoring
+  - [ ] Status of all Docker containers
+  - [ ] Resource usage (CPU, Memory, Disk)
+  - [ ] Log viewing and filtering
+  - [ ] Container restart capabilities
+
+- [ ] User Management Interface
+  - [ ] View all users and their roles
+  - [ ] Approve/reject access requests
+  - [ ] Manage user permissions
+  - [ ] User activity logs
+
+- [ ] System Status
+  - [ ] Plex server status
+  - [ ] Sonar/Radar health checks
+  - [ ] Qubit Torrent status
+  - [ ] Download queue monitoring
+  - [ ] Storage space monitoring
+
+- [ ] Request Management
+  - [ ] View all media requests
+  - [ ] Approve/reject requests
+  - [ ] Track download progress
+  - [ ] Manual download triggers
+  - [ ] Request history and statistics
+
+- [ ] System Configuration
+  - [ ] API key management
+  - [ ] Service connection settings
+  - [ ] Notification preferences
+  - [ ] System backup/restore
+
 ## Technical Goals
 
 ### Security
