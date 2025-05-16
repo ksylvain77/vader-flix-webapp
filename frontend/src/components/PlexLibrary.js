@@ -7,6 +7,8 @@ const PlexLibrary = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedServer, setSelectedServer] = useState(null);
+    const [selectedLibrary, setSelectedLibrary] = useState(null);
+    const [libraryItems, setLibraryItems] = useState([]);
 
     useEffect(() => {
         fetchServers();
@@ -88,6 +90,40 @@ const PlexLibrary = () => {
         }
     };
 
+    const fetchLibraryItems = async (library) => {
+        try {
+            setLoading(true);
+            setSelectedLibrary(library);
+            console.log('Fetching items for library:', library.title);
+            
+            const response = await axios.get(`${selectedServer}/library/sections/${library.key}/all`, {
+                headers: PlexTokenService.getHeaders()
+            });
+            console.log('Library items response:', response.data);
+
+            if (!response.data.MediaContainer || !response.data.MediaContainer.Metadata) {
+                throw new Error('Invalid response format for library items');
+            }
+
+            const items = response.data.MediaContainer.Metadata.map(item => ({
+                key: item.ratingKey,
+                title: item.title,
+                year: item.year,
+                type: item.type,
+                thumb: item.thumb
+            }));
+
+            console.log('Library items:', items);
+            setLibraryItems(items);
+            setError(null);
+        } catch (err) {
+            console.error('Error fetching library items:', err);
+            setError('Failed to fetch library items: ' + err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="plex-library">
             <div className="header">
@@ -112,7 +148,11 @@ const PlexLibrary = () => {
             ) : (
                 <div className="libraries-grid">
                     {libraries.map((library) => (
-                        <div key={library.key} className="library-card">
+                        <div 
+                            key={library.key} 
+                            className={`library-card ${selectedLibrary?.key === library.key ? 'selected' : ''}`}
+                            onClick={() => fetchLibraryItems(library)}
+                        >
                             <div className="library-icon">
                                 {library.type === 'movie' ? '🎬' : '📺'}
                             </div>
@@ -124,6 +164,29 @@ const PlexLibrary = () => {
                             </div>
                         </div>
                     ))}
+                </div>
+            )}
+
+            {selectedLibrary && libraryItems.length > 0 && (
+                <div className="library-items">
+                    <h2>{selectedLibrary.title} Content</h2>
+                    <div className="items-grid">
+                        {libraryItems.map((item) => (
+                            <div key={item.key} className="item-card">
+                                {item.thumb && (
+                                    <img 
+                                        src={`${selectedServer}${item.thumb}?X-Plex-Token=${PlexTokenService.getToken()}`} 
+                                        alt={item.title}
+                                        className="item-thumbnail"
+                                    />
+                                )}
+                                <div className="item-info">
+                                    <h3>{item.title}</h3>
+                                    {item.year && <p>Year: {item.year}</p>}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             )}
 
@@ -197,6 +260,7 @@ const PlexLibrary = () => {
                     display: grid;
                     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
                     gap: 20px;
+                    margin-bottom: 40px;
                 }
 
                 .library-card {
@@ -206,11 +270,17 @@ const PlexLibrary = () => {
                     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
                     border: 2px solid #E5A00D;
                     transition: transform 0.2s, box-shadow 0.2s;
+                    cursor: pointer;
                 }
 
                 .library-card:hover {
                     transform: translateY(-5px);
                     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                }
+
+                .library-card.selected {
+                    border-color: #007bff;
+                    background-color: #f8f9fa;
                 }
 
                 .library-icon {
@@ -241,9 +311,62 @@ const PlexLibrary = () => {
                     margin: 5px 0;
                 }
 
+                .library-items {
+                    margin-top: 40px;
+                }
+
+                .library-items h2 {
+                    color: #333;
+                    margin-bottom: 20px;
+                }
+
+                .items-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                    gap: 20px;
+                }
+
+                .item-card {
+                    background: white;
+                    border-radius: 8px;
+                    overflow: hidden;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    transition: transform 0.2s;
+                }
+
+                .item-card:hover {
+                    transform: translateY(-5px);
+                }
+
+                .item-thumbnail {
+                    width: 100%;
+                    height: 300px;
+                    object-fit: cover;
+                }
+
+                .item-info {
+                    padding: 15px;
+                }
+
+                .item-info h3 {
+                    margin: 0 0 10px 0;
+                    color: #333;
+                    font-size: 16px;
+                }
+
+                .item-info p {
+                    margin: 5px 0;
+                    color: #666;
+                    font-size: 14px;
+                }
+
                 @media (max-width: 768px) {
                     .libraries-grid {
                         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    }
+                    
+                    .items-grid {
+                        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
                     }
                 }
             `}</style>
