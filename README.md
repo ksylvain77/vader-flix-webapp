@@ -42,17 +42,23 @@ A modern streaming platform built with Node.js, Express, and MariaDB, containeri
    cd vader-flix-webapp
    ```
 
-2. **Start the Application**
+2. **Start the Database**
+   ```bash
+   cd db
+   docker-compose up -d
+   ```
+   Note: This project uses Synology Container Manager for Docker orchestration, but the compose files are compatible with standard Docker Compose.
+
+3. **Start the Application**
    ```bash
    ./restart-docker.sh
    ```
    This script will:
-   - Start the MariaDB database
    - Start the backend API server
    - Start the frontend application
    - Configure all necessary environment variables
 
-3. **Access the Application**
+4. **Access the Application**
    - Frontend: `http://localhost:3001`
    - Backend API: `http://localhost:3000`
 
