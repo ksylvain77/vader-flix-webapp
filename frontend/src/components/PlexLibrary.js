@@ -9,6 +9,7 @@ const PlexLibrary = () => {
     const [selectedServer, setSelectedServer] = useState(null);
     const [selectedLibrary, setSelectedLibrary] = useState(null);
     const [libraryItems, setLibraryItems] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         fetchServers();
@@ -183,17 +184,42 @@ const PlexLibrary = () => {
         }
     };
 
+    const filteredItems = libraryItems.filter(item => 
+        item.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
         <div className="plex-library">
             <div className="header">
                 <h1>Plex Libraries</h1>
-                {selectedServer && (
-                    <div className="server-info">
-                        <button onClick={() => fetchLibraries(selectedServer)} disabled={loading}>
-                            {loading ? 'Refreshing...' : 'Refresh'}
-                        </button>
-                    </div>
-                )}
+                <div className="header-controls">
+                    {selectedLibrary && (
+                        <div className="search-container">
+                            <input
+                                type="text"
+                                placeholder="Search in library..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="search-input"
+                            />
+                            {searchQuery && (
+                                <button 
+                                    className="clear-search"
+                                    onClick={() => setSearchQuery('')}
+                                >
+                                    ×
+                                </button>
+                            )}
+                        </div>
+                    )}
+                    {selectedServer && (
+                        <div className="server-info">
+                            <button onClick={() => fetchLibraries(selectedServer)} disabled={loading}>
+                                {loading ? 'Refreshing...' : 'Refresh'}
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {error && (
@@ -210,7 +236,10 @@ const PlexLibrary = () => {
                         <div 
                             key={library.key} 
                             className={`library-card ${selectedLibrary?.key === library.key ? 'selected' : ''}`}
-                            onClick={() => fetchLibraryItems(library)}
+                            onClick={() => {
+                                setSearchQuery(''); // Clear search when switching libraries
+                                fetchLibraryItems(library);
+                            }}
                         >
                             <div className="library-icon">
                                 {library.type === 'movie' ? '🎬' : '📺'}
@@ -230,36 +259,47 @@ const PlexLibrary = () => {
                 <div className="library-items">
                     <h2>{selectedLibrary.title} Content</h2>
                     {libraryItems.length > 0 ? (
-                        <div className="items-grid">
-                            {libraryItems.map((item) => (
-                                <div key={item.key} className="item-card">
-                                    {item.thumb && (
-                                        <img 
-                                            src={`${selectedServer}${item.thumb}?X-Plex-Token=${PlexTokenService.getToken()}`} 
-                                            alt={item.title}
-                                            className="item-thumbnail"
-                                        />
+                        <>
+                            {searchQuery && (
+                                <div className="search-results-info">
+                                    {filteredItems.length === 0 ? (
+                                        <p>No items found matching "{searchQuery}"</p>
+                                    ) : (
+                                        <p>Found {filteredItems.length} item{filteredItems.length !== 1 ? 's' : ''} matching "{searchQuery}"</p>
                                     )}
-                                    <div className="item-info">
-                                        <h3>{item.title}</h3>
-                                        {item.year && <p>Year: {item.year}</p>}
-                                        {item.type === 'show' && (
-                                            <>
-                                                {item.seasonCount && <p>Seasons: {item.seasonCount}</p>}
-                                                {item.episodeCount && <p>Episodes: {item.episodeCount}</p>}
-                                            </>
-                                        )}
-                                        {item.type === 'movie' && item.duration && (
-                                            <p>Duration: {Math.floor(item.duration / 60000)} minutes</p>
-                                        )}
-                                        {item.rating && <p>Rating: {item.rating}</p>}
-                                        {item.summary && (
-                                            <p className="item-summary">{item.summary}</p>
-                                        )}
-                                    </div>
                                 </div>
-                            ))}
-                        </div>
+                            )}
+                            <div className="items-grid">
+                                {filteredItems.map((item) => (
+                                    <div key={item.key} className="item-card">
+                                        {item.thumb && (
+                                            <img 
+                                                src={`${selectedServer}${item.thumb}?X-Plex-Token=${PlexTokenService.getToken()}`} 
+                                                alt={item.title}
+                                                className="item-thumbnail"
+                                            />
+                                        )}
+                                        <div className="item-info">
+                                            <h3>{item.title}</h3>
+                                            {item.year && <p>Year: {item.year}</p>}
+                                            {item.type === 'show' && (
+                                                <>
+                                                    {item.seasonCount && <p>Seasons: {item.seasonCount}</p>}
+                                                    {item.episodeCount && <p>Episodes: {item.episodeCount}</p>}
+                                                </>
+                                            )}
+                                            {item.type === 'movie' && item.duration && (
+                                                <p>Duration: {Math.floor(item.duration / 60000)} minutes</p>
+                                            )}
+                                            {item.rating && <p>Rating: {item.rating}</p>}
+                                            {item.summary && (
+                                                <p className="item-summary">{item.summary}</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
                     ) : (
                         <div className="empty-library">
                             <p>No items found in this library.</p>
@@ -463,6 +503,69 @@ const PlexLibrary = () => {
                     font-weight: 500;
                 }
 
+                .header-controls {
+                    display: flex;
+                    align-items: center;
+                    gap: 20px;
+                }
+
+                .search-container {
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                }
+
+                .search-input {
+                    padding: 10px 15px;
+                    padding-right: 35px;
+                    border: 2px solid #E5A00D;
+                    border-radius: 4px;
+                    font-size: 16px;
+                    width: 300px;
+                    transition: all 0.2s;
+                }
+
+                .search-input:focus {
+                    outline: none;
+                    border-color: #C48A0B;
+                    box-shadow: 0 0 0 2px rgba(229, 160, 13, 0.2);
+                }
+
+                .clear-search {
+                    position: absolute;
+                    right: 10px;
+                    background: none;
+                    border: none;
+                    color: #666;
+                    font-size: 20px;
+                    cursor: pointer;
+                    padding: 0;
+                    width: 20px;
+                    height: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                }
+
+                .clear-search:hover {
+                    background-color: #f0f0f0;
+                    color: #333;
+                }
+
+                .search-results-info {
+                    margin: 20px 0;
+                    padding: 10px;
+                    background-color: #f8f9fa;
+                    border-radius: 4px;
+                    text-align: center;
+                }
+
+                .search-results-info p {
+                    margin: 0;
+                    color: #666;
+                }
+
                 @media (max-width: 768px) {
                     .libraries-grid {
                         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -470,6 +573,15 @@ const PlexLibrary = () => {
                     
                     .items-grid {
                         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                    }
+
+                    .header-controls {
+                        flex-direction: column;
+                        align-items: stretch;
+                    }
+
+                    .search-input {
+                        width: 100%;
                     }
                 }
             `}</style>
