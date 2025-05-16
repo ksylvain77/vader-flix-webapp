@@ -55,25 +55,17 @@ const PlexLibrary = () => {
             });
             console.log('Library response:', response.data);
 
-            // Parse XML response
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(response.data, "text/xml");
-            console.log('Parsed XML:', xmlDoc);
-            
-            const libraryElements = xmlDoc.getElementsByTagName('Directory');
-            console.log('Found library elements:', libraryElements.length);
-            
-            const libraries = Array.from(libraryElements).map(lib => {
-                const library = {
-                    key: lib.getAttribute('key'),
-                    title: lib.getAttribute('title'),
-                    type: lib.getAttribute('type'),
-                    count: lib.getAttribute('count'),
-                    updatedAt: lib.getAttribute('updatedAt')
-                };
-                console.log('Parsed library:', library);
-                return library;
-            });
+            if (!response.data.MediaContainer || !response.data.MediaContainer.Directory) {
+                throw new Error('Invalid response format from Plex server');
+            }
+
+            const libraries = response.data.MediaContainer.Directory.map(lib => ({
+                key: lib.key,
+                title: lib.title,
+                type: lib.type,
+                count: lib.count,
+                updatedAt: lib.updatedAt
+            }));
 
             console.log('Final libraries array:', libraries);
             setLibraries(libraries);
