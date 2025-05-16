@@ -19,42 +19,30 @@ log "- NAS SSH Port: $NAS_SSH_PORT"
 log "- Project Path: $NAS_PROJECT_PATH"
 log "- Container Prefix: $CONTAINER_NAME_PREFIX"
 
-# Define full paths to Docker executables
-DOCKER_CMD="/usr/local/bin/docker"
-COMPOSE_CMD="/usr/local/bin/docker-compose"
+# Run the task scheduler task to restart Docker containers
+log "Triggering the Docker restart task on Synology Task Scheduler..."
+TASK_RESULT=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "synoschedtask --run \"Restart Vader Flix Docker\"" 2>&1)
+TASK_STATUS=$?
 
-# Restart backend containers
-log "Stopping backend containers..."
-STOP_BACKEND=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "cd $NAS_PROJECT_PATH/backend && $COMPOSE_CMD -f compose.yaml down" 2>&1)
-log "Backend stop output: $STOP_BACKEND"
+log "Task trigger result: $TASK_RESULT"
+log "Task trigger status code: $TASK_STATUS"
 
-log "Starting backend containers..."
-START_BACKEND=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "cd $NAS_PROJECT_PATH/backend && $COMPOSE_CMD -f compose.yaml up -d" 2>&1)
-BACKEND_STATUS=$?
-log "Backend start output: $START_BACKEND"
-log "Backend start status: $BACKEND_STATUS"
+if [ $TASK_STATUS -ne 0 ]; then
+  log "ERROR: Failed to trigger task scheduler. Verify task name."
+  echo "ERROR: Failed to trigger task scheduler. See log for details."
+  exit 1
+fi
 
-# Restart db containers
-log "Stopping db containers..."
-STOP_DB=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "cd $NAS_PROJECT_PATH/db && $COMPOSE_CMD -f compose.yaml down" 2>&1)
-log "DB stop output: $STOP_DB"
+log "Task triggered successfully at $(date)"
+echo "Task triggered successfully at $(date)"
 
-log "Starting db containers..."
-START_DB=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "cd $NAS_PROJECT_PATH/db && $COMPOSE_CMD -f compose.yaml up -d" 2>&1)
-DB_STATUS=$?
-log "DB start output: $START_DB"
-log "DB start status: $DB_STATUS"
-
-log "Containers restarted at $(date)"
-echo "Containers restarted at $(date)"
-
-log "Waiting 10 seconds for containers to start..."
-echo "Waiting 10 seconds for containers to start..."
-sleep 10
+log "Waiting 30 seconds for containers to restart..."
+echo "Waiting 30 seconds for containers to restart..."
+sleep 30
 
 # Check container status
 log "Checking container status..."
-RUNNING_CONTAINERS=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "$DOCKER_CMD ps --filter \"name=$CONTAINER_NAME_PREFIX\" --format \"{{.Names}}: {{.Status}}\"" 2>&1)
+RUNNING_CONTAINERS=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "/usr/local/bin/docker ps --filter \"name=$CONTAINER_NAME_PREFIX\" --format \"{{.Names}}: {{.Status}}\"" 2>&1)
 CONTAINER_STATUS=$?
 
 log "Container status check exit code: $CONTAINER_STATUS"
