@@ -117,3 +117,15 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 # Local development test
 // Test comment
 // Simplified hook test
+
+## 🧪 Running Tests
+
+- Tests are located in `backend/__tests__`.
+- Tests use a separate test database configured in `backend/config/db.config.testconfig.js`.
+- The test database must exist and the test user must have privileges (see project setup).
+- The JWT secret for tests is set to `DeathStarDesignFlaw` by default.
+- To run tests:
+  ```bash
+  cd backend
+  npm test
+  ```

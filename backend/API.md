@@ -120,6 +120,7 @@ Create a new media item. Requires admin privileges.
 ```
 
 **Response:**
+Status: 201 Created
 ```json
 {
   "id": "number",
@@ -297,7 +298,7 @@ All endpoints may return the following error responses:
 ### 403 Forbidden
 ```json
 {
-  "message": "Requires admin role!"
+  "message": "Require Admin Role!"
 }
 ```
 
