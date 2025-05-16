@@ -7,9 +7,22 @@ class WebSocketService {
         this.reconnectDelay = 3000; // 3 seconds
         this.heartbeatInterval = null;
         this.heartbeatTimeout = null;
+        this.connectionCount = 0; // Track number of components using the connection
     }
 
     connect() {
+        this.connectionCount++;
+        
+        // If already connected, just increment the counter
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            return;
+        }
+
+        // If there's an existing connection attempt, don't create a new one
+        if (this.ws && this.ws.readyState === WebSocket.CONNECTING) {
+            return;
+        }
+
         const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const wsHost = window.location.hostname + ':3000';
         const wsUrl = `${wsProtocol}//${wsHost}/ws`;
@@ -42,7 +55,9 @@ class WebSocketService {
         this.ws.onclose = () => {
             console.log('WebSocket disconnected');
             this.stopHeartbeat();
-            this.attemptReconnect();
+            if (this.connectionCount > 0) {
+                this.attemptReconnect();
+            }
         };
 
         this.ws.onerror = (error) => {
@@ -56,7 +71,7 @@ class WebSocketService {
 
         // Send ping every 25 seconds
         this.heartbeatInterval = setInterval(() => {
-            if (this.ws.readyState === WebSocket.OPEN) {
+            if (this.ws && this.ws.readyState === WebSocket.OPEN) {
                 this.send({ type: 'ping' });
             }
         }, 25000);
@@ -64,7 +79,9 @@ class WebSocketService {
         // Set timeout for pong response
         this.heartbeatTimeout = setTimeout(() => {
             console.log('Heartbeat timeout - reconnecting...');
-            this.ws.close();
+            if (this.ws) {
+                this.ws.close();
+            }
         }, 30000);
     }
 
@@ -76,7 +93,9 @@ class WebSocketService {
         // Set new timeout
         this.heartbeatTimeout = setTimeout(() => {
             console.log('Heartbeat timeout - reconnecting...');
-            this.ws.close();
+            if (this.ws) {
+                this.ws.close();
+            }
         }, 30000);
     }
 
@@ -102,10 +121,16 @@ class WebSocketService {
     }
 
     disconnect() {
-        this.stopHeartbeat();
-        if (this.ws) {
-            this.ws.close();
-            this.ws = null;
+        this.connectionCount--;
+        
+        // Only actually disconnect if no components are using the connection
+        if (this.connectionCount <= 0) {
+            this.connectionCount = 0;
+            this.stopHeartbeat();
+            if (this.ws) {
+                this.ws.close();
+                this.ws = null;
+            }
         }
     }
 
