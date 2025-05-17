@@ -29,7 +29,20 @@ class SonarrService {
     async getAllSeries() {
         try {
             const response = await this.client.get('/api/v3/series');
-            return response.data;
+            // Fix image URLs to be absolute
+            const baseUrl = sonarrConfig.baseUrl.replace(/\/$/, '');
+            const processed = response.data.map(series => ({
+                ...series,
+                images: Array.isArray(series.images)
+                    ? series.images.map(img => ({
+                        ...img,
+                        url: img.url && !img.url.startsWith('http')
+                            ? `${baseUrl}${img.url}`
+                            : img.url
+                    }))
+                    : []
+            }));
+            return processed;
         } catch (error) {
             console.error('Error fetching series from Sonarr:', error.message);
             throw new Error('Failed to fetch TV shows');
