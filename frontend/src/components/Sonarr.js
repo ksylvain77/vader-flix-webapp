@@ -7,26 +7,44 @@ const Sonarr = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        let isMounted = true;
+
         const fetchShows = async () => {
             try {
                 const token = localStorage.getItem('token');
+                if (!token) {
+                    throw new Error('No authentication token found');
+                }
+
                 const response = await axios.get('http://192.168.50.92:3000/api/sonarr/series', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                setShows(response.data);
-                setLoading(false);
+
+                if (isMounted) {
+                    setShows(response.data);
+                    setLoading(false);
+                    setError(null);
+                }
             } catch (err) {
-                setError('Failed to fetch shows');
-                setLoading(false);
-                console.error('Error fetching shows:', err);
+                if (isMounted) {
+                    setError(err.response?.data?.message || 'Failed to fetch shows');
+                    setLoading(false);
+                    setShows([]);
+                    console.error('Error fetching shows:', err);
+                }
             }
         };
 
         fetchShows();
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     if (loading) return <div>Loading shows...</div>;
-    if (error) return <div>Error: {error}</div>;
+    if (error) return <div className="error-message">Error: {error}</div>;
+    if (!shows.length) return <div>No shows found</div>;
 
     return (
         <div className="sonarr">
@@ -104,6 +122,13 @@ const Sonarr = () => {
                     margin: 5px 0;
                     color: #666;
                     font-size: 0.9em;
+                }
+
+                .error-message {
+                    color: #d32f2f;
+                    text-align: center;
+                    padding: 20px;
+                    font-size: 1.1em;
                 }
             `}</style>
         </div>
