@@ -12,8 +12,7 @@ const Navbar = () => {
         { name: 'Sonarr', path: '/sonarr', icon: '📺' },
         { name: 'Radarr', path: '/radarr', icon: '🎥' },
         { name: 'Prowlarr', path: '/prowlarr', icon: '🔍' },
-        { name: 'qBittorrent', path: '/qbittorrent', icon: '⬇️' },
-        { name: 'Torrent', path: '/torrent', icon: '🌊' }
+        { name: 'qBittorrent', path: '/qbittorrent', icon: '⬇️' }
     ];
 
     return (
