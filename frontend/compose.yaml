@@ -6,8 +6,6 @@ services:
     restart: unless-stopped
     working_dir: /app
     environment:
-      - PUID=1027
-      - PGID=65536
       - NODE_ENV=development
       - REACT_APP_API_URL=http://192.168.50.92:3000
       - WATCHPACK_POLLING=true
@@ -16,11 +14,11 @@ services:
       - PORT=3000
     volumes:
       - /volume1/docker/projects/vader-flix-webapp/frontend:/app
-      - /volume1/docker/projects/vader-flix-webapp/frontend/node_modules:/app/node_modules
     ports:
       - 3001:3000
     command: >
       bash -c "
-        chown -R node:node /app &&
-        su - node -c 'cd /app && npm install && npm start'
+        cd /app && 
+        npm install && 
+        npm start
       "
