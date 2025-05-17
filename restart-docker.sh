@@ -19,71 +19,24 @@ log "- Project Path: $NAS_PROJECT_PATH"
 log "- Container Name Prefix: $CONTAINER_NAME_PREFIX"
 
 # Define Docker command with sudo
-DOCKER_CMD="sudo /usr/local/bin/docker"
+DOCKER_CMD="sudo docker"
 
 # Record the start time
 START_TIME=$(date +%s)
 
-# Get list of containers to restart
-log "Getting list of Vader Flix containers..."
-CONTAINER_LIST=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "$DOCKER_CMD ps -a --format '{{.Names}}' --filter name=${CONTAINER_NAME_PREFIX}" 2>&1)
-COMMAND_STATUS=$?
+# Define the specific container names from what we observed
+DB_CONTAINER="mariadb"
+BACKEND_CONTAINER="vader-flix-backend"
+FRONTEND_CONTAINER="vader-flix-frontend"
 
-if [ $COMMAND_STATUS -ne 0 ]; then
-  log "ERROR: Failed to get container list: $CONTAINER_LIST"
-  echo "ERROR: Failed to get container list. See log for details."
-  exit 1
-fi
-
-if [ -z "$CONTAINER_LIST" ]; then
-  log "ERROR: No containers found with prefix: ${CONTAINER_NAME_PREFIX}"
-  echo "ERROR: No containers found with prefix: ${CONTAINER_NAME_PREFIX}"
-  exit 1
-fi
-
-log "Found the following containers to restart:"
-log "$CONTAINER_LIST"
-
-# Find the database container first (assuming it has 'db', 'database', or 'maria' in the name)
-DB_CONTAINER=""
-for container in $CONTAINER_LIST; do
-  if [[ $container == *"db"* ]] || [[ $container == *"database"* ]] || [[ $container == *"maria"* ]]; then
-    DB_CONTAINER=$container
-    break
-  fi
-done
-
-# Find the backend container (assuming it has 'app', 'backend', or 'api' in the name)
-BACKEND_CONTAINER=""
-for container in $CONTAINER_LIST; do
-  if [[ $container == *"app"* ]] || [[ $container == *"backend"* ]] || [[ $container == *"api"* ]]; then
-    BACKEND_CONTAINER=$container
-    break
-  fi
-done
-
-# Find the frontend container (assuming it has 'frontend', 'web', or 'ui' in the name)
-FRONTEND_CONTAINER=""
-for container in $CONTAINER_LIST; do
-  if [[ $container == *"frontend"* ]] || [[ $container == *"web"* ]] || [[ $container == *"ui"* ]]; then
-    FRONTEND_CONTAINER=$container
-    break
-  fi
-done
-
-log "Identified containers:"
-log "- Database: ${DB_CONTAINER:-None identified}"
-log "- Backend: ${BACKEND_CONTAINER:-None identified}"
-log "- Frontend: ${FRONTEND_CONTAINER:-None identified}"
+log "Using specific container names:"
+log "- Database: $DB_CONTAINER"
+log "- Backend: $BACKEND_CONTAINER"
+log "- Frontend: $FRONTEND_CONTAINER"
 
 # Function to restart a container
 restart_container() {
   local container_name=$1
-  
-  if [ -z "$container_name" ]; then
-    log "Skipping restart for unidentified container"
-    return 0
-  fi
   
   log "Restarting container: $container_name"
   
@@ -104,52 +57,40 @@ restart_container() {
 # Restart containers in correct order: database first, then backend, then frontend
 log "Starting container restarts in sequence..."
 
-# Restart database first if identified
-if [ -n "$DB_CONTAINER" ]; then
-  restart_container "$DB_CONTAINER"
-  DB_STATUS=$?
+# Restart database
+restart_container "$DB_CONTAINER"
+DB_STATUS=$?
   
-  # Wait for database to initialize if restart was successful
-  if [ $DB_STATUS -eq 0 ]; then
-    log "Waiting for database to initialize..."
-    sleep 10
-  fi
+# Wait for database to initialize if restart was successful
+if [ $DB_STATUS -eq 0 ]; then
+  log "Waiting for database to initialize..."
+  sleep 10
 else
-  log "No database container identified, continuing with other containers"
-  DB_STATUS=0
+  log "ERROR: Failed to restart database container"
+  exit 1
 fi
 
-# Restart backend if identified
-if [ -n "$BACKEND_CONTAINER" ]; then
-  restart_container "$BACKEND_CONTAINER"
-  BACKEND_STATUS=$?
+# Restart backend
+restart_container "$BACKEND_CONTAINER"
+BACKEND_STATUS=$?
   
-  # Wait for backend to initialize if restart was successful
-  if [ $BACKEND_STATUS -eq 0 ]; then
-    log "Waiting for backend to initialize..."
-    sleep 5
-  fi
+# Wait for backend to initialize if restart was successful
+if [ $BACKEND_STATUS -eq 0 ]; then
+  log "Waiting for backend to initialize..."
+  sleep 5
 else
-  log "No backend container identified, continuing with other containers"
-  BACKEND_STATUS=0
+  log "ERROR: Failed to restart backend container"
+  exit 1
 fi
 
-# Restart frontend if identified
-if [ -n "$FRONTEND_CONTAINER" ]; then
-  restart_container "$FRONTEND_CONTAINER"
-  FRONTEND_STATUS=$?
-else
-  log "No frontend container identified"
-  FRONTEND_STATUS=0
-fi
+# Restart frontend
+restart_container "$FRONTEND_CONTAINER"
+FRONTEND_STATUS=$?
 
-# Restart any remaining containers that weren't specifically identified
-for container in $CONTAINER_LIST; do
-  if [ "$container" != "$DB_CONTAINER" ] && [ "$container" != "$BACKEND_CONTAINER" ] && [ "$container" != "$FRONTEND_CONTAINER" ]; then
-    log "Restarting additional container: $container"
-    restart_container "$container"
-  fi
-done
+if [ $FRONTEND_STATUS -ne 0 ]; then
+  log "ERROR: Failed to restart frontend container"
+  exit 1
+fi
 
 # Wait a short time before starting to check
 echo "Waiting for containers to start..."
@@ -198,5 +139,5 @@ log "Container status at timeout:"
 log "$CONTAINER_STATUS"
 
 echo "WARNING: Reached maximum wait time ($MAX_WAIT seconds)"
-echo "Container status unknown. To check container status, SSH into the NAS and run: sudo docker ps --filter name=${CONTAINER_NAME_PREFIX}"
+echo "Container status unknown. To check container status, SSH into the NAS and run: sudo docker ps"
 log "========== Script completed at $(date) =========="
