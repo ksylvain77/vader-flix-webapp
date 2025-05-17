@@ -69,6 +69,8 @@ Note: The `restart-docker.sh` script uses the following configuration:
 - Project Path: /volume1/docker/projects/vader-flix-webapp
 - Container Prefix: vader-flix
 
+> **Note**: Currently testing Git hook functionality to ensure proper deployment workflow.
+
 ## 🔧 Environment Variables
 
 ### Backend
