@@ -18,79 +18,22 @@ log "- NAS SSH Port: $NAS_SSH_PORT"
 log "- Project Path: $NAS_PROJECT_PATH"
 log "- Container Name Prefix: $CONTAINER_NAME_PREFIX"
 
-# Define Docker command with sudo
-DOCKER_CMD="sudo docker"
-
 # Record the start time
 START_TIME=$(date +%s)
 
-# Define the specific container names from what we observed
-DB_CONTAINER="mariadb"
-BACKEND_CONTAINER="vader-flix-backend"
-FRONTEND_CONTAINER="vader-flix-frontend"
+# Use the Synology API to restart containers
+log "Restarting mariadb container..."
+ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "synowebapi --exec api=SYNO.Docker.Container version=1 method=restart name=\"mariadb\""
+log "Waiting for database to initialize..."
+sleep 10
 
-log "Using specific container names:"
-log "- Database: $DB_CONTAINER"
-log "- Backend: $BACKEND_CONTAINER"
-log "- Frontend: $FRONTEND_CONTAINER"
+log "Restarting backend container..."
+ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "synowebapi --exec api=SYNO.Docker.Container version=1 method=restart name=\"vader-flix-backend\""
+log "Waiting for backend to initialize..."
+sleep 5
 
-# Function to restart a container
-restart_container() {
-  local container_name=$1
-  
-  log "Restarting container: $container_name"
-  
-  RESTART_RESULT=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "$DOCKER_CMD restart $container_name" 2>&1)
-  RESTART_STATUS=$?
-  
-  log "Restart result: $RESTART_RESULT"
-  
-  if [ $RESTART_STATUS -ne 0 ]; then
-    log "ERROR: Failed to restart container: $container_name"
-    return 1
-  fi
-  
-  log "Container restarted successfully: $container_name"
-  return 0
-}
-
-# Restart containers in correct order: database first, then backend, then frontend
-log "Starting container restarts in sequence..."
-
-# Restart database
-restart_container "$DB_CONTAINER"
-DB_STATUS=$?
-  
-# Wait for database to initialize if restart was successful
-if [ $DB_STATUS -eq 0 ]; then
-  log "Waiting for database to initialize..."
-  sleep 10
-else
-  log "ERROR: Failed to restart database container"
-  exit 1
-fi
-
-# Restart backend
-restart_container "$BACKEND_CONTAINER"
-BACKEND_STATUS=$?
-  
-# Wait for backend to initialize if restart was successful
-if [ $BACKEND_STATUS -eq 0 ]; then
-  log "Waiting for backend to initialize..."
-  sleep 5
-else
-  log "ERROR: Failed to restart backend container"
-  exit 1
-fi
-
-# Restart frontend
-restart_container "$FRONTEND_CONTAINER"
-FRONTEND_STATUS=$?
-
-if [ $FRONTEND_STATUS -ne 0 ]; then
-  log "ERROR: Failed to restart frontend container"
-  exit 1
-fi
+log "Restarting frontend container..."
+ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "synowebapi --exec api=SYNO.Docker.Container version=1 method=restart name=\"vader-flix-frontend\""
 
 # Wait a short time before starting to check
 echo "Waiting for containers to start..."
@@ -115,9 +58,8 @@ for (( elapsed=5; elapsed<=$MAX_WAIT; elapsed+=$WAIT_STEP )); do
     echo "All containers started successfully after $DURATION seconds"
     
     # Get actual container status for verification
-    CONTAINER_STATUS=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "$DOCKER_CMD ps --filter name=${CONTAINER_NAME_PREFIX}" 2>&1)
-    log "Container status:"
-    log "$CONTAINER_STATUS"
+    CONTAINER_STATUS=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "synowebapi --exec api=SYNO.Docker.Container version=1 method=list" 2>&1)
+    log "Container status check completed"
     
     log "========== Script completed at $(date) =========="
     exit 0
@@ -134,10 +76,9 @@ log "WARNING: Reached maximum wait time ($MAX_WAIT seconds)"
 log "Actual elapsed time: $DURATION seconds"
 
 # Get actual container status for debugging
-CONTAINER_STATUS=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "$DOCKER_CMD ps --filter name=${CONTAINER_NAME_PREFIX}" 2>&1)
-log "Container status at timeout:"
-log "$CONTAINER_STATUS"
+CONTAINER_STATUS=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "synowebapi --exec api=SYNO.Docker.Container version=1 method=list" 2>&1)
+log "Container status check completed"
 
 echo "WARNING: Reached maximum wait time ($MAX_WAIT seconds)"
-echo "Container status unknown. To check container status, SSH into the NAS and run: sudo docker ps"
+echo "Container status unknown. Check the log file for details."
 log "========== Script completed at $(date) =========="
