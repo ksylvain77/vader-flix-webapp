@@ -1,112 +1,41 @@
-const db = require("../models");
-const Request = db.requests;
-const User = db.users;
-const Op = db.Sequelize.Op;
+const requestService = require("../services/request.service");
 
 // Create and Save a new Request
-exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.title || !req.body.type) {
-    res.status(400).send({
-      message: "Title and type cannot be empty!"
-    });
-    return;
+exports.create = async (req, res) => {
+  try {
+    const data = await requestService.create(req.body);
+    res.send(data);
+  } catch (err) {
+    res.status(500).send({ message: err.message });
   }
-
-  // Create a Request
-  const request = {
-    title: req.body.title,
-    type: req.body.type,
-    tmdbId: req.body.tmdbId,
-    notes: req.body.notes,
-    userId: req.userId
-  };
-
-  // Save Request in the database
-  Request.create(request)
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the Request."
-      });
-    });
 };
 
 // Retrieve all Requests from the database
-exports.findAll = (req, res) => {
-  const title = req.query.title;
-  const condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
-
-  Request.findAll({ 
-    where: condition,
-    include: [{
-      model: User,
-      as: "user",
-      attributes: ['username', 'email']
-    }]
-  })
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving requests."
-      });
-    });
+exports.findAll = async (req, res) => {
+  try {
+    const data = await requestService.findAll(req.query.title);
+    res.send(data);
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
 };
 
 // Find all Requests for a user
-exports.findAllForUser = (req, res) => {
-  const userId = req.userId;
-
-  Request.findAll({
-    where: { userId: userId }
-  })
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving requests."
-      });
-    });
+exports.findAllForUser = async (req, res) => {
+  try {
+    const data = await requestService.findAllForUser(req.userId);
+    res.send(data);
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
 };
 
 // Update a Request status
-exports.updateStatus = (req, res) => {
-  const id = req.params.id;
-  
-  // Validate request
-  if (!req.body.status) {
-    res.status(400).send({
-      message: "Status cannot be empty!"
-    });
-    return;
+exports.updateStatus = async (req, res) => {
+  try {
+    const result = await requestService.updateStatus(req.params.id, req.body.status);
+    res.send(result);
+  } catch (err) {
+    res.status(500).send({ message: err.message });
   }
-
-  Request.update(
-    { status: req.body.status },
-    { where: { id: id } }
-  )
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "Request status was updated successfully."
-        });
-      } else {
-        res.send({
-          message: `Cannot update Request with id=${id}. Maybe Request was not found!`
-        });
-      }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error updating Request with id=" + id
-      });
-    });
 };
