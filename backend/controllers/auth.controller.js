@@ -2,6 +2,7 @@ const db = require("../models");
 const User = db.users;
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const authConfig = require("../config/services/auth");
 
 exports.signup = (req, res) => {
   // Save User to Database
@@ -41,8 +42,8 @@ exports.signin = (req, res) => {
         });
       }
 
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET || "DeathStarDesignFlaw", {
-        expiresIn: 86400 // 24 hours
+      const token = jwt.sign({ id: user.id }, authConfig.jwtSecret, {
+        expiresIn: authConfig.tokenExpiration
       });
 
       res.status(200).send({

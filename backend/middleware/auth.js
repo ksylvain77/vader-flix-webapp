@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const config = process.env.JWT_SECRET || "DeathStarDesignFlaw";
+const authConfig = require("../config/services/auth");
 
 verifyToken = (req, res, next) => {
   let token = req.headers["x-access-token"] || req.headers.authorization;
@@ -15,7 +15,7 @@ verifyToken = (req, res, next) => {
     token = token.slice(7, token.length);
   }
 
-  jwt.verify(token, config, (err, decoded) => {
+  jwt.verify(token, authConfig.jwtSecret, (err, decoded) => {
     if (err) {
       return res.status(401).send({
         message: "Unauthorized!"
