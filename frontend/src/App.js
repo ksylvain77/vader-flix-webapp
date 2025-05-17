@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard';
 import PlexLibrary from './components/PlexLibrary';
 import Auth from './components/Auth';
 import SimpleTest from './components/SimpleTest';
+import Sonarr from './components/Sonarr';
 
 function App() {
   console.log('App component rendering'); // Debug log
@@ -33,6 +34,7 @@ function App() {
               <>
                 <Link to="/">Home</Link> | 
                 <Link to="/plex">Plex</Link> | 
+                <Link to="/sonarr">Sonarr</Link> | 
                 <Link to="/simple">Simple Test</Link>
               </>
             )}
@@ -50,6 +52,11 @@ function App() {
             <Route path="/plex" element={
               <ProtectedRoute>
                 <PlexLibrary />
+              </ProtectedRoute>
+            } />
+            <Route path="/sonarr" element={
+              <ProtectedRoute>
+                <Sonarr />
               </ProtectedRoute>
             } />
             <Route path="/simple/*" element={

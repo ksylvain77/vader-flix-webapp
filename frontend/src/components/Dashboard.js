@@ -11,7 +11,12 @@ const Dashboard = () => {
             color: '#E5A00D',
             onClick: () => navigate('/plex')
         },
-        { name: 'Sonarr', icon: '📺', color: '#2196F3' },
+        { 
+            name: 'Sonarr', 
+            icon: '📺', 
+            color: '#2196F3',
+            onClick: () => navigate('/sonarr')
+        },
         { name: 'Radarr', icon: '🎥', color: '#4CAF50' },
         { name: 'Prowlarr', icon: '🔍', color: '#9C27B0' },
         { name: 'qBittorrent', icon: '⬇️', color: '#FF5722' },
