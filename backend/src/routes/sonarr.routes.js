@@ -21,6 +21,8 @@ router.get('/search', async (req, res) => {
             });
         }
 
+        console.log('Making Sonarr API call for term:', trimmedTerm);
+        
         const response = await axios.get(`${sonarrConfig.baseUrl}/api/series/lookup`, {
             params: { term: trimmedTerm },
             headers: {
@@ -28,9 +30,13 @@ router.get('/search', async (req, res) => {
             }
         });
 
+        console.log('Sonarr API response received');
         res.json(response.data);
     } catch (error) {
         console.error('Error searching Sonarr:', error.message);
+        if (error.response) {
+            console.error('Sonarr API error response:', error.response.data);
+        }
         res.status(500).json({ 
             error: 'Failed to search Sonarr',
             details: error.message
