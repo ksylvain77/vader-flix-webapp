@@ -37,17 +37,19 @@ MAX_WAIT=45 # Maximum wait time in seconds
 WAIT_STEP=5 # Check every 5 seconds
 for (( elapsed=5; elapsed<=$MAX_WAIT; elapsed+=$WAIT_STEP )); do
 log "Checking container status after $elapsed seconds..."
-# Check both backend and frontend ports
+# Check all required ports
 BACKEND_CHECK=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "netstat -an | grep LISTEN | grep :3000" 2>&1)
 FRONTEND_CHECK=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "netstat -an | grep LISTEN | grep :3001" 2>&1)
-# If we see both ports open, containers are running
-if [ -n "$BACKEND_CHECK" ] && [ -n "$FRONTEND_CHECK" ]; then
+DB_CHECK=$(ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "netstat -an | grep LISTEN | grep :3306" 2>&1)
+# If we see all ports open, containers are running
+if [ -n "$BACKEND_CHECK" ] && [ -n "$FRONTEND_CHECK" ] && [ -n "$DB_CHECK" ]; then
 END_TIME=$(date +%s)
 DURATION=$((END_TIME - START_TIME))
-log "Containers started successfully after $DURATION seconds"
-echo "Containers started successfully after $DURATION seconds"
+log "All containers started successfully after $DURATION seconds"
+echo "All containers started successfully after $DURATION seconds"
 log "Backend port info: $(echo "$BACKEND_CHECK" | grep ":3000")"
 log "Frontend port info: $(echo "$FRONTEND_CHECK" | grep ":3001")"
+log "Database port info: $(echo "$DB_CHECK" | grep ":3306")"
 log "========== Script completed at $(date) =========="
 exit 0
 fi
