@@ -1,20 +1,14 @@
 const express = require('express');
-const cors = require('cors');
 const http = require('http');
 const WebSocketServer = require('./websocket');
 const { initializeDatabase } = require('../services/database');
+const setupMiddleware = require('./middleware');
 
 // Create Express app
 const app = express();
 
-// Middleware
-app.use(cors({
-    origin: '*', // In production, replace with your frontend domain
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Apply middleware
+setupMiddleware(app);
 
 // Simple route
 app.get('/', (req, res) => {
