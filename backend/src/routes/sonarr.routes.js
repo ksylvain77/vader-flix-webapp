@@ -12,12 +12,17 @@ router.use(verifyToken);
 router.get('/search', async (req, res) => {
     try {
         const { term } = req.query;
-        if (!term) {
-            return res.status(400).json({ error: 'Search term is required' });
+        const trimmedTerm = term?.trim();
+
+        if (!trimmedTerm || trimmedTerm.length < 2) {
+            return res.status(400).json({ 
+                error: 'Search term must be at least 2 characters long',
+                received: false
+            });
         }
 
         const response = await axios.get(`${sonarrConfig.baseUrl}/api/series/lookup`, {
-            params: { term },
+            params: { term: trimmedTerm },
             headers: {
                 'X-Api-Key': sonarrConfig.apiKey
             }
