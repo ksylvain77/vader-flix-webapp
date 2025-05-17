@@ -34,6 +34,18 @@ require('../routes/auth.routes')(app);
 require('../routes/media.routes')(app);
 require('../routes/request.routes')(app);
 
+// Database initialization
+try {
+    const db = require("../models");
+    db.sequelize.sync({ alter: true }).then(() => {
+        console.log("Database synchronized");
+    }).catch(err => {
+        console.log("Failed to sync database: " + err.message);
+    });
+} catch (error) {
+    console.log("Database connection skipped:", error.message);
+}
+
 // Create HTTP server
 const server = http.createServer(app);
 
