@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const http = require('http');
 const WebSocketServer = require('./websocket');
+const { initializeDatabase } = require('../services/database');
 
 // Create Express app
 const app = express();
@@ -34,17 +35,8 @@ require('../routes/auth.routes')(app);
 require('../routes/media.routes')(app);
 require('../routes/request.routes')(app);
 
-// Database initialization
-try {
-    const db = require("../models");
-    db.sequelize.sync({ alter: true }).then(() => {
-        console.log("Database synchronized");
-    }).catch(err => {
-        console.log("Failed to sync database: " + err.message);
-    });
-} catch (error) {
-    console.log("Database connection skipped:", error.message);
-}
+// Initialize database
+initializeDatabase();
 
 // Create HTTP server
 const server = http.createServer(app);
