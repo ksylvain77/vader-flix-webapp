@@ -17,7 +17,7 @@ log() {
 
 # Database
 DB_CONTAINER="mariadb"
-DB_COMPOSE_PATH="$NAS_PROJECT_PATH/db"
+DB_COMPOSE_PATH="$PROJECT_PATH/db"
 
 log "Stopping database container..."
 ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "$DOCKER stop $DB_CONTAINER"
@@ -32,8 +32,8 @@ log "Checking database container status..."
 ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "$DOCKER ps | grep $DB_CONTAINER" | tee -a $LOG_FILE
 
 # Backend
-BACKEND_CONTAINER="vader-flix-backend"
-BACKEND_COMPOSE_PATH="$NAS_PROJECT_PATH/backend"
+BACKEND_CONTAINER="${CONTAINER_PREFIX}-backend"
+BACKEND_COMPOSE_PATH="$PROJECT_PATH/backend"
 
 log "Stopping backend container..."
 ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "$DOCKER stop $BACKEND_CONTAINER"
@@ -48,8 +48,8 @@ log "Checking backend container status..."
 ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "$DOCKER ps | grep $BACKEND_CONTAINER" | tee -a $LOG_FILE
 
 # Frontend
-FRONTEND_CONTAINER="vader-flix-frontend"
-FRONTEND_COMPOSE_PATH="$NAS_PROJECT_PATH/frontend"
+FRONTEND_CONTAINER="${CONTAINER_PREFIX}-frontend"
+FRONTEND_COMPOSE_PATH="$PROJECT_PATH/frontend"
 
 log "Stopping frontend container..."
 ssh -p $NAS_SSH_PORT $NAS_USER@$NAS_IP "$DOCKER stop $FRONTEND_CONTAINER"
