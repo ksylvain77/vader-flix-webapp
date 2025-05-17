@@ -24,8 +24,7 @@ const Dashboard = () => {
             onClick: () => navigate('/radarr')
         },
         { name: 'Prowlarr', icon: '🔍', color: '#9C27B0' },
-        { name: 'qBittorrent', icon: '⬇️', color: '#FF5722' },
-        { name: 'Torrent', icon: '🌊', color: '#607D8B' }
+        { name: 'qBittorrent', icon: '⬇️', color: '#FF5722' }
     ];
 
     return (
