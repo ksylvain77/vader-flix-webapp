@@ -1,6 +1,9 @@
 #!/bin/bash
 # Simple Docker restart script for Synology NAS
 
+# Set environment variable for Docker socket
+export DOCKER_HOST="unix:///var/run/docker.sock"
+
 # Log file
 LOG_FILE="vader-flix-restart.log"
 echo "========== Restart attempt at $(date) ==========" > $LOG_FILE
@@ -11,6 +14,20 @@ log() {
 }
 
 log "Starting container restarts at $(date)"
+
+# Test Docker connection first
+if ! docker ps > /dev/null 2>&1; then
+  log "ERROR: Cannot connect to Docker daemon. Trying to restart Docker service..."
+  sudo systemctl restart pkg-ContainerManager-dockerd
+  sleep 5
+  
+  # Check again after restart
+  if ! docker ps > /dev/null 2>&1; then
+    log "ERROR: Still cannot connect to Docker daemon after service restart."
+    echo "ERROR: Docker daemon connection failed. See log for details."
+    exit 1
+  fi
+fi
 
 # Restart containers in proper order
 log "Restarting database container..."
