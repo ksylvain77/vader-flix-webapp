@@ -1,83 +1,91 @@
 # Environment Variables Documentation
 
-This document lists all required environment variables for the Vader Flix application. Copy these variables to your `.env` file and update the values according to your environment.
+## Backend Environment Variables
 
-## Application Environment
-```env
-# The environment the application is running in
-NODE_ENV=development  # Options: development, production, test
-PORT=3000            # The port the server will listen on
+### Core Application
+- `NODE_ENV`: Application environment (development/production/test)
+- `PORT`: Port number for the backend server (default: 3000)
+
+### Database Configuration
+- `DB_HOST`: Database host address
+- `DB_PORT`: Database port number
+- `DB_USER`: Database username
+- `DB_PASSWORD`: Database password
+- `DB_NAME`: Database name
+
+### Authentication
+- `JWT_SECRET`: Secret key for JWT token generation
+- `JWT_EXPIRATION`: Token expiration time (default: 1h)
+
+### Plex Integration
+- `PLEX_BASE_URL`: Base URL for Plex server
+- `PLEX_TOKEN`: Plex authentication token
+- `PLEX_LIBRARY_SECTIONS`: Comma-separated list of library section IDs
+
+### Docker Configuration
+- `CONTAINER_PREFIX`: Prefix for Docker container names
+- `NAS_IP`: IP address of the NAS
+- `NAS_USER`: NAS username
+- `NAS_SSH_PORT`: SSH port for NAS (default: 22)
+- `PROJECT_PATH`: Path to project on NAS
+
+### CORS Configuration
+- `CORS_ORIGIN`: Allowed origin for CORS (default: http://localhost:3001)
+
+## Frontend Environment Variables
+
+### API Configuration
+- `REACT_APP_API_URL`: Backend API URL
+- `REACT_APP_WS_URL`: WebSocket URL
+
+### Plex Configuration
+- `REACT_APP_PLEX_URL`: Plex server URL
+- `REACT_APP_PLEX_TOKEN`: Plex authentication token
+
+## Docker Environment Variables
+
+### User/Group IDs
+- `PUID`: User ID for container
+- `PGID`: Group ID for container
+
+## Usage Notes
+
+1. These variables should be set in your Docker Compose files or container environment
+2. Never commit sensitive values to version control
+3. Use different values for development and production environments
+4. Keep a secure backup of your production environment variables
+
+## Security Considerations
+
+1. Use strong, unique passwords
+2. Rotate JWT secrets regularly
+3. Use different credentials for development and production
+4. Restrict access to environment variables to authorized personnel only
+
+## Docker Compose Example
+
+```yaml
+version: '3'
+services:
+  backend:
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=mariadb
+      - DB_PORT=3306
+      - DB_USER=your_user
+      - DB_PASSWORD=your_password
+      - DB_NAME=your_database
+      - PORT=3000
+      - JWT_SECRET=your_secret
+      # Add other variables as needed
 ```
 
-## CORS Configuration
-```env
-# CORS settings for the API
-CORS_ORIGIN=http://localhost:3001  # The origin allowed to access the API
-```
+## Troubleshooting
 
-## Database Configuration
-```env
-# MariaDB connection settings
-DB_HOST=mariadb      # Database host
-DB_PORT=3306        # Database port
-DB_NAME=vaderflix   # Database name
-DB_USER=vaderflix   # Database user
-DB_PASSWORD=your_secure_password_here  # Database password
-```
+If you encounter issues with environment variables:
 
-## Authentication
-```env
-# JWT settings
-JWT_SECRET=your_jwt_secret_here  # Secret key for JWT tokens
-TOKEN_EXPIRATION=1h              # Token expiration time
-```
-
-## Plex Configuration
-```env
-# Plex Media Server settings
-PLEX_BASE_URL=http://192.168.50.92:32400  # Plex server URL
-PLEX_TOKEN=your_plex_token_here           # Plex authentication token
-PLEX_LIBRARY_SECTION_IDS=1,2,3            # Comma-separated list of library section IDs
-```
-
-## Docker/NAS Configuration
-```env
-# Docker and NAS settings
-CONTAINER_PREFIX=vader-flix                                    # Prefix for Docker containers
-NAS_IP=192.168.50.92                                          # NAS IP address
-NAS_USER=your_nas_username                                    # NAS username
-NAS_SSH_PORT=22                                               # SSH port for NAS
-NAS_PROJECT_PATH=/volume1/docker/projects/vader-flix-webapp   # Project path on NAS
-```
-
-## Logging
-```env
-# Logging configuration
-LOG_LEVEL=debug   # Options: error, warn, info, debug
-LOG_FORMAT=dev    # Options: dev, combined, common, short, tiny
-```
-
-## Environment-Specific Notes
-
-### Development
-- Use `NODE_ENV=development`
-- Set `CORS_ORIGIN` to your frontend development server
-- Use development database credentials
-
-### Production
-- Use `NODE_ENV=production`
-- Set `CORS_ORIGIN` to your production domain
-- Use production database credentials
-- Set appropriate logging levels
-
-### Test
-- Use `NODE_ENV=test`
-- Use test database credentials
-- Set `LOG_LEVEL=error` to minimize test output
-
-## Security Notes
-1. Never commit the actual `.env` file to version control
-2. Use strong, unique passwords for all services
-3. Regularly rotate sensitive credentials
-4. Use different credentials for development and production
-5. Keep your JWT secret secure and complex 
+1. Verify the variable is set in your Docker Compose file
+2. Check if the variable is accessible in your application
+3. Ensure the variable name matches exactly
+4. Check for any typos in variable names
+5. Verify the variable is being passed to the container 
