@@ -17,6 +17,8 @@ Authorization: Bearer <your_jwt_token>
 - [Media](media.md) - Media management endpoints
 - [Content Requests](requests.md) - Content request system endpoints
 - [Plex Integration](plex.md) - Plex server integration endpoints
+- [Sonarr Integration](sonarr.md) - TV show management endpoints
+- [Radarr Integration](radarr.md) - Movie management endpoints
 
 ## Common Error Responses
 

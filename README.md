@@ -12,10 +12,12 @@ A modern streaming platform built with Node.js, Express, and MariaDB, containeri
 - Secure database management
 - Docker containerization
 - Plex media server integration
+- Sonarr TV show management integration
+- Radarr movie management integration
 - Global search across all media libraries
 - Real-time search filtering
-
-
+- Modern responsive UI with navigation
+- Service status monitoring
 
 ## 🛠️ Tech Stack
 
@@ -26,7 +28,10 @@ A modern streaming platform built with Node.js, Express, and MariaDB, containeri
 - **Containerization**: Docker (via Synology Container Manager)
 - **API**: RESTful
 - **Frontend**: React.js
-- **Media Integration**: Plex Media Server
+- **Media Integration**: 
+  - Plex Media Server
+  - Sonarr
+  - Radarr
 
 ## 📋 Prerequisites
 
@@ -145,8 +150,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Express.js team
 - Docker team
 - MariaDB team 
-
-
 
 ## 🧪 Running Tests
 
