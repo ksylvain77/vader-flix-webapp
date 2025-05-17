@@ -16,9 +16,12 @@ services:
       - DB_NAME=vaderflix
       - PORT=3000
       - JWT_SECRET=DeathStarDesignFlaw
-      - SONARR_BASE_URL=http://sonarr:8989
+      - SONARR_BASE_URL=http://192.168.50.92:8989
       - SONARR_API_KEY=8709f14bd30d4924bc76349878a1a06f
       - SONARR_ROOT_FOLDER_PATH=/data/media/tv
+      - RADARR_BASE_URL=http://192.168.50.92:7878
+      - RADARR_API_KEY=1796ecf4c4f244bfa6b7db47c6e271b0
+      - RADARR_ROOT_FOLDER_PATH=data/media/movies
     volumes:
       - /volume1/docker/projects/vader-flix-webapp/backend:/app
     ports:

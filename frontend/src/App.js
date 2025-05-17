@@ -6,6 +6,7 @@ import PlexLibrary from './components/PlexLibrary';
 import Auth from './components/Auth';
 import SimpleTest from './components/SimpleTest';
 import Sonarr from './components/Sonarr';
+import Radarr from './components/Radarr';
 import Navbar from './components/Navbar';
 
 function App() {
@@ -46,6 +47,11 @@ function App() {
             <Route path="/sonarr" element={
               <ProtectedRoute>
                 <Sonarr />
+              </ProtectedRoute>
+            } />
+            <Route path="/radarr" element={
+              <ProtectedRoute>
+                <Radarr />
               </ProtectedRoute>
             } />
             <Route path="/simple/*" element={
