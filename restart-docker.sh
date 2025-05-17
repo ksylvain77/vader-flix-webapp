@@ -18,7 +18,7 @@ log "Starting container restarts at $(date)"
 # Test Docker connection first
 if ! docker ps > /dev/null 2>&1; then
   log "ERROR: Cannot connect to Docker daemon. Trying to restart Docker service..."
-  sudo systemctl restart pkg-ContainerManager-dockerd
+  sudo synoservicecfg --restart pkgctl-Docker
   sleep 5
   
   # Check again after restart
