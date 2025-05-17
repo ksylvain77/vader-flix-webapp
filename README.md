@@ -73,6 +73,7 @@ Note: The `restart-docker.sh` script uses the following configuration:
 > **Note**: Testing post-commit hook for automated deployment verification.
 > **Note**: Running another hook test to verify deployment pipeline.
 > **Note**: Testing hook trigger with README update.
+> **Note**: Testing with core.logAllRefUpdates enabled.
 
 ## 🔧 Environment Variables
 
