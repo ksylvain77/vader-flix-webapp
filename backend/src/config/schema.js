@@ -43,6 +43,16 @@ const schema = Joi.object({
             librarySectionIds: Joi.array().items(Joi.number()).default([])
         }).required(),
 
+        sonarr: Joi.object({
+            baseUrl: Joi.string().uri().required(),
+            apiKey: Joi.string().required(),
+            qualityProfileId: Joi.number().default(1),
+            rootFolderPath: Joi.string().required(),
+            seasonFolder: Joi.boolean().default(true),
+            monitored: Joi.boolean().default(true),
+            searchForMissingEpisodes: Joi.boolean().default(false)
+        }).required(),
+
         docker: Joi.object({
             containerPrefix: Joi.string().required(),
             nasIp: Joi.string().ip().required(),

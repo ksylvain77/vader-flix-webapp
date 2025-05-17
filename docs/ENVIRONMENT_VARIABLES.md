@@ -22,6 +22,15 @@
 - `PLEX_TOKEN`: Plex authentication token
 - `PLEX_LIBRARY_SECTIONS`: Comma-separated list of library section IDs
 
+### Sonarr Integration
+- `SONARR_BASE_URL`: Base URL for Sonarr server (e.g., http://localhost:8989)
+- `SONARR_API_KEY`: Sonarr API key
+- `SONARR_QUALITY_PROFILE_ID`: ID of the quality profile to use (default: 1)
+- `SONARR_ROOT_FOLDER_PATH`: Path where Sonarr stores TV shows
+- `SONARR_SEASON_FOLDER`: Whether to create season folders (default: true)
+- `SONARR_MONITORED`: Whether to monitor shows by default (default: true)
+- `SONARR_SEARCH_MISSING`: Whether to search for missing episodes (default: false)
+
 ### Docker Configuration
 - `CONTAINER_PREFIX`: Prefix for Docker container names
 - `NAS_IP`: IP address of the NAS
@@ -77,6 +86,9 @@ services:
       - DB_NAME=your_database
       - PORT=3000
       - JWT_SECRET=your_secret
+      - SONARR_BASE_URL=http://localhost:8989
+      - SONARR_API_KEY=your_api_key
+      - SONARR_ROOT_FOLDER_PATH=/tv
       # Add other variables as needed
 ```
 
