@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const sonarrController = require('../controllers/sonarr.controller');
 const { verifyToken } = require('../middleware/auth');
+const axios = require('axios');
+const sonarrConfig = require('../config/services/sonarr');
 
 // All routes require authentication
 router.use(verifyToken);
@@ -10,11 +12,24 @@ router.use(verifyToken);
 router.get('/search', async (req, res) => {
     try {
         const { term } = req.query;
-        console.log('Received search request for term:', term);
-        res.json({ received: true });
+        if (!term) {
+            return res.status(400).json({ error: 'Search term is required' });
+        }
+
+        const response = await axios.get(`${sonarrConfig.baseUrl}/api/series/lookup`, {
+            params: { term },
+            headers: {
+                'X-Api-Key': sonarrConfig.apiKey
+            }
+        });
+
+        res.json(response.data);
     } catch (error) {
-        console.error('Error in search route:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('Error searching Sonarr:', error.message);
+        res.status(500).json({ 
+            error: 'Failed to search Sonarr',
+            details: error.message
+        });
     }
 });
 
