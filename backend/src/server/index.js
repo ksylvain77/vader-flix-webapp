@@ -3,6 +3,7 @@ const http = require('http');
 const WebSocketServer = require('./websocket');
 const { initializeDatabase } = require('../services/database');
 const setupMiddleware = require('./middleware');
+const setupRoutes = require('../routes');
 
 // Create Express app
 const app = express();
@@ -25,9 +26,7 @@ app.get('/ws-status', (req, res) => {
 });
 
 // Routes
-require('../routes/auth.routes')(app);
-require('../routes/media.routes')(app);
-require('../routes/request.routes')(app);
+setupRoutes(app);
 
 // Initialize database
 initializeDatabase();
