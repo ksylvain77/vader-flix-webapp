@@ -4,6 +4,7 @@ const WebSocketServer = require('./websocket');
 const { initializeDatabase } = require('../services/database');
 const setupMiddleware = require('./middleware');
 const setupRoutes = require('../routes');
+const errorHandler = require('../middleware/errorHandler');
 
 // Create Express app
 const app = express();
@@ -27,6 +28,9 @@ app.get('/ws-status', (req, res) => {
 
 // Routes
 setupRoutes(app);
+
+// Apply error handling middleware
+app.use(errorHandler);
 
 // Initialize database
 initializeDatabase();
