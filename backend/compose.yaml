@@ -21,3 +21,10 @@ services:
     ports:
       - 3000:3000
     command: bash -c "npm install && npm start"
+    networks:
+      - synobridge
+
+networks:
+  synobridge:
+    external: true
+    name: synobridge
