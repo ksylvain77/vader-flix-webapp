@@ -70,6 +70,7 @@ Note: The `restart-docker.sh` script uses the following configuration:
 - Container Prefix: vader-flix
 
 > **Note**: Currently testing Git hook functionality to ensure proper deployment workflow.
+> **Note**: Testing post-commit hook for automated deployment verification.
 
 ## 🔧 Environment Variables
 
