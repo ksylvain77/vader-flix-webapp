@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import SearchBar from './SearchBar';
 
 const Sonarr = () => {
     const [shows, setShows] = useState([]);
@@ -51,6 +52,11 @@ const Sonarr = () => {
         setImageErrors(prev => new Set([...prev, showId]));
     };
 
+    const handleSearch = (searchTerm) => {
+        // For now, just log the search term
+        console.log('Searching for:', searchTerm);
+    };
+
     if (loading) return <div>Loading shows...</div>;
     if (error) return <div className="error-message">Error: {error}</div>;
     if (!shows.length) return <div>No shows found</div>;
@@ -58,6 +64,7 @@ const Sonarr = () => {
     return (
         <div className="sonarr">
             <h1>TV Shows</h1>
+            <SearchBar onSearch={handleSearch} />
             <div className="shows-grid">
                 {shows.map((show) => (
                     <div key={show.id} className="show-card">
