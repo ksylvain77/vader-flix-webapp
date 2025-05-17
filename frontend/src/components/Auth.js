@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Auth = () => {
     console.log('Auth component rendering'); // Debug log
     const location = useLocation();
+    const navigate = useNavigate();
     const isSignup = location.pathname === '/auth/signup';
 
     const [username, setUsername] = useState('');
@@ -24,6 +25,10 @@ const Auth = () => {
             const response = await axios.post('http://192.168.50.92:3000/api/auth/signin', { username, password });
             setToken(response.data.accessToken);
             setMessage('Login successful!');
+            // Store the token in localStorage
+            localStorage.setItem('token', response.data.accessToken);
+            // Redirect to dashboard after successful login
+            navigate('/');
         } catch (error) {
             console.error('Login error:', error); // Debug log
             setMessage(error.response?.data?.message || 'Login failed.');
@@ -36,6 +41,8 @@ const Auth = () => {
         try {
             const response = await axios.post('http://192.168.50.92:3000/api/auth/signup', { username, email, password });
             setMessage('Signup successful! Please login.');
+            // Redirect to login page after successful signup
+            navigate('/auth');
         } catch (error) {
             console.error('Signup error:', error); // Debug log
             setMessage(error.response?.data?.message || 'Signup failed.');
