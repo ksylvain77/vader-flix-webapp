@@ -5,6 +5,7 @@ const { initializeDatabase } = require('../services/database');
 const setupMiddleware = require('./middleware');
 const setupRoutes = require('../routes');
 const errorHandler = require('../middleware/errorHandler');
+const logger = require('../services/logging.service');
 
 // Create Express app
 const app = express();
@@ -46,8 +47,8 @@ const PORT = process.env.PORT || 3000;
 
 // Start server
 server.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server is running on port ${PORT}.`);
-    console.log(`WebSocket server available at: ws://0.0.0.0:${PORT}/ws`);
+    logger.info(`Server is running on port ${PORT}.`);
+    logger.info(`WebSocket server available at: ws://0.0.0.0:${PORT}/ws`);
 });
 
 // Export for testing
