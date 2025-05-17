@@ -7,7 +7,16 @@ const { verifyToken } = require('../middleware/auth');
 router.use(verifyToken);
 
 // Search for TV shows
-router.get('/search', sonarrController.searchShows);
+router.get('/search', async (req, res) => {
+    try {
+        const { term } = req.query;
+        console.log('Received search request for term:', term);
+        res.json({ received: true });
+    } catch (error) {
+        console.error('Error in search route:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 // Get all series
 router.get('/series', sonarrController.getAllSeries);

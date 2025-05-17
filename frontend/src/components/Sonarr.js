@@ -52,9 +52,22 @@ const Sonarr = () => {
         setImageErrors(prev => new Set([...prev, showId]));
     };
 
-    const handleSearch = (searchTerm) => {
-        // For now, just log the search term
-        console.log('Searching for:', searchTerm);
+    const handleSearch = async (searchTerm) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
+            const response = await axios.get(`http://192.168.50.92:3000/api/sonarr/search`, {
+                params: { term: searchTerm },
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            console.log('Search response:', response.data);
+        } catch (error) {
+            console.error('Error searching shows:', error);
+        }
     };
 
     if (loading) return <div>Loading shows...</div>;
