@@ -5,8 +5,9 @@ const Sonarr = () => {
     const [shows, setShows] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [imageErrors, setImageErrors] = useState(new Set());
 
-    const fetchShows = useCallback(async () => {
+    const fetchShows = useCallback(async (signal) => {
         try {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -14,7 +15,8 @@ const Sonarr = () => {
             }
 
             const response = await axios.get('http://192.168.50.92:3000/api/sonarr/series', {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: { Authorization: `Bearer ${token}` },
+                signal
             });
 
             setShows(response.data);
@@ -36,13 +38,18 @@ const Sonarr = () => {
         const controller = new AbortController();
         setLoading(true);
         setError(null);
+        setImageErrors(new Set());
 
-        fetchShows();
+        fetchShows(controller.signal);
 
         return () => {
             controller.abort();
         };
     }, [fetchShows]);
+
+    const handleImageError = (showId) => {
+        setImageErrors(prev => new Set([...prev, showId]));
+    };
 
     if (loading) return <div>Loading shows...</div>;
     if (error) return <div className="error-message">Error: {error}</div>;
@@ -54,15 +61,20 @@ const Sonarr = () => {
             <div className="shows-grid">
                 {shows.map((show) => (
                     <div key={show.id} className="show-card">
-                        <img 
-                            src={show.images?.[0]?.url} 
-                            alt={show.title}
-                            className="show-poster"
-                            onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = 'https://via.placeholder.com/300x450?text=No+Image';
-                            }}
-                        />
+                        <div className="show-poster-container">
+                            {!imageErrors.has(show.id) && show.images?.[0]?.url ? (
+                                <img 
+                                    src={show.images[0].url} 
+                                    alt={show.title}
+                                    className="show-poster"
+                                    onError={() => handleImageError(show.id)}
+                                />
+                            ) : (
+                                <div className="show-poster-placeholder">
+                                    <span>{show.title}</span>
+                                </div>
+                            )}
+                        </div>
                         <div className="show-info">
                             <h2>{show.title}</h2>
                             <p>Status: {show.status}</p>
@@ -104,10 +116,30 @@ const Sonarr = () => {
                     transform: translateY(-5px);
                 }
 
-                .show-poster {
+                .show-poster-container {
                     width: 100%;
                     height: 300px;
+                    position: relative;
+                    background: #f5f5f5;
+                }
+
+                .show-poster {
+                    width: 100%;
+                    height: 100%;
                     object-fit: cover;
+                }
+
+                .show-poster-placeholder {
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: #e0e0e0;
+                    color: #666;
+                    text-align: center;
+                    padding: 10px;
+                    font-size: 0.9em;
                 }
 
                 .show-info {
