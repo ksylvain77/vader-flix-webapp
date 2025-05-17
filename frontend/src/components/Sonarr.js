@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
 const Sonarr = () => {
@@ -6,41 +6,43 @@ const Sonarr = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        let isMounted = true;
-
-        const fetchShows = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    throw new Error('No authentication token found');
-                }
-
-                const response = await axios.get('http://192.168.50.92:3000/api/sonarr/series', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-
-                if (isMounted) {
-                    setShows(response.data);
-                    setLoading(false);
-                    setError(null);
-                }
-            } catch (err) {
-                if (isMounted) {
-                    setError(err.response?.data?.message || 'Failed to fetch shows');
-                    setLoading(false);
-                    setShows([]);
-                    console.error('Error fetching shows:', err);
-                }
+    const fetchShows = useCallback(async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
             }
-        };
+
+            const response = await axios.get('http://192.168.50.92:3000/api/sonarr/series', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            setShows(response.data);
+            setLoading(false);
+            setError(null);
+        } catch (err) {
+            if (axios.isCancel(err)) {
+                console.log('Request cancelled');
+                return;
+            }
+            setError(err.response?.data?.message || 'Failed to fetch shows');
+            setLoading(false);
+            setShows([]);
+            console.error('Error fetching shows:', err);
+        }
+    }, []);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        setLoading(true);
+        setError(null);
 
         fetchShows();
 
         return () => {
-            isMounted = false;
+            controller.abort();
         };
-    }, []);
+    }, [fetchShows]);
 
     if (loading) return <div>Loading shows...</div>;
     if (error) return <div className="error-message">Error: {error}</div>;

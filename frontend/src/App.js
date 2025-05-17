@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
 import './App.css';
 import Dashboard from './components/Dashboard';
 import PlexLibrary from './components/PlexLibrary';
@@ -17,8 +17,9 @@ function App() {
 
   // Protected Route component
   const ProtectedRoute = ({ children }) => {
+    const location = useLocation();
     if (!isAuthenticated()) {
-      return <Navigate to="/auth" replace />;
+      return <Navigate to="/auth" state={{ from: location }} replace />;
     }
     return children;
   };
@@ -42,13 +43,13 @@ function App() {
         </header>
         <main>
           <Routes>
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/auth/signup" element={<Auth />} />
             <Route path="/" element={
               <ProtectedRoute>
                 <Dashboard />
               </ProtectedRoute>
             } />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/auth/signup" element={<Auth />} />
             <Route path="/plex" element={
               <ProtectedRoute>
                 <PlexLibrary />
