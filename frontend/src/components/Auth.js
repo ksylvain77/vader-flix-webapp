@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useLocation } from 'react-router-dom';
 
 const Auth = () => {
     console.log('Auth component rendering'); // Debug log
+    const location = useLocation();
+    const isSignup = location.pathname === '/auth/signup';
 
     const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const [token, setToken] = useState('');
@@ -26,6 +30,18 @@ const Auth = () => {
         }
     };
 
+    const handleSignup = async (e) => {
+        e.preventDefault();
+        console.log('Signup attempt with:', username); // Debug log
+        try {
+            const response = await axios.post('http://192.168.50.92:3000/api/auth/signup', { username, email, password });
+            setMessage('Signup successful! Please login.');
+        } catch (error) {
+            console.error('Signup error:', error); // Debug log
+            setMessage(error.response?.data?.message || 'Signup failed.');
+        }
+    };
+
     return (
         <div className="auth-container" style={{
             maxWidth: '400px',
@@ -42,8 +58,8 @@ const Auth = () => {
                 textAlign: 'center',
                 color: '#333',
                 marginBottom: '20px'
-            }}>Login</h2>
-            <form onSubmit={handleLogin} style={{
+            }}>{isSignup ? 'Sign Up' : 'Login'}</h2>
+            <form onSubmit={isSignup ? handleSignup : handleLogin} style={{
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '15px'
@@ -67,6 +83,27 @@ const Auth = () => {
                         }}
                     />
                 </div>
+                {isSignup && (
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '5px'
+                    }}>
+                        <label style={{ color: '#666' }}>Email:</label>
+                        <input 
+                            type="email" 
+                            value={email} 
+                            onChange={(e) => setEmail(e.target.value)} 
+                            required 
+                            style={{
+                                padding: '8px',
+                                borderRadius: '4px',
+                                border: '1px solid #ddd',
+                                fontSize: '16px'
+                            }}
+                        />
+                    </div>
+                )}
                 <div style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -99,7 +136,7 @@ const Auth = () => {
                         marginTop: '10px'
                     }}
                 >
-                    Login
+                    {isSignup ? 'Sign Up' : 'Login'}
                 </button>
             </form>
             {message && (
@@ -125,6 +162,13 @@ const Auth = () => {
                     <code style={{ fontSize: '12px' }}>{token}</code>
                 </div>
             )}
+            <div style={{ marginTop: '15px', textAlign: 'center' }}>
+                {isSignup ? (
+                    <a href="/auth" style={{ color: '#007bff', textDecoration: 'none' }}>Already have an account? Login</a>
+                ) : (
+                    <a href="/auth/signup" style={{ color: '#007bff', textDecoration: 'none' }}>Need an account? Sign up</a>
+                )}
+            </div>
         </div>
     );
 };

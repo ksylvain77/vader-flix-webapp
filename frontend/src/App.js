@@ -26,6 +26,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/auth/signup" element={<Auth />} />
             <Route path="/plex" element={<PlexLibrary />} />
             <Route path="/simple/*" element={<SimpleTest />} />
           </Routes>
