@@ -10,7 +10,7 @@ const Sonarr = () => {
         const fetchShows = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get('http://localhost:3000/api/sonarr/series', {
+                const response = await axios.get('http://192.168.50.92:3000/api/sonarr/series', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setShows(response.data);

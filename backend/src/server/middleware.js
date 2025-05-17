@@ -4,9 +4,10 @@ const express = require('express');
 function setupMiddleware(app) {
     // CORS middleware
     app.use(cors({
-        origin: '*', // In production, replace with your frontend domain
+        origin: ['http://localhost:3001', 'http://192.168.50.92:3001'],
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization']
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        credentials: true
     }));
 
     // JSON and URL-encoded body parsing
