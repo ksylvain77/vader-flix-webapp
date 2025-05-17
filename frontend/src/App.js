@@ -1,11 +1,12 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import './App.css';
 import Dashboard from './components/Dashboard';
 import PlexLibrary from './components/PlexLibrary';
 import Auth from './components/Auth';
 import SimpleTest from './components/SimpleTest';
 import Sonarr from './components/Sonarr';
+import Navbar from './components/Navbar';
 
 function App() {
   console.log('App component rendering'); // Debug log
@@ -27,21 +28,8 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <header className="App-header">
-          <h1>Vader Flix</h1>
-          <p>Your personal media dashboard</p>
-          <nav>
-            {isAuthenticated() && (
-              <>
-                <Link to="/">Home</Link> | 
-                <Link to="/plex">Plex</Link> | 
-                <Link to="/sonarr">Sonarr</Link> | 
-                <Link to="/simple">Simple Test</Link>
-              </>
-            )}
-          </nav>
-        </header>
-        <main>
+        {isAuthenticated() && <Navbar />}
+        <main className="main-content">
           <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/auth/signup" element={<Auth />} />
@@ -68,6 +56,25 @@ function App() {
             <Route path="*" element={<Navigate to="/auth" replace />} />
           </Routes>
         </main>
+
+        <style>{`
+          .App {
+            min-height: 100vh;
+            background-color: #f5f5f5;
+          }
+
+          .main-content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+          }
+
+          @media (max-width: 768px) {
+            .main-content {
+              padding: 10px;
+            }
+          }
+        `}</style>
       </div>
     </Router>
   );
