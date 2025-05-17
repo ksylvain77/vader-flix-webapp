@@ -10,14 +10,14 @@ This document outlines the planned refactoring and improvements for the Vader Fl
 - [ ] Create a single source of truth for configuration
 
 ### 2. Backend Organization
-- [ ] Split `server.js` into modules
-- [ ] Properly integrate WebSocket logic
-- [ ] Organize controllers and routes more effectively
+- [x] Split `server.js` into modules *(May 17, 2025 - Completed: Modularized server, moved WebSocket, middleware, and database logic to separate modules)*
+- [x] Properly integrate WebSocket logic *(May 17, 2025 - Completed: WebSocket logic extracted to its own module)*
+- [x] Organize controllers and routes more effectively *(May 17, 2025 - Completed: Centralized route loader, refactored controllers to use service modules)*
 
 ### 3. Error Handling
-- [ ] Implement centralized error handling
+- [x] Implement centralized error handling *(May 17, 2025 - Completed: Added error handler middleware)*
 - [ ] Add error boundaries in frontend
-- [ ] Standardize error responses across the API
+- [x] Standardize error responses across the API *(May 17, 2025 - Completed: Controllers/services now use consistent error responses)*
 
 ### 4. Security
 - [ ] Review JWT implementation
@@ -63,7 +63,7 @@ This document outlines the planned refactoring and improvements for the Vader Fl
 
 ### 3. Code Quality
 - [ ] Add TypeScript for better type safety
-- [ ] Implement proper logging system
+- [x] Implement proper logging system *(May 17, 2025 - Completed: Winston-based logging service added)*
 - [ ] Add performance monitoring
 - [ ] Add code coverage reporting
 
