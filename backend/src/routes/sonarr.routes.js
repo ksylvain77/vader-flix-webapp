@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const sonarrController = require('../controllers/sonarr.controller');
-const { verifyToken } = require('../middleware/auth.middleware');
+const { verifyToken } = require('../middleware/auth');
 
 // All routes require authentication
 router.use(verifyToken);
