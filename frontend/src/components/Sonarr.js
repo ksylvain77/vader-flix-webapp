@@ -46,7 +46,7 @@ const filterAndSortResults = (results, searchTerm) => {
         levenshtein(normalize(show.titleSlug || ''), normalizedSearch)
       )
     }))
-    .filter(show => show.matchScore <= 3) // Allow for some typos/fuzzy matching
+    .filter(show => show.matchScore <= 6) // Allow for broader fuzzy matching
     .sort((a, b) => a.matchScore - b.matchScore);
 };
 
