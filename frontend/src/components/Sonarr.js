@@ -47,12 +47,12 @@ const Sonarr = () => {
       if (!token) throw new Error('No authentication token found');
 
       const response = await axios.get(
-        `${API_BASE_URL}/api/sonarr/series/lookup?term=${encodeURIComponent(term)}`,
+        `${API_BASE_URL}/api/sonarr/search?query=${encodeURIComponent(term)}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
       );
-      setSearchResults(response.data);
+      setSearchResults(response.data.results);
       setError(null);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to search shows');
