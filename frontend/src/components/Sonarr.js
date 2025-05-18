@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import SearchBar from './SearchBar';
-import LoadingSpinner from './LoadingSpinner';
 
 const Sonarr = () => {
     const [shows, setShows] = useState([]);
