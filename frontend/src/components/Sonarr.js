@@ -99,6 +99,9 @@ const Sonarr = () => {
         }
       };
 
+      // Debug: Log the exact payload being sent to Sonarr
+      console.log('Sonarr Add Series Payload:', JSON.stringify(showToAdd, null, 2));
+
       await axios.post(
         `${API_BASE_URL}/api/sonarr/series`,
         showToAdd,
