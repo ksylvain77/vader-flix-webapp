@@ -24,3 +24,16 @@ node_modules/
 *.tmp
 *.temp
 .DS_Store
+
+# Synology system folders
+@eaDir/
+
+# Editor swap/junk files
+*.swp
+*.swo
+*.bak
+*.orig
+
+# Build artifacts
+dist/
+build/
