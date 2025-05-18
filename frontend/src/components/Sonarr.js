@@ -70,6 +70,16 @@ const Sonarr = () => {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No authentication token found');
 
+      // Log original show data with focus on monitoring fields
+      console.log('🔍 ORIGINAL SHOW DATA - Monitoring Fields:', {
+        title: show.title,
+        tvdbId: show.tvdbId,
+        seasons: show.seasons.map(s => ({
+          seasonNumber: s.seasonNumber,
+          episodeCount: s.episodeCount
+        }))
+      });
+
       // Prepare the show data with explicit monitoring options
       const showToAdd = {
         tvdbId: show.tvdbId,
@@ -98,8 +108,34 @@ const Sonarr = () => {
         }
       };
 
-      // Debug: Log the exact payload being sent to Sonarr
-      console.log('Sonarr Add Series Payload:', JSON.stringify(showToAdd, null, 2));
+      // Log monitoring settings being applied
+      console.log('✅ APPLYING MONITORING SETTINGS:', {
+        seriesMonitored: showToAdd.monitored,
+        seasonMonitoring: showToAdd.seasons.map(s => ({
+          season: s.seasonNumber,
+          monitored: s.monitored
+        })),
+        addOptions: showToAdd.addOptions
+      });
+
+      // Validate monitoring settings before sending
+      const monitoringValidation = {
+        seriesMonitored: showToAdd.monitored === true,
+        allSeasonsMonitored: showToAdd.seasons.every(s => s.monitored === true),
+        validAddOptions: showToAdd.addOptions.monitor === "all"
+      };
+
+      if (!monitoringValidation.seriesMonitored || !monitoringValidation.allSeasonsMonitored) {
+        console.warn('⚠️ MONITORING VALIDATION WARNING:', monitoringValidation);
+      }
+
+      // Log the exact payload with focus on monitoring fields
+      console.log('📤 PAYLOAD TO SONARR - Monitoring Summary:', {
+        seriesMonitored: showToAdd.monitored,
+        seasonCount: showToAdd.seasons.length,
+        monitoredSeasons: showToAdd.seasons.filter(s => s.monitored).length,
+        addOptions: showToAdd.addOptions
+      });
 
       const addResponse = await axios.post(
         `${API_BASE_URL}/api/sonarr/series`,
@@ -109,9 +145,16 @@ const Sonarr = () => {
         }
       );
       
-      // Debug: Log the response from Sonarr
-      console.log('Sonarr Add Series Response:', JSON.stringify(addResponse.data, null, 2));
-      
+      // Log Sonarr's response focusing on monitoring status
+      console.log('📥 SONARR RESPONSE - Monitoring Status:', {
+        seriesId: addResponse.data.id,
+        seriesMonitored: addResponse.data.monitored,
+        seasonMonitoring: addResponse.data.seasons.map(s => ({
+          season: s.seasonNumber,
+          monitored: s.monitored
+        }))
+      });
+
       // Refresh library after adding
       const libraryResponse = await axios.get(`${API_BASE_URL}/api/sonarr/series`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -119,14 +162,15 @@ const Sonarr = () => {
       setLibrary(libraryResponse.data);
       setError(null);
     } catch (err) {
-      // Debug: Log any errors in detail
-      console.error('Sonarr Add Series Error:', {
-        message: err.message,
-        response: err.response?.data,
-        status: err.response?.status
+      // Enhanced error logging focusing on monitoring-related issues
+      console.error('❌ SONARR ERROR - Monitoring Status:', {
+        error: err.message,
+        status: err.response?.status,
+        monitoringRelated: err.response?.data?.message?.toLowerCase().includes('monitor') || false,
+        responseData: err.response?.data
       });
       setError(err.response?.data?.message || 'Failed to add show');
-      setSearchResults([]); // Keep clearing results on error
+      setSearchResults([]);
     } finally {
       setIsLoading(false);
     }
