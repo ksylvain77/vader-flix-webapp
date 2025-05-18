@@ -142,6 +142,22 @@ class SonarrService {
             throw new Error('Failed to update TV show');
         }
     }
+
+    // Trigger Sonarr command
+    async triggerCommand(name, seriesId) {
+        try {
+            const commandData = {
+                name,
+                ...(seriesId && { seriesId: parseInt(seriesId, 10) })
+            };
+
+            const response = await this.client.post('/api/v3/command', commandData);
+            return response.data;
+        } catch (error) {
+            console.error('Error triggering Sonarr command:', error.message);
+            throw new Error('Failed to trigger command');
+        }
+    }
 }
 
 module.exports = new SonarrService(); 

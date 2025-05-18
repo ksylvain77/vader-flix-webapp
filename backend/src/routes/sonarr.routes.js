@@ -61,6 +61,9 @@ router.put('/series/:id', sonarrController.updateSeries);
 // Delete a series
 router.delete('/series/:id', sonarrController.deleteSeries);
 
+// Trigger Sonarr command
+router.post('/command', sonarrController.triggerCommand);
+
 // Get download queue
 router.get('/queue', sonarrController.getQueue);
 

@@ -113,4 +113,21 @@ exports.deleteSeries = async (req, res) => {
         console.error('Error in deleteSeries controller:', error);
         res.status(500).json({ message: error.message });
     }
+};
+
+// Trigger Sonarr command
+exports.triggerCommand = async (req, res) => {
+    try {
+        const { name, seriesId } = req.body;
+        
+        if (!name) {
+            return res.status(400).json({ message: 'Command name is required' });
+        }
+        
+        const result = await sonarrService.triggerCommand(name, seriesId);
+        res.json(result);
+    } catch (error) {
+        console.error('Error in triggerCommand controller:', error);
+        res.status(500).json({ message: error.message });
+    }
 }; 

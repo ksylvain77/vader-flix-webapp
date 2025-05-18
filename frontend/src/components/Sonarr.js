@@ -171,6 +171,32 @@ const Sonarr = () => {
         }))
       });
 
+      // Step 3: Trigger a search for missing episodes
+      try {
+        console.log('🔍 Triggering search for missing episodes...');
+        const searchResponse = await axios.post(
+          `${API_BASE_URL}/api/sonarr/command`,
+          {
+            name: 'SeriesSearch',
+            seriesId: addResponse.data.id
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        );
+        console.log('✅ Search triggered successfully:', {
+          commandId: searchResponse.data.id,
+          status: searchResponse.data.status
+        });
+      } catch (searchError) {
+        // Log the error but don't fail the whole operation
+        console.warn('⚠️ Failed to trigger search for missing episodes:', {
+          error: searchError.message,
+          status: searchError.response?.status,
+          responseData: searchError.response?.data
+        });
+      }
+
       // Refresh library after adding
       const libraryResponse = await axios.get(`${API_BASE_URL}/api/sonarr/series`, {
         headers: { Authorization: `Bearer ${token}` }
