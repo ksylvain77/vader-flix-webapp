@@ -36,7 +36,8 @@ const Sonarr = () => {
 
   // Handle search
   const handleSearch = async (term) => {
-    if (!term.trim()) {
+    const trimmedTerm = term.trim();
+    if (!trimmedTerm || trimmedTerm.length < 2) {
       setSearchResults([]);
       return;
     }
@@ -47,12 +48,12 @@ const Sonarr = () => {
       if (!token) throw new Error('No authentication token found');
 
       const response = await axios.get(
-        `${API_BASE_URL}/api/sonarr/search?query=${encodeURIComponent(term)}`,
+        `${API_BASE_URL}/api/sonarr/series/lookup?term=${encodeURIComponent(trimmedTerm)}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
       );
-      setSearchResults(response.data.results);
+      setSearchResults(response.data);
       setError(null);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to search shows');
