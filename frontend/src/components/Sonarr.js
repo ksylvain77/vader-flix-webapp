@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
 const API_BASE_URL = 'http://192.168.50.92:3000';
+const SEARCH_DEBOUNCE_MS = 500; // Half second delay
 
 const Sonarr = () => {
   // State management
@@ -10,6 +11,10 @@ const Sonarr = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  
+  // Refs for search debouncing
+  const searchTimeoutRef = useRef(null);
+  const currentSearchTermRef = useRef('');
 
   // Fetch library on mount
   useEffect(() => {
@@ -34,33 +39,74 @@ const Sonarr = () => {
     fetchLibrary();
   }, []);
 
-  // Handle search
+  // Handle search with debouncing
   const handleSearch = async (term) => {
     const trimmedTerm = term.trim();
+    
+    // Clear any existing timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    // Don't search if term is too short
     if (!trimmedTerm || trimmedTerm.length < 2) {
       setSearchResults([]);
+      currentSearchTermRef.current = '';
       return;
     }
 
-    try {
-      setIsLoading(true);
-      const token = localStorage.getItem('token');
-      if (!token) throw new Error('No authentication token found');
-
-      const response = await axios.get(
-        `${API_BASE_URL}/api/sonarr/search?term=${encodeURIComponent(trimmedTerm)}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-      setSearchResults(response.data);
-      setError(null);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to search shows');
-      setSearchResults([]); // Keep clearing results on error
-    } finally {
-      setIsLoading(false);
+    // Don't search if term hasn't changed
+    if (trimmedTerm === currentSearchTermRef.current) {
+      return;
     }
+
+    // Set up new timeout
+    searchTimeoutRef.current = setTimeout(async () => {
+      try {
+        setIsLoading(true);
+        const token = localStorage.getItem('token');
+        if (!token) throw new Error('No authentication token found');
+
+        // Update current search term before making the request
+        currentSearchTermRef.current = trimmedTerm;
+
+        const response = await axios.get(
+          `${API_BASE_URL}/api/sonarr/search?term=${encodeURIComponent(trimmedTerm)}`,
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        );
+        setSearchResults(response.data);
+        setError(null);
+      } catch (err) {
+        // Only show error if this is still the current search term
+        if (trimmedTerm === currentSearchTermRef.current) {
+          setError(err.response?.data?.message || 'Failed to search shows');
+          setSearchResults([]);
+        }
+      } finally {
+        // Only update loading state if this is still the current search term
+        if (trimmedTerm === currentSearchTermRef.current) {
+          setIsLoading(false);
+        }
+      }
+    }, SEARCH_DEBOUNCE_MS);
+  };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Handle search input change
+  const handleSearchInputChange = (e) => {
+    const newTerm = e.target.value;
+    setSearchTerm(newTerm);
+    handleSearch(newTerm);
   };
 
   // Handle adding a show
@@ -227,10 +273,7 @@ const Sonarr = () => {
           type="text"
           placeholder="Search for shows..."
           value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            handleSearch(e.target.value);
-          }}
+          onChange={handleSearchInputChange}
           className="search-input"
         />
       </div>
