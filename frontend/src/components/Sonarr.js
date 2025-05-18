@@ -56,6 +56,13 @@ const Sonarr = () => {
 
     const handleSearch = async (searchTerm) => {
         try {
+            if (!searchTerm) {
+                setSearchResults([]);
+                setIsSearching(false);
+                setError(null);
+                return;
+            }
+
             setIsSearching(true);
             setError(null);
             
