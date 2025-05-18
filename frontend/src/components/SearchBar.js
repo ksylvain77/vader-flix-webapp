@@ -5,12 +5,15 @@ const SearchBar = ({ onSearch }) => {
 
     const debouncedSearch = useCallback(
         (value) => {
-            const timer = setTimeout(() => {
-                onSearch(value);
-                console.log('Search term:', value);
-            }, 300);
+            // Only trigger search if there's actual input
+            if (value.trim().length > 0) {
+                const timer = setTimeout(() => {
+                    onSearch(value);
+                    console.log('Search term:', value);
+                }, 300);
 
-            return () => clearTimeout(timer);
+                return () => clearTimeout(timer);
+            }
         },
         [onSearch]
     );

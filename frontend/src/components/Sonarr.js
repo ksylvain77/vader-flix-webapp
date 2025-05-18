@@ -7,6 +7,8 @@ const Sonarr = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [imageErrors, setImageErrors] = useState(new Set());
+    const [searchResults, setSearchResults] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
 
     const fetchShows = useCallback(async (signal) => {
         try {
@@ -54,6 +56,9 @@ const Sonarr = () => {
 
     const handleSearch = async (searchTerm) => {
         try {
+            setIsSearching(true);
+            setError(null);
+            
             const token = localStorage.getItem('token');
             if (!token) {
                 throw new Error('No authentication token found');
@@ -65,22 +70,29 @@ const Sonarr = () => {
             });
 
             console.log('Search response:', response.data);
-            // TODO: Update the UI with search results
+            setSearchResults(response.data);
         } catch (error) {
             console.error('Error searching shows:', error);
+            setError(error.response?.data?.error || 'Failed to search shows');
+            setSearchResults([]);
+        } finally {
+            setIsSearching(false);
         }
     };
 
     if (loading) return <div>Loading shows...</div>;
     if (error) return <div className="error-message">Error: {error}</div>;
-    if (!shows.length) return <div>No shows found</div>;
+
+    const displayShows = searchResults.length > 0 ? searchResults : shows;
 
     return (
         <div className="sonarr">
             <h1>TV Shows</h1>
             <SearchBar onSearch={handleSearch} />
+            {isSearching && <div className="searching">Searching...</div>}
+            {!isSearching && displayShows.length === 0 && <div>No shows found</div>}
             <div className="shows-grid">
-                {shows.map((show) => (
+                {displayShows.map((show) => (
                     <div key={show.id} className="show-card">
                         <div className="show-poster-container">
                             {!imageErrors.has(show.id) && show.images?.[0]?.url ? (
@@ -116,6 +128,12 @@ const Sonarr = () => {
                     text-align: center;
                     color: #333;
                     margin-bottom: 30px;
+                }
+
+                .searching {
+                    text-align: center;
+                    color: #666;
+                    margin: 20px 0;
                 }
 
                 .shows-grid {
