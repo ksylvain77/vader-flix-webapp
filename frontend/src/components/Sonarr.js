@@ -101,7 +101,7 @@ const Sonarr = () => {
       // Debug: Log the exact payload being sent to Sonarr
       console.log('Sonarr Add Series Payload:', JSON.stringify(showToAdd, null, 2));
 
-      await axios.post(
+      const addResponse = await axios.post(
         `${API_BASE_URL}/api/sonarr/series`,
         showToAdd,
         {
@@ -109,14 +109,24 @@ const Sonarr = () => {
         }
       );
       
+      // Debug: Log the response from Sonarr
+      console.log('Sonarr Add Series Response:', JSON.stringify(addResponse.data, null, 2));
+      
       // Refresh library after adding
-      const response = await axios.get(`${API_BASE_URL}/api/sonarr/series`, {
+      const libraryResponse = await axios.get(`${API_BASE_URL}/api/sonarr/series`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setLibrary(response.data);
+      setLibrary(libraryResponse.data);
       setError(null);
     } catch (err) {
+      // Debug: Log any errors in detail
+      console.error('Sonarr Add Series Error:', {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status
+      });
       setError(err.response?.data?.message || 'Failed to add show');
+      setSearchResults([]); // Keep clearing results on error
     } finally {
       setIsLoading(false);
     }
