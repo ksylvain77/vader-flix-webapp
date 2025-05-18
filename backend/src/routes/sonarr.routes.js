@@ -24,19 +24,23 @@ router.get('/search', async (req, res) => {
         console.log('Making Sonarr API call for query:', trimmedQuery);
         
         const response = await axios.get(`${sonarrConfig.baseUrl}/api/v3/series/lookup`, {
-            params: { 
-                term: trimmedQuery,
-                limit: 20,  // Limit to 20 results
-                sortKey: 'title',
-                sortDirection: 'ascending'
-            },
+            params: { term: trimmedQuery },
             headers: {
                 'X-Api-Key': sonarrConfig.apiKey
             }
         });
 
-        console.log('Sonarr API response received');
-        res.json(response.data);
+        // Sort and limit the results
+        const sortedResults = response.data
+            .sort((a, b) => a.title.localeCompare(b.title))
+            .slice(0, 20);
+
+        console.log('Sonarr API response received and processed');
+        res.json({
+            results: sortedResults,
+            total: response.data.length,
+            limit: 20
+        });
     } catch (error) {
         console.error('Error searching Sonarr:', error.message);
         if (error.response) {

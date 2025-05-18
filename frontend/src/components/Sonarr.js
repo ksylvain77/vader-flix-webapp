@@ -77,7 +77,7 @@ const Sonarr = () => {
             });
 
             console.log('Search response:', response.data);
-            setSearchResults(response.data);
+            setSearchResults(response.data.results);
         } catch (error) {
             console.error('Error searching shows:', error);
             setError(error.response?.data?.error || 'Failed to search shows');
