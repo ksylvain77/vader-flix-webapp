@@ -49,11 +49,17 @@ router.get('/search', async (req, res) => {
 // Get all series
 router.get('/series', sonarrController.getAllSeries);
 
+// Get a single series by ID
+router.get('/series/:id', sonarrController.getSeriesById);
+
 // Add a new series
 router.post('/series', sonarrController.addSeries);
 
 // Update a series
 router.put('/series/:id', sonarrController.updateSeries);
+
+// Delete a series
+router.delete('/series/:id', sonarrController.deleteSeries);
 
 // Get download queue
 router.get('/queue', sonarrController.getQueue);

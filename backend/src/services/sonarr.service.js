@@ -106,6 +106,32 @@ class SonarrService {
         }
     }
 
+    // Get a single series by ID
+    async getSeriesById(id) {
+        try {
+            const response = await this.client.get(`/api/v3/series/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching series from Sonarr:', error.message);
+            throw new Error('Failed to fetch series');
+        }
+    }
+
+    // Delete a series
+    async deleteSeries(id) {
+        try {
+            await this.client.delete(`/api/v3/series/${id}`, {
+                params: {
+                    deleteFiles: true,
+                    addImportListExclusion: true
+                }
+            });
+        } catch (error) {
+            console.error('Error deleting series from Sonarr:', error.message);
+            throw new Error('Failed to delete series');
+        }
+    }
+
     // Update series monitoring status
     async updateSeries(seriesId, updateData) {
         try {

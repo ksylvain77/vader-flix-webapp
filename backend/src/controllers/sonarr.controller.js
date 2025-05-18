@@ -79,4 +79,38 @@ exports.updateSeries = async (req, res) => {
         console.error('Error in updateSeries controller:', error);
         res.status(500).json({ message: error.message });
     }
+};
+
+// Get a single series by ID
+exports.getSeriesById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        if (!id) {
+            return res.status(400).json({ message: 'Series ID is required' });
+        }
+        
+        const series = await sonarrService.getSeriesById(id);
+        res.json(series);
+    } catch (error) {
+        console.error('Error in getSeriesById controller:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Delete a series
+exports.deleteSeries = async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        if (!id) {
+            return res.status(400).json({ message: 'Series ID is required' });
+        }
+        
+        await sonarrService.deleteSeries(id);
+        res.json({ message: 'Series deleted successfully' });
+    } catch (error) {
+        console.error('Error in deleteSeries controller:', error);
+        res.status(500).json({ message: error.message });
+    }
 }; 
