@@ -110,8 +110,15 @@ const Sonarr = () => {
         }
 
         try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
             console.log('Fetching from backend...');
-            const response = await axios.get(`${API_BASE_URL}/api/sonarr/search?term=${encodeURIComponent(term)}`);
+            const response = await axios.get(`${API_BASE_URL}/api/sonarr/search?term=${encodeURIComponent(term)}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
             console.log('Search response received:', response.data);
             
             // Filter and sort results before updating state
