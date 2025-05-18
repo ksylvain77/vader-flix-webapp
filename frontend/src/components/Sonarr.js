@@ -120,6 +120,7 @@ const Sonarr = () => {
 
   // Handle adding a show
   const handleAddShow = async (show) => {
+    console.log('🔵 Starting handleAddShow for:', show.title);
     try {
       setIsLoading(true);
       const token = localStorage.getItem('token');
@@ -156,6 +157,7 @@ const Sonarr = () => {
         }
       };
 
+      console.log('🔵 Step 1: Adding series to Sonarr');
       // Step 1: Add the series
       const addResponse = await axios.post(
         `${API_BASE_URL}/api/sonarr/series`,
@@ -164,7 +166,9 @@ const Sonarr = () => {
           headers: { Authorization: `Bearer ${token}` }
         }
       );
+      console.log('✅ Step 1 complete:', addResponse.data.id);
 
+      console.log('🔵 Step 2: Updating series monitoring status');
       // Step 2: Update the series to set it as monitored
       const updatedSeries = {
         ...addResponse.data,
@@ -182,7 +186,9 @@ const Sonarr = () => {
           headers: { Authorization: `Bearer ${token}` }
         }
       );
+      console.log('✅ Step 2 complete:', updateResponse.data.id);
 
+      console.log('🔵 Step 3: Triggering search for missing episodes');
       // Step 3: Trigger a search for missing episodes
       const commandPayload = {
         name: 'SeriesSearch',
@@ -196,7 +202,9 @@ const Sonarr = () => {
           headers: { Authorization: `Bearer ${token}` }
         }
       );
+      console.log('✅ Step 3 complete');
 
+      console.log('🔵 Step 4: Refreshing library');
       // Step 4: Refresh the library
       const libraryResponse = await axios.get(`${API_BASE_URL}/api/sonarr/series`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -204,18 +212,34 @@ const Sonarr = () => {
       setLibrary(libraryResponse.data);
       setError(null);
       setSearchResults([]); // Clear search results after successful add
+      console.log('✅ Step 4 complete - All operations finished successfully');
     } catch (err) {
-      console.error('❌ Sonarr Error:', {
+      console.error('❌ Error in handleAddShow:', {
         error: err.message,
         status: err.response?.status,
         responseData: err.response?.data,
-        step: err.config?.url?.includes('/series/') ? 'Update' : 'Add'
+        step: err.config?.url?.includes('/series/') ? 'Update' : 'Add',
+        url: err.config?.url,
+        method: err.config?.method,
+        headers: err.config?.headers,
+        data: err.config?.data
       });
       setError(err.response?.data?.message || 'Failed to add show');
     } finally {
       setIsLoading(false);
+      console.log('🔵 handleAddShow completed');
     }
   };
+
+  // Add a useEffect to monitor state changes
+  useEffect(() => {
+    console.log('🔄 State updated:', {
+      libraryLength: library.length,
+      searchResultsLength: searchResults.length,
+      isLoading,
+      error
+    });
+  }, [library, searchResults, isLoading, error]);
 
   return (
     <div className="sonarr-container">
