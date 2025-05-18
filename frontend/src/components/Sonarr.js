@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import SearchBar from './SearchBar';
-import ShowCard from './ShowCard';
 import LoadingSpinner from './LoadingSpinner';
 
 const Sonarr = () => {
