@@ -80,6 +80,20 @@ const Sonarr = () => {
         }))
       });
 
+      // Filter out season 0 (specials) as it causes monitoring issues
+      // Sonarr automatically handles specials differently and including them
+      // in the initial payload can cause the series to be marked as unmonitored
+      const filteredSeasons = show.seasons.filter(season => season.seasonNumber > 0);
+      
+      console.log('🔍 SEASON FILTERING:', {
+        totalSeasons: show.seasons.length,
+        includedSeasons: filteredSeasons.map(s => s.seasonNumber),
+        excludedSeasons: show.seasons
+          .filter(s => s.seasonNumber === 0)
+          .map(s => s.seasonNumber),
+        reason: 'Season 0 (specials) excluded to prevent monitoring issues'
+      });
+
       // Prepare the show data with explicit monitoring options
       const showToAdd = {
         tvdbId: show.tvdbId,
@@ -91,7 +105,7 @@ const Sonarr = () => {
         qualityProfileId: 1,
         languageProfileId: 1,
         rootFolderPath: "/data/media/tv",
-        seasons: show.seasons.map(season => ({
+        seasons: filteredSeasons.map(season => ({
           seasonNumber: season.seasonNumber,
           monitored: true,
           statistics: {
@@ -115,14 +129,16 @@ const Sonarr = () => {
           season: s.seasonNumber,
           monitored: s.monitored
         })),
-        addOptions: showToAdd.addOptions
+        addOptions: showToAdd.addOptions,
+        note: 'Season 0 excluded from monitoring to prevent series-level monitoring issues'
       });
 
       // Validate monitoring settings before sending
       const monitoringValidation = {
         seriesMonitored: showToAdd.monitored === true,
         allSeasonsMonitored: showToAdd.seasons.every(s => s.monitored === true),
-        validAddOptions: showToAdd.addOptions.monitor === "all"
+        validAddOptions: showToAdd.addOptions.monitor === "all",
+        noSeasonZero: !showToAdd.seasons.some(s => s.seasonNumber === 0)
       };
 
       if (!monitoringValidation.seriesMonitored || !monitoringValidation.allSeasonsMonitored) {
@@ -134,6 +150,7 @@ const Sonarr = () => {
         seriesMonitored: showToAdd.monitored,
         seasonCount: showToAdd.seasons.length,
         monitoredSeasons: showToAdd.seasons.filter(s => s.monitored).length,
+        includedSeasonNumbers: showToAdd.seasons.map(s => s.seasonNumber),
         addOptions: showToAdd.addOptions
       });
 
@@ -152,7 +169,8 @@ const Sonarr = () => {
         seasonMonitoring: addResponse.data.seasons.map(s => ({
           season: s.seasonNumber,
           monitored: s.monitored
-        }))
+        })),
+        note: 'Season 0 (specials) will be handled separately by Sonarr'
       });
 
       // Refresh library after adding
