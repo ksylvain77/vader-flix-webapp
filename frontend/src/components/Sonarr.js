@@ -57,8 +57,11 @@ const Sonarr = () => {
     };
 
     const handleSearch = useCallback(async (searchTerm) => {
+        console.log('handleSearch called with:', searchTerm);
+        
         try {
             if (!searchTerm) {
+                console.log('Empty searchTerm, skipping');
                 setSearchResults([]);
                 setIsSearching(false);
                 setError(null);
@@ -73,17 +76,19 @@ const Sonarr = () => {
                 throw new Error('No authentication token found');
             }
 
+            console.log('Starting fetch to backend');
             const response = await axios.get(`http://192.168.50.92:3000/api/sonarr/search`, {
                 params: { query: searchTerm },
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            console.log('Search response:', response.data);
+            console.log('Received search response (length):', response.data.results.length);
+            // Only update if results are different
             if (JSON.stringify(response.data.results) !== JSON.stringify(searchResults)) {
                 setSearchResults(response.data.results);
             }
         } catch (error) {
-            console.error('Error searching shows:', error);
+            console.error('Error in handleSearch:', error.message);
             setError(error.response?.data?.error || 'Failed to search shows');
             setSearchResults([]);
         } finally {

@@ -6,6 +6,10 @@ const SearchBar = ({ onSearch }) => {
     const timeoutRef = useRef(null);
 
     useEffect(() => {
+        console.log('SearchBar useEffect firing');
+        console.log('Current searchTerm:', searchTerm);
+        console.log('TimeoutRef before setTimeout:', timeoutRef.current);
+
         const trimmedValue = searchTerm.trim();
         setError('');
 
@@ -17,13 +21,14 @@ const SearchBar = ({ onSearch }) => {
 
             // Only clear if there's an existing timer that hasn't fired
             if (timeoutRef.current) {
+                console.log('Clearing existing timeout');
                 clearTimeout(timeoutRef.current);
             }
 
             // Set new timeout
             timeoutRef.current = setTimeout(() => {
+                console.log('Debounced onSearch firing with:', trimmedValue);
                 onSearch(trimmedValue);
-                console.log('Search term:', trimmedValue);
                 timeoutRef.current = null;
             }, 300);
         }
@@ -31,6 +36,7 @@ const SearchBar = ({ onSearch }) => {
         // Cleanup function
         return () => {
             if (timeoutRef.current) {
+                console.log('Cleanup: clearing timeout on unmount/update');
                 clearTimeout(timeoutRef.current);
                 timeoutRef.current = null;
             }
