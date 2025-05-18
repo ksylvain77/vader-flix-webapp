@@ -75,6 +75,7 @@ const Sonarr = () => {
       const showToAdd = {
         ...show,
         monitored: true,
+        qualityProfileId: 1,
         addOptions: {
           searchForMissingEpisodes: true,
           monitor: "all"
