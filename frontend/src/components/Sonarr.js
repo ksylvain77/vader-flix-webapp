@@ -133,9 +133,28 @@ const Sonarr = () => {
       });
 
       // Step 2: Update the series to set it as monitored
+      // First fetch the current series data
+      const currentSeriesResponse = await axios.get(
+        `${API_BASE_URL}/api/sonarr/series/${addResponse.data.id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      // Merge the monitored change into the full series object
+      const updatedSeries = {
+        ...currentSeriesResponse.data,
+        monitored: true,
+        seasons: currentSeriesResponse.data.seasons.map(season => ({
+          ...season,
+          monitored: true
+        }))
+      };
+
+      // Send the complete series object with monitoring enabled
       const updateResponse = await axios.put(
         `${API_BASE_URL}/api/sonarr/series/${addResponse.data.id}`,
-        { monitored: true },
+        updatedSeries,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
