@@ -82,6 +82,17 @@ const Sonarr = () => {
         qualityProfileId: 1,
         languageProfileId: 1,
         rootFolderPath: "/tv",
+        seasons: show.seasons.map(season => ({
+          seasonNumber: season.seasonNumber,
+          monitored: true,
+          statistics: {
+            episodeFileCount: 0,
+            episodeCount: season.episodeCount || 0,
+            totalEpisodeCount: season.episodeCount || 0,
+            sizeOnDisk: 0,
+            percentOfEpisodes: 0
+          }
+        })),
         addOptions: {
           searchForMissingEpisodes: true,
           monitor: "all"
