@@ -1,5 +1,13 @@
 {
+  "name": "vader-flix-backend",
+  "version": "1.0.0",
+  "description": "Minimal backend for Vader Flix",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
-    "ws": "^8.18.2"
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2"
   }
-}
+} 
