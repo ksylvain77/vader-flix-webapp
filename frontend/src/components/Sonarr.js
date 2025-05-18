@@ -6,7 +6,13 @@ const API_BASE_URL = 'http://192.168.50.92:3000';
 
 // Helper function to normalize strings for comparison
 const normalize = (str) => {
-  return str.toLowerCase().trim();
+  if (!str) return '';
+  return str
+    .toLowerCase()
+    .replace(/[_-]/g, ' ')
+    .replace(/[.,:;!?'"`~@#$%^&*()\[\]{}<>|\\/]/g, '')
+    .replace(/^(the|a|an)\s+/i, '') // Remove leading "the", "a", "an"
+    .trim();
 };
 
 // Levenshtein distance implementation for fuzzy matching
@@ -39,14 +45,21 @@ const filterAndSortResults = (results, searchTerm) => {
 
   const normalizedSearch = normalize(searchTerm);
   return results
-    .map(show => ({
-      ...show,
-      matchScore: Math.min(
-        levenshtein(normalize(show.title), normalizedSearch),
-        levenshtein(normalize(show.titleSlug || ''), normalizedSearch)
-      )
-    }))
-    .filter(show => show.matchScore <= 6) // Allow for broader fuzzy matching
+    .map(show => {
+      const normTitle = normalize(show.title);
+      const normSlug = normalize(show.titleSlug || '');
+      let matchScore;
+      if (normTitle.includes(normalizedSearch) || normSlug.includes(normalizedSearch)) {
+        matchScore = 0;
+      } else {
+        matchScore = Math.min(
+          levenshtein(normTitle, normalizedSearch),
+          levenshtein(normSlug, normalizedSearch)
+        );
+      }
+      return { ...show, matchScore };
+    })
+    .filter(show => show.matchScore <= 6)
     .sort((a, b) => a.matchScore - b.matchScore);
 };
 
