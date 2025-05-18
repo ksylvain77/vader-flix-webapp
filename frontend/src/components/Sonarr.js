@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import SearchBar from './SearchBar';
+import ShowCard from './ShowCard';
+import LoadingSpinner from './LoadingSpinner';
 
 const Sonarr = () => {
     const [shows, setShows] = useState([]);
@@ -54,7 +56,7 @@ const Sonarr = () => {
         setImageErrors(prev => new Set([...prev, showId]));
     };
 
-    const handleSearch = async (searchTerm) => {
+    const handleSearch = useCallback(async (searchTerm) => {
         try {
             if (!searchTerm) {
                 setSearchResults([]);
@@ -85,7 +87,7 @@ const Sonarr = () => {
         } finally {
             setIsSearching(false);
         }
-    };
+    }, []);
 
     if (loading) return <div>Loading shows...</div>;
     if (error) return <div className="error-message">Error: {error}</div>;
