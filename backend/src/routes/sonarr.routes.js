@@ -11,20 +11,20 @@ router.use(verifyToken);
 // Search for TV shows
 router.get('/search', async (req, res) => {
     try {
-        const { term } = req.query;
-        const trimmedTerm = term?.trim();
+        const { query } = req.query;
+        const trimmedQuery = query?.trim();
 
-        if (!trimmedTerm || trimmedTerm.length < 2) {
+        if (!trimmedQuery || trimmedQuery.length < 2) {
             return res.status(400).json({ 
-                error: 'Search term must be at least 2 characters long',
+                error: 'Search query must be at least 2 characters long',
                 received: false
             });
         }
 
-        console.log('Making Sonarr API call for term:', trimmedTerm);
+        console.log('Making Sonarr API call for query:', trimmedQuery);
         
-        const response = await axios.get(`${sonarrConfig.baseUrl}/api/series/lookup`, {
-            params: { term: trimmedTerm },
+        const response = await axios.get(`${sonarrConfig.baseUrl}/api/v3/series/lookup`, {
+            params: { term: trimmedQuery },
             headers: {
                 'X-Api-Key': sonarrConfig.apiKey
             }

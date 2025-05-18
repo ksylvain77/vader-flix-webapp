@@ -60,11 +60,12 @@ const Sonarr = () => {
             }
 
             const response = await axios.get(`http://192.168.50.92:3000/api/sonarr/search`, {
-                params: { term: searchTerm },
+                params: { query: searchTerm },
                 headers: { Authorization: `Bearer ${token}` }
             });
 
             console.log('Search response:', response.data);
+            // TODO: Update the UI with search results
         } catch (error) {
             console.error('Error searching shows:', error);
         }
