@@ -173,10 +173,23 @@ const Sonarr = () => {
           padding: 20px;
           max-width: 1200px;
           margin: 0 auto;
+          color: #222;
         }
 
         h1, h2 {
-          color: #333;
+          color: #222;
+          margin-bottom: 1rem;
+        }
+
+        h1 {
+          font-size: 2rem;
+          border-bottom: 2px solid #eee;
+          padding-bottom: 0.5rem;
+        }
+
+        h2 {
+          font-size: 1.5rem;
+          margin-top: 2rem;
         }
 
         .search-section {
@@ -187,53 +200,83 @@ const Sonarr = () => {
           width: 100%;
           padding: 8px;
           font-size: 16px;
-          border: 1px solid #ddd;
+          border: 2px solid #ddd;
           border-radius: 4px;
+          background-color: #fff;
+          color: #222;
+          transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+          outline: none;
+          border-color: #007bff;
         }
 
         table {
           width: 100%;
           border-collapse: collapse;
           margin: 20px 0;
+          background-color: #fff;
+          border: 1px solid #ddd;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         th, td {
           padding: 12px;
           text-align: left;
-          border-bottom: 1px solid #ddd;
+          border: 1px solid #ddd;
+          color: #222;
         }
 
         th {
-          background-color: #f5f5f5;
+          background-color: #f8f9fa;
+          font-weight: 600;
+        }
+
+        tbody tr:nth-child(even) {
+          background-color: #f8f9fa;
+        }
+
+        tbody tr:hover {
+          background-color: #f1f3f5;
         }
 
         button {
           padding: 6px 12px;
-          background-color: #007bff;
+          background-color: #0066cc;
           color: white;
           border: none;
           border-radius: 4px;
           cursor: pointer;
+          font-weight: 500;
+          transition: background-color 0.2s;
+        }
+
+        button:hover {
+          background-color: #0052a3;
         }
 
         button:disabled {
-          background-color: #ccc;
+          background-color: #e9ecef;
+          color: #6c757d;
           cursor: not-allowed;
         }
 
         .error-message {
-          color: #dc3545;
+          color: #842029;
           padding: 10px;
           margin: 10px 0;
-          border: 1px solid #dc3545;
+          border: 1px solid #f5c2c7;
           border-radius: 4px;
           background-color: #f8d7da;
+          font-weight: 500;
         }
 
         .loading {
           text-align: center;
           padding: 20px;
-          color: #666;
+          color: #495057;
+          font-weight: 500;
         }
       `}</style>
     </div>
