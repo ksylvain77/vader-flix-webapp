@@ -120,6 +120,8 @@ const Sonarr = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             console.log('Search response received:', response.data);
+            console.log('First search result:', response.data.results[0]);
+            console.log('All search results:', response.data.results);
             
             // Filter and sort results before updating state
             const filteredResults = filterAndSortResults(response.data.results, term);
