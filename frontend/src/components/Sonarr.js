@@ -44,6 +44,7 @@ const Sonarr = () => {
 
     try {
       setIsLoading(true);
+      setSearchResults([]); // Clear previous results while loading
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No authentication token found');
 
@@ -57,6 +58,7 @@ const Sonarr = () => {
       setError(null);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to search shows');
+      setSearchResults([]); // Clear results on error
     } finally {
       setIsLoading(false);
     }
@@ -112,10 +114,15 @@ const Sonarr = () => {
       {error && <div className="error-message">{error}</div>}
 
       {/* Loading State */}
-      {isLoading && <div className="loading">Loading...</div>}
+      {isLoading && (
+        <div className="loading">
+          <div className="loading-spinner"></div>
+          <div>Searching...</div>
+        </div>
+      )}
 
       {/* Search Results */}
-      {searchResults.length > 0 && (
+      {!isLoading && searchResults.length > 0 && (
         <div className="search-results">
           <h2>Search Results</h2>
           <table>
@@ -278,6 +285,24 @@ const Sonarr = () => {
           padding: 20px;
           color: #495057;
           font-weight: 500;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .loading-spinner {
+          width: 30px;
+          height: 30px;
+          border: 3px solid #f3f3f3;
+          border-top: 3px solid #0066cc;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
         }
       `}</style>
     </div>
