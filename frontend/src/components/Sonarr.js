@@ -116,7 +116,7 @@ const Sonarr = () => {
             }
 
             console.log('Fetching from backend...');
-            const response = await axios.get(`${API_BASE_URL}/api/sonarr/search?term=${encodeURIComponent(term)}`, {
+            const response = await axios.get(`${API_BASE_URL}/api/sonarr/search?query=${encodeURIComponent(term)}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             console.log('Search response received:', response.data);
