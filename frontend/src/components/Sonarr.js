@@ -107,7 +107,7 @@ const Sonarr = () => {
             {!isSearching && displayShows.length === 0 && <div>No shows found</div>}
             <div className="shows-grid">
                 {displayShows.map((show) => (
-                    <div key={show.id} className="show-card">
+                    <div key={show.id || `show-${show.title}`} className="show-card">
                         <div className="show-poster-container">
                             {!imageErrors.has(show.id) && show.images?.[0]?.url ? (
                                 <img 
