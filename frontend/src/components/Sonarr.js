@@ -118,7 +118,7 @@ const Sonarr = () => {
         })),
         addOptions: {
           searchForMissingEpisodes: true,
-          monitor: "all"
+          monitor: "missing"
         }
       };
 
@@ -129,15 +129,22 @@ const Sonarr = () => {
           season: s.seasonNumber,
           monitored: s.monitored
         })),
-        addOptions: showToAdd.addOptions,
-        note: 'Season 0 excluded from monitoring to prevent series-level monitoring issues'
+        addOptions: {
+          ...showToAdd.addOptions,
+          monitorOptions: {
+            current: showToAdd.addOptions.monitor,
+            available: ["all", "future", "missing", "existing", "firstSeason", "latestSeason", "none"],
+            description: "Using 'missing' - monitors only episodes that need to be downloaded, ideal for new series in empty library"
+          }
+        },
+        note: 'Using "missing" monitor option to focus on episodes that need to be downloaded'
       });
 
       // Validate monitoring settings before sending
       const monitoringValidation = {
         seriesMonitored: showToAdd.monitored === true,
         allSeasonsMonitored: showToAdd.seasons.every(s => s.monitored === true),
-        validAddOptions: showToAdd.addOptions.monitor === "all",
+        validAddOptions: showToAdd.addOptions.monitor === "missing",
         noSeasonZero: !showToAdd.seasons.some(s => s.seasonNumber === 0)
       };
 
@@ -151,7 +158,10 @@ const Sonarr = () => {
         seasonCount: showToAdd.seasons.length,
         monitoredSeasons: showToAdd.seasons.filter(s => s.monitored).length,
         includedSeasonNumbers: showToAdd.seasons.map(s => s.seasonNumber),
-        addOptions: showToAdd.addOptions
+        addOptions: {
+          ...showToAdd.addOptions,
+          monitoringStrategy: "Using 'missing' monitor option to focus on episodes that need to be downloaded"
+        }
       });
 
       const addResponse = await axios.post(
@@ -168,10 +178,23 @@ const Sonarr = () => {
         seriesMonitored: addResponse.data.monitored,
         seasonMonitoring: addResponse.data.seasons.map(s => ({
           season: s.seasonNumber,
-          monitored: s.monitored
+          monitored: s.monitored,
+          isSpecial: s.seasonNumber === 0
         })),
-        note: 'Season 0 (specials) will be handled separately by Sonarr'
+        note: 'Checking if specials monitoring configuration was applied correctly'
       });
+
+      // If the series is still unmonitored, log a warning with potential solutions
+      if (!addResponse.data.monitored) {
+        console.warn('⚠️ SERIES MONITORING ISSUE:', {
+          problem: 'Series marked as unmonitored despite configuration',
+          potentialSolutions: [
+            'Try changing monitor option to "future" or "missing"',
+            'Check if specials configuration is being respected',
+            'Verify if season 0 is being added by Sonarr automatically'
+          ]
+        });
+      }
 
       // Refresh library after adding
       const libraryResponse = await axios.get(`${API_BASE_URL}/api/sonarr/series`, {
