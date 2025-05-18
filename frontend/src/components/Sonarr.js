@@ -60,15 +60,20 @@ const Sonarr = () => {
       return;
     }
 
+    // Update current search term before setting up the timeout
+    currentSearchTermRef.current = trimmedTerm;
+
     // Set up new timeout
     searchTimeoutRef.current = setTimeout(async () => {
+      // Double check that this is still the current search term
+      if (trimmedTerm !== currentSearchTermRef.current) {
+        return;
+      }
+
       try {
         setIsLoading(true);
         const token = localStorage.getItem('token');
         if (!token) throw new Error('No authentication token found');
-
-        // Update current search term before making the request
-        currentSearchTermRef.current = trimmedTerm;
 
         const response = await axios.get(
           `${API_BASE_URL}/api/sonarr/search?term=${encodeURIComponent(trimmedTerm)}`,
@@ -76,8 +81,12 @@ const Sonarr = () => {
             headers: { Authorization: `Bearer ${token}` }
           }
         );
-        setSearchResults(response.data);
-        setError(null);
+
+        // Only update results if this is still the current search term
+        if (trimmedTerm === currentSearchTermRef.current) {
+          setSearchResults(response.data);
+          setError(null);
+        }
       } catch (err) {
         // Only show error if this is still the current search term
         if (trimmedTerm === currentSearchTermRef.current) {
@@ -147,18 +156,7 @@ const Sonarr = () => {
         }
       };
 
-      // Log what we're sending to Sonarr
-      console.log('📤 Sending to Sonarr:', {
-        title: showToAdd.title,
-        seriesMonitored: showToAdd.monitored,
-        monitorOption: showToAdd.addOptions.monitor,
-        seasons: showToAdd.seasons.map(s => ({
-          season: s.seasonNumber,
-          monitored: s.monitored
-        }))
-      });
-
-      // Step 1: Add the series (monitored flag will be ignored due to API bug)
+      // Step 1: Add the series
       const addResponse = await axios.post(
         `${API_BASE_URL}/api/sonarr/series`,
         showToAdd,
@@ -166,38 +164,17 @@ const Sonarr = () => {
           headers: { Authorization: `Bearer ${token}` }
         }
       );
-      
-      // Log initial add response
-      console.log('📥 Series Added (unmonitored due to API bug):', {
-        title: addResponse.data.title,
-        seriesId: addResponse.data.id,
-        seriesMonitored: addResponse.data.monitored,
-        seasons: addResponse.data.seasons.map(s => ({
-          season: s.seasonNumber,
-          monitored: s.monitored
-        }))
-      });
 
       // Step 2: Update the series to set it as monitored
-      // First fetch the current series data
-      const currentSeriesResponse = await axios.get(
-        `${API_BASE_URL}/api/sonarr/series/${addResponse.data.id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-
-      // Merge the monitored change into the full series object
       const updatedSeries = {
-        ...currentSeriesResponse.data,
+        ...addResponse.data,
         monitored: true,
-        seasons: currentSeriesResponse.data.seasons.map(season => ({
+        seasons: addResponse.data.seasons.map(season => ({
           ...season,
           monitored: true
         }))
       };
 
-      // Send the complete series object with monitoring enabled
       const updateResponse = await axios.put(
         `${API_BASE_URL}/api/sonarr/series/${addResponse.data.id}`,
         updatedSeries,
@@ -206,63 +183,27 @@ const Sonarr = () => {
         }
       );
 
-      // Log the final monitoring status
-      console.log('✅ Series Updated to Monitored:', {
-        title: updateResponse.data.title,
-        seriesId: updateResponse.data.id,
-        seriesMonitored: updateResponse.data.monitored,
-        seasons: updateResponse.data.seasons.map(s => ({
-          season: s.seasonNumber,
-          monitored: s.monitored
-        }))
-      });
-
       // Step 3: Trigger a search for missing episodes
-      try {
-        const commandPayload = {
-          name: 'SeriesSearch',
-          seriesId: addResponse.data.id
-        };
+      const commandPayload = {
+        name: 'SeriesSearch',
+        seriesId: addResponse.data.id
+      };
 
-        console.log('🔍 Sending search command to Sonarr:', {
-          command: commandPayload.name,
-          seriesId: commandPayload.seriesId,
-          seriesTitle: addResponse.data.title,
-          fullPayload: commandPayload
-        });
+      await axios.post(
+        `${API_BASE_URL}/api/sonarr/command`,
+        commandPayload,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
 
-        const searchResponse = await axios.post(
-          `${API_BASE_URL}/api/sonarr/command`,
-          commandPayload,
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
-        );
-
-        console.log('✅ Search command response:', {
-          commandId: searchResponse.data.id,
-          status: searchResponse.data.status,
-          fullResponse: searchResponse.data
-        });
-      } catch (searchError) {
-        // Log the error but don't fail the whole operation
-        console.warn('⚠️ Failed to trigger search for missing episodes:', {
-          error: searchError.message,
-          status: searchError.response?.status,
-          responseData: searchError.response?.data,
-          commandPayload: {
-            name: 'SeriesSearch',
-            seriesId: addResponse.data.id
-          }
-        });
-      }
-
-      // Refresh library after adding
+      // Step 4: Refresh the library
       const libraryResponse = await axios.get(`${API_BASE_URL}/api/sonarr/series`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setLibrary(libraryResponse.data);
       setError(null);
+      setSearchResults([]); // Clear search results after successful add
     } catch (err) {
       console.error('❌ Sonarr Error:', {
         error: err.message,
@@ -271,7 +212,6 @@ const Sonarr = () => {
         step: err.config?.url?.includes('/series/') ? 'Update' : 'Add'
       });
       setError(err.response?.data?.message || 'Failed to add show');
-      setSearchResults([]);
     } finally {
       setIsLoading(false);
     }
