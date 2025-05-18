@@ -81,7 +81,7 @@ const Sonarr = () => {
         monitored: true,
         qualityProfileId: 1,
         languageProfileId: 1,
-        rootFolderPath: "/tv",
+        rootFolderPath: "/data/media/tv",
         seasons: show.seasons.map(season => ({
           seasonNumber: season.seasonNumber,
           monitored: true,
