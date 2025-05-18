@@ -219,27 +219,41 @@ const Sonarr = () => {
 
       // Step 3: Trigger a search for missing episodes
       try {
-        console.log('🔍 Triggering search for missing episodes...');
+        const commandPayload = {
+          name: 'SeriesSearch',
+          seriesId: addResponse.data.id
+        };
+
+        console.log('🔍 Sending search command to Sonarr:', {
+          command: commandPayload.name,
+          seriesId: commandPayload.seriesId,
+          seriesTitle: addResponse.data.title,
+          fullPayload: commandPayload
+        });
+
         const searchResponse = await axios.post(
           `${API_BASE_URL}/api/sonarr/command`,
-          {
-            name: 'SeriesSearch',
-            seriesId: addResponse.data.id
-          },
+          commandPayload,
           {
             headers: { Authorization: `Bearer ${token}` }
           }
         );
-        console.log('✅ Search triggered successfully:', {
+
+        console.log('✅ Search command response:', {
           commandId: searchResponse.data.id,
-          status: searchResponse.data.status
+          status: searchResponse.data.status,
+          fullResponse: searchResponse.data
         });
       } catch (searchError) {
         // Log the error but don't fail the whole operation
         console.warn('⚠️ Failed to trigger search for missing episodes:', {
           error: searchError.message,
           status: searchError.response?.status,
-          responseData: searchError.response?.data
+          responseData: searchError.response?.data,
+          commandPayload: {
+            name: 'SeriesSearch',
+            seriesId: addResponse.data.id
+          }
         });
       }
 
