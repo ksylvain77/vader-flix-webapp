@@ -211,7 +211,7 @@ const Sonarr = () => {
       });
       setLibrary(libraryResponse.data);
       setError(null);
-      setSearchResults([]); // Clear search results after successful add
+      setSearchResults([]); // Only clear search results, keep search term
       console.log('✅ Step 4 complete - All operations finished successfully');
     } catch (err) {
       console.error('❌ Error in handleAddShow:', {
