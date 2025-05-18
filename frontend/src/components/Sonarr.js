@@ -70,8 +70,18 @@ const Sonarr = () => {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No authentication token found');
 
-      // Filter out season 0 (specials) as it causes monitoring issues
-      const filteredSeasons = show.seasons.filter(season => season.seasonNumber > 0);
+      // Include ALL seasons including season 0 (specials) and set them all as monitored
+      const allSeasons = show.seasons.map(season => ({
+        seasonNumber: season.seasonNumber,
+        monitored: true,
+        statistics: {
+          episodeFileCount: 0,
+          episodeCount: season.episodeCount || 0,
+          totalEpisodeCount: season.episodeCount || 0,
+          sizeOnDisk: 0,
+          percentOfEpisodes: 0
+        }
+      }));
 
       // Prepare the show data with explicit monitoring options
       const showToAdd = {
@@ -84,17 +94,7 @@ const Sonarr = () => {
         qualityProfileId: 1,
         languageProfileId: 1,
         rootFolderPath: "/data/media/tv",
-        seasons: filteredSeasons.map(season => ({
-          seasonNumber: season.seasonNumber,
-          monitored: true,
-          statistics: {
-            episodeFileCount: 0,
-            episodeCount: season.episodeCount || 0,
-            totalEpisodeCount: season.episodeCount || 0,
-            sizeOnDisk: 0,
-            percentOfEpisodes: 0
-          }
-        })),
+        seasons: allSeasons,
         addOptions: {
           searchForMissingEpisodes: true,
           monitor: "missing"
