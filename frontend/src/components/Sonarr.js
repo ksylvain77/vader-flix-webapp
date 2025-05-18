@@ -144,29 +144,42 @@ const Sonarr = () => {
             {isSearching && <div className="searching">Searching...</div>}
             {!isSearching && displayShows.length === 0 && <div>No shows found</div>}
             <div className="shows-grid">
-                {displayShows.map((show) => (
-                    <div key={show.id || `show-${show.title}`} className="show-card">
-                        <div className="show-poster-container">
-                            {!imageErrors.has(show.id) && show.images?.[0]?.url ? (
-                                <img 
-                                    src={show.images[0].url} 
-                                    alt={show.title}
-                                    className="show-poster"
-                                    onError={() => handleImageError(show.id)}
-                                />
-                            ) : (
-                                <div className="show-poster-placeholder">
-                                    <span>{show.title}</span>
-                                </div>
-                            )}
+                {displayShows.map((show) => {
+                    // Poster logic: prefer remotePoster, then images array
+                    let posterUrl = show.remotePoster;
+                    if (!posterUrl && Array.isArray(show.images)) {
+                        const posterImg = show.images.find(img => img.coverType === 'poster' && img.url);
+                        if (posterImg) posterUrl = posterImg.url;
+                    }
+                    const seasonCount = show.statistics?.seasonCount ?? show.seasons?.length ?? 'N/A';
+                    return (
+                        <div key={show.id || `show-${show.title}`} className="show-card">
+                            <div className="show-poster-container">
+                                {!imageErrors.has(show.id) && posterUrl ? (
+                                    <img
+                                        src={posterUrl}
+                                        alt={show.title}
+                                        className="show-poster"
+                                        onError={() => handleImageError(show.id)}
+                                    />
+                                ) : (
+                                    <div className="show-poster-placeholder">
+                                        <span>{show.title}</span>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="show-info">
+                                <h2>{show.title} {show.year ? `(${show.year})` : ''}</h2>
+                                <p><strong>Status:</strong> {show.status || 'N/A'}</p>
+                                <p><strong>Seasons:</strong> {seasonCount}</p>
+                                <p><strong>Network:</strong> {show.network || 'N/A'}</p>
+                                <p><strong>Genres:</strong> {Array.isArray(show.genres) ? show.genres.join(', ') : 'N/A'}</p>
+                                <p><strong>Rating:</strong> {show.ratings?.value ? show.ratings.value.toFixed(1) : 'N/A'}</p>
+                                <p className="show-overview">{show.overview || 'No description available.'}</p>
+                            </div>
                         </div>
-                        <div className="show-info">
-                            <h2>{show.title}</h2>
-                            <p>Status: {show.status}</p>
-                            <p>Seasons: {show.seasonCount}</p>
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             <style>{`
