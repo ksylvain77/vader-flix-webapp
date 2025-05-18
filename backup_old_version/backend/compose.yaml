@@ -1,0 +1,23 @@
+version: '3'
+services:
+  backend:
+    container_name: vader-flix-backend
+    image: node:16
+    restart: unless-stopped
+    working_dir: /app
+    environment:
+      - PUID=1027
+      - PGID=65536
+      - NODE_ENV=development
+      - DB_HOST=mariadb
+      - DB_PORT=3306
+      - DB_USER=vaderflix
+      - DB_PASSWORD=DarthVader2024
+      - DB_NAME=vaderflix
+      - PORT=3000
+      - JWT_SECRET=DeathStarDesignFlaw
+    volumes:
+      - /volume1/docker/projects/vader-flix-webapp/backend:/app
+    ports:
+      - 3000:3000
+    command: bash -c "npm install && npm start"
