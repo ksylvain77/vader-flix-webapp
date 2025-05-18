@@ -112,6 +112,7 @@ const Sonarr = () => {
         }))
       });
 
+      // Step 1: Add the series (monitored flag will be ignored due to API bug)
       const addResponse = await axios.post(
         `${API_BASE_URL}/api/sonarr/series`,
         showToAdd,
@@ -120,11 +121,32 @@ const Sonarr = () => {
         }
       );
       
-      // Log what Sonarr returned
-      console.log('📥 Sonarr Response:', {
+      // Log initial add response
+      console.log('📥 Series Added (unmonitored due to API bug):', {
         title: addResponse.data.title,
+        seriesId: addResponse.data.id,
         seriesMonitored: addResponse.data.monitored,
         seasons: addResponse.data.seasons.map(s => ({
+          season: s.seasonNumber,
+          monitored: s.monitored
+        }))
+      });
+
+      // Step 2: Update the series to set it as monitored
+      const updateResponse = await axios.put(
+        `${API_BASE_URL}/api/sonarr/series/${addResponse.data.id}`,
+        { monitored: true },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      // Log the final monitoring status
+      console.log('✅ Series Updated to Monitored:', {
+        title: updateResponse.data.title,
+        seriesId: updateResponse.data.id,
+        seriesMonitored: updateResponse.data.monitored,
+        seasons: updateResponse.data.seasons.map(s => ({
           season: s.seasonNumber,
           monitored: s.monitored
         }))
@@ -140,7 +162,8 @@ const Sonarr = () => {
       console.error('❌ Sonarr Error:', {
         error: err.message,
         status: err.response?.status,
-        responseData: err.response?.data
+        responseData: err.response?.data,
+        step: err.config?.url?.includes('/series/') ? 'Update' : 'Add'
       });
       setError(err.response?.data?.message || 'Failed to add show');
       setSearchResults([]);
