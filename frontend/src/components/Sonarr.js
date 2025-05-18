@@ -71,9 +71,19 @@ const Sonarr = () => {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No authentication token found');
 
+      // Prepare the show data with explicit monitoring options
+      const showToAdd = {
+        ...show,
+        monitored: true,
+        addOptions: {
+          searchForMissingEpisodes: true,
+          monitor: "all"
+        }
+      };
+
       await axios.post(
         `${API_BASE_URL}/api/sonarr/series`,
-        show,
+        showToAdd,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
