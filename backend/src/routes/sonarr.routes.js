@@ -24,7 +24,12 @@ router.get('/search', async (req, res) => {
         console.log('Making Sonarr API call for query:', trimmedQuery);
         
         const response = await axios.get(`${sonarrConfig.baseUrl}/api/v3/series/lookup`, {
-            params: { term: trimmedQuery },
+            params: { 
+                term: trimmedQuery,
+                limit: 20,  // Limit to 20 results
+                sortKey: 'title',
+                sortDirection: 'ascending'
+            },
             headers: {
                 'X-Api-Key': sonarrConfig.apiKey
             }
