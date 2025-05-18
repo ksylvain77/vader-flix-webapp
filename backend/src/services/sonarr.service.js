@@ -105,6 +105,17 @@ class SonarrService {
             throw new Error('Failed to fetch system status');
         }
     }
+
+    // Update series monitoring status
+    async updateSeries(seriesId, updateData) {
+        try {
+            const response = await this.client.put(`/api/v3/series/${seriesId}`, updateData);
+            return response.data;
+        } catch (error) {
+            console.error('Error updating series in Sonarr:', error.message);
+            throw new Error('Failed to update TV show');
+        }
+    }
 }
 
 module.exports = new SonarrService(); 

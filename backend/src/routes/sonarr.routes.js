@@ -52,6 +52,9 @@ router.get('/series', sonarrController.getAllSeries);
 // Add a new series
 router.post('/series', sonarrController.addSeries);
 
+// Update a series
+router.put('/series/:id', sonarrController.updateSeries);
+
 // Get download queue
 router.get('/queue', sonarrController.getQueue);
 

@@ -61,4 +61,22 @@ exports.getStatus = async (req, res) => {
         console.error('Error in getStatus controller:', error);
         res.status(500).json({ message: error.message });
     }
+};
+
+// Update series
+exports.updateSeries = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updateData = req.body;
+        
+        if (!id) {
+            return res.status(400).json({ message: 'Series ID is required' });
+        }
+        
+        const result = await sonarrService.updateSeries(id, updateData);
+        res.json(result);
+    } catch (error) {
+        console.error('Error in updateSeries controller:', error);
+        res.status(500).json({ message: error.message });
+    }
 }; 
