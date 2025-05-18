@@ -73,9 +73,15 @@ const Sonarr = () => {
 
       // Prepare the show data with explicit monitoring options
       const showToAdd = {
-        ...show,
+        tvdbId: show.tvdbId,
+        title: show.title,
+        titleSlug: show.titleSlug,
+        images: show.images,
+        year: show.year,
         monitored: true,
         qualityProfileId: 1,
+        languageProfileId: 1,
+        rootFolderPath: "/tv",
         addOptions: {
           searchForMissingEpisodes: true,
           monitor: "all"
