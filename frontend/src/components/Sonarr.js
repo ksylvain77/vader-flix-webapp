@@ -44,7 +44,6 @@ const Sonarr = () => {
 
     try {
       setIsLoading(true);
-      setSearchResults([]); // Clear previous results while loading
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No authentication token found');
 
@@ -58,7 +57,7 @@ const Sonarr = () => {
       setError(null);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to search shows');
-      setSearchResults([]); // Clear results on error
+      setSearchResults([]); // Keep clearing results on error
     } finally {
       setIsLoading(false);
     }
@@ -145,7 +144,7 @@ const Sonarr = () => {
       {error && <div className="error-message">{error}</div>}
 
       {/* Loading State */}
-      {isLoading && (
+      {isLoading && !searchResults.length && (
         <div className="loading">
           <div className="loading-spinner"></div>
           <div>Searching...</div>
@@ -153,9 +152,15 @@ const Sonarr = () => {
       )}
 
       {/* Search Results */}
-      {!isLoading && searchResults.length > 0 && (
+      {searchResults.length > 0 && (
         <div className="search-results">
           <h2>Search Results</h2>
+          {isLoading && (
+            <div className="loading-indicator">
+              <div className="loading-spinner"></div>
+              <div>Updating results...</div>
+            </div>
+          )}
           <table>
             <thead>
               <tr>
