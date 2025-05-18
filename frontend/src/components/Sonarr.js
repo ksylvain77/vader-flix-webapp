@@ -1,289 +1,243 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import SearchBar from './SearchBar';
 
 const API_BASE_URL = 'http://192.168.50.92:3000';
 
-// Helper function to normalize strings for comparison
-const normalize = (str) => {
-  if (!str) return '';
-  return str
-    .toLowerCase()
-    .replace(/[_-]/g, ' ')
-    .replace(/[.,:;!?'"`~@#$%^&*()\[\]{}<>|\\/]/g, '')
-    .replace(/^(the|a|an)\s+/i, '') // Remove leading "the", "a", "an"
-    .trim();
-};
-
-// Levenshtein distance implementation for fuzzy matching
-const levenshtein = (a, b) => {
-  if (a.length === 0) return b.length;
-  if (b.length === 0) return a.length;
-
-  const matrix = Array(b.length + 1).fill(null).map(() => Array(a.length + 1).fill(null));
-
-  for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
-  for (let j = 0; j <= b.length; j++) matrix[j][0] = j;
-
-  for (let j = 1; j <= b.length; j++) {
-    for (let i = 1; i <= a.length; i++) {
-      const substitutionCost = a[i - 1] === b[j - 1] ? 0 : 1;
-      matrix[j][i] = Math.min(
-        matrix[j][i - 1] + 1,
-        matrix[j - 1][i] + 1,
-        matrix[j - 1][i - 1] + substitutionCost
-      );
-    }
-  }
-
-  return matrix[b.length][a.length];
-};
-
-// Filter and sort results based on search term
-const filterAndSortResults = (results, searchTerm) => {
-  if (!searchTerm) return results;
-
-  const normalizedSearch = normalize(searchTerm);
-  return results
-    .map(show => {
-      const normTitle = normalize(show.title);
-      const normSlug = normalize(show.titleSlug || '');
-      let matchScore;
-      if (normTitle.includes(normalizedSearch) || normSlug.includes(normalizedSearch)) {
-        matchScore = 0;
-      } else {
-        matchScore = Math.min(
-          levenshtein(normTitle, normalizedSearch),
-          levenshtein(normSlug, normalizedSearch)
-        );
-      }
-      return { ...show, matchScore };
-    })
-    .filter(show => show.matchScore <= 6)
-    .sort((a, b) => a.matchScore - b.matchScore);
-};
-
 const Sonarr = () => {
-    const [shows, setShows] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [imageErrors, setImageErrors] = useState(new Set());
-    const [searchResults, setSearchResults] = useState([]);
-    const [isSearching, setIsSearching] = useState(false);
+  // State management
+  const [library, setLibrary] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    const fetchShows = useCallback(async (signal) => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('No authentication token found');
-            }
+  // Fetch library on mount
+  useEffect(() => {
+    const fetchLibrary = async () => {
+      try {
+        setIsLoading(true);
+        const token = localStorage.getItem('token');
+        if (!token) throw new Error('No authentication token found');
 
-            const response = await axios.get('http://192.168.50.92:3000/api/sonarr/series', {
-                headers: { Authorization: `Bearer ${token}` },
-                signal
-            });
-
-            setShows(response.data);
-            setLoading(false);
-            setError(null);
-        } catch (err) {
-            if (axios.isCancel(err)) {
-                console.log('Request cancelled');
-                return;
-            }
-            setError(err.response?.data?.message || 'Failed to fetch shows');
-            setLoading(false);
-            setShows([]);
-            console.error('Error fetching shows:', err);
-        }
-    }, []);
-
-    useEffect(() => {
-        const controller = new AbortController();
-        setLoading(true);
+        const response = await axios.get(`${API_BASE_URL}/api/sonarr/series`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setLibrary(response.data);
         setError(null);
-        setImageErrors(new Set());
-
-        fetchShows(controller.signal);
-
-        return () => {
-            controller.abort();
-        };
-    }, [fetchShows]);
-
-    const handleImageError = (showId) => {
-        setImageErrors(prev => new Set([...prev, showId]));
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to fetch library');
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    const handleSearch = useCallback(async (term) => {
-        console.log('handleSearch called with term:', term);
-        if (!term) {
-            setSearchResults([]);
-            return;
+    fetchLibrary();
+  }, []);
+
+  // Handle search
+  const handleSearch = async (term) => {
+    if (!term.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No authentication token found');
+
+      const response = await axios.get(
+        `${API_BASE_URL}/api/sonarr/search?query=${encodeURIComponent(term)}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
         }
+      );
+      setSearchResults(response.data.results);
+      setError(null);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to search shows');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('No authentication token found');
-            }
+  // Handle adding a show
+  const handleAddShow = async (show) => {
+    try {
+      setIsLoading(true);
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No authentication token found');
 
-            console.log('Fetching from backend...');
-            const response = await axios.get(`${API_BASE_URL}/api/sonarr/search?query=${encodeURIComponent(term)}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            console.log('Search response received:', response.data);
-            console.log('First search result:', response.data.results[0]);
-            console.log('All search results:', response.data.results);
-            
-            // Filter and sort results before updating state
-            const filteredResults = filterAndSortResults(response.data.results, term);
-            setSearchResults(filteredResults);
-        } catch (error) {
-            console.error('Error searching shows:', error);
-            setError('Failed to search shows. Please try again.');
+      await axios.post(
+        `${API_BASE_URL}/api/sonarr/series`,
+        show,
+        {
+          headers: { Authorization: `Bearer ${token}` }
         }
-    }, []);
+      );
+      
+      // Refresh library after adding
+      const response = await axios.get(`${API_BASE_URL}/api/sonarr/series`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setLibrary(response.data);
+      setError(null);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to add show');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    if (loading) return <div>Loading shows...</div>;
-    if (error) return <div className="error-message">Error: {error}</div>;
+  return (
+    <div className="sonarr-container">
+      <h1>Sonarr TV Shows</h1>
+      
+      {/* Search Section */}
+      <div className="search-section">
+        <input
+          type="text"
+          placeholder="Search for shows..."
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            handleSearch(e.target.value);
+          }}
+          className="search-input"
+        />
+      </div>
 
-    const displayShows = searchResults.length > 0 ? searchResults : shows;
+      {/* Error Display */}
+      {error && <div className="error-message">{error}</div>}
 
-    return (
-        <div className="sonarr">
-            <h1>TV Shows</h1>
-            <SearchBar onSearch={handleSearch} />
-            {isSearching && <div className="searching">Searching...</div>}
-            {!isSearching && displayShows.length === 0 && <div>No shows found</div>}
-            <div className="shows-grid">
-                {displayShows.map((show) => {
-                    // Poster logic: prefer remotePoster, then images array
-                    let posterUrl = show.remotePoster;
-                    if (!posterUrl && Array.isArray(show.images)) {
-                        const posterImg = show.images.find(img => img.coverType === 'poster' && img.url);
-                        if (posterImg) posterUrl = posterImg.url;
-                    }
-                    const seasonCount = show.statistics?.seasonCount ?? show.seasons?.length ?? 'N/A';
-                    return (
-                        <div key={show.id || `show-${show.title}`} className="show-card">
-                            <div className="show-poster-container">
-                                {!imageErrors.has(show.id) && posterUrl ? (
-                                    <img
-                                        src={posterUrl}
-                                        alt={show.title}
-                                        className="show-poster"
-                                        onError={() => handleImageError(show.id)}
-                                    />
-                                ) : (
-                                    <div className="show-poster-placeholder">
-                                        <span>{show.title}</span>
-                                    </div>
-                                )}
-                            </div>
-                            <div className="show-info">
-                                <h2>{show.title} {show.year ? `(${show.year})` : ''}</h2>
-                                <p><strong>Status:</strong> {show.status || 'N/A'}</p>
-                                <p><strong>Seasons:</strong> {seasonCount}</p>
-                                <p><strong>Network:</strong> {show.network || 'N/A'}</p>
-                                <p><strong>Genres:</strong> {Array.isArray(show.genres) ? show.genres.join(', ') : 'N/A'}</p>
-                                <p><strong>Rating:</strong> {show.ratings?.value ? show.ratings.value.toFixed(1) : 'N/A'}</p>
-                                <p className="show-overview">{show.overview || 'No description available.'}</p>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
+      {/* Loading State */}
+      {isLoading && <div className="loading">Loading...</div>}
 
-            <style>{`
-                .sonarr {
-                    padding: 20px;
-                    max-width: 1200px;
-                    margin: 0 auto;
-                }
-
-                h1 {
-                    text-align: center;
-                    color: #333;
-                    margin-bottom: 30px;
-                }
-
-                .searching {
-                    text-align: center;
-                    color: #666;
-                    margin: 20px 0;
-                }
-
-                .shows-grid {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                    gap: 20px;
-                    padding: 20px;
-                }
-
-                .show-card {
-                    background: white;
-                    border-radius: 10px;
-                    overflow: hidden;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                    transition: transform 0.2s;
-                }
-
-                .show-card:hover {
-                    transform: translateY(-5px);
-                }
-
-                .show-poster-container {
-                    width: 100%;
-                    height: 300px;
-                    position: relative;
-                    background: #f5f5f5;
-                }
-
-                .show-poster {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                }
-
-                .show-poster-placeholder {
-                    width: 100%;
-                    height: 100%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    background: #e0e0e0;
-                    color: #666;
-                    text-align: center;
-                    padding: 10px;
-                    font-size: 0.9em;
-                }
-
-                .show-info {
-                    padding: 15px;
-                }
-
-                .show-info h2 {
-                    margin: 0 0 10px 0;
-                    font-size: 1.1em;
-                    color: #333;
-                }
-
-                .show-info p {
-                    margin: 5px 0;
-                    color: #666;
-                    font-size: 0.9em;
-                }
-
-                .error-message {
-                    color: #d32f2f;
-                    text-align: center;
-                    padding: 20px;
-                    font-size: 1.1em;
-                }
-            `}</style>
+      {/* Search Results */}
+      {searchResults.length > 0 && (
+        <div className="search-results">
+          <h2>Search Results</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Year</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {searchResults.map((show) => (
+                <tr key={show.tvdbId}>
+                  <td>{show.title}</td>
+                  <td>{show.year}</td>
+                  <td>
+                    <button
+                      onClick={() => handleAddShow(show)}
+                      disabled={isLoading}
+                    >
+                      Add
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-    );
+      )}
+
+      {/* Library Display */}
+      <div className="library">
+        <h2>Your Library</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Status</th>
+              <th>Seasons</th>
+            </tr>
+          </thead>
+          <tbody>
+            {library.map((show) => (
+              <tr key={show.id}>
+                <td>{show.title}</td>
+                <td>{show.status}</td>
+                <td>{show.statistics?.seasonCount || 'N/A'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <style>{`
+        .sonarr-container {
+          padding: 20px;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+
+        h1, h2 {
+          color: #333;
+        }
+
+        .search-section {
+          margin: 20px 0;
+        }
+
+        .search-input {
+          width: 100%;
+          padding: 8px;
+          font-size: 16px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 20px 0;
+        }
+
+        th, td {
+          padding: 12px;
+          text-align: left;
+          border-bottom: 1px solid #ddd;
+        }
+
+        th {
+          background-color: #f5f5f5;
+        }
+
+        button {
+          padding: 6px 12px;
+          background-color: #007bff;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+
+        button:disabled {
+          background-color: #ccc;
+          cursor: not-allowed;
+        }
+
+        .error-message {
+          color: #dc3545;
+          padding: 10px;
+          margin: 10px 0;
+          border: 1px solid #dc3545;
+          border-radius: 4px;
+          background-color: #f8d7da;
+        }
+
+        .loading {
+          text-align: center;
+          padding: 20px;
+          color: #666;
+        }
+      `}</style>
+    </div>
+  );
 };
 
 export default Sonarr; 
