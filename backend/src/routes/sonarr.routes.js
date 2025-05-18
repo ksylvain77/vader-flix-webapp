@@ -2,8 +2,7 @@ const express = require('express');
 const router = express.Router();
 const sonarrController = require('../controllers/sonarr.controller');
 const { verifyToken } = require('../middleware/auth');
-const axios = require('axios');
-const sonarrConfig = require('../config/services/sonarr');
+const sonarrService = require('../services/sonarr.service');
 
 // All routes require authentication
 router.use(verifyToken);
@@ -23,16 +22,11 @@ router.get('/search', async (req, res) => {
 
         console.log('Making Sonarr API call for term:', trimmedTerm);
         
-        const response = await axios.get(`${sonarrConfig.baseUrl}/api/v3/series/lookup`, {
-            params: { term: trimmedTerm },
-            headers: {
-                'X-Api-Key': sonarrConfig.apiKey
-            }
-        });
+        const results = await sonarrService.searchShows(trimmedTerm);
 
         // Pass through the raw response from Sonarr
         console.log('Sonarr API response received');
-        res.json(response.data);
+        res.json(results);
 
     } catch (error) {
         console.error('Error searching Sonarr:', error.message);
