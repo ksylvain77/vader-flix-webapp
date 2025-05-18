@@ -15,7 +15,7 @@ const SearchBar = ({ onSearch }) => {
                 return;
             }
 
-            // Clear any existing timeout
+            // Only clear if there's an existing timer that hasn't fired
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
             }
@@ -24,6 +24,7 @@ const SearchBar = ({ onSearch }) => {
             timeoutRef.current = setTimeout(() => {
                 onSearch(trimmedValue);
                 console.log('Search term:', trimmedValue);
+                timeoutRef.current = null;
             }, 300);
         }
 
@@ -31,9 +32,10 @@ const SearchBar = ({ onSearch }) => {
         return () => {
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
+                timeoutRef.current = null;
             }
         };
-    }, [searchTerm, onSearch]);
+    }, [searchTerm]); // Removed onSearch from dependencies
 
     const handleClear = () => {
         setSearchTerm('');
