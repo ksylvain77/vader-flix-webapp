@@ -1,6 +1,101 @@
-title: VaderFlix Dashboard
+title: VaderFlix Command Center
 theme: dark
 color: slate
+
+# Custom CSS for Star Wars theme
+customCSS: |
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+  
+  :root {
+    --sw-yellow: #FFE81F;
+    --sw-red: #FF0000;
+    --sw-blue: #00D4FF;
+    --sw-gray: #2C2C2C;
+  }
+  
+  body {
+    background: radial-gradient(ellipse at center, #1B1B1B 0%, #000000 70%);
+    font-family: 'Orbitron', sans-serif !important;
+  }
+  
+  /* Main title styling */
+  h1, .page-title {
+    color: var(--sw-yellow) !important;
+    text-shadow: 0 0 10px var(--sw-yellow);
+    font-family: 'Orbitron', sans-serif !important;
+    font-weight: 900 !important;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+  }
+  
+  /* Widget containers */
+  .widget, .service-card {
+    background: linear-gradient(145deg, #2a2a2a, #1a1a1a) !important;
+    border: 1px solid var(--sw-blue) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.3) !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .widget:hover, .service-card:hover {
+    border-color: var(--sw-yellow) !important;
+    box-shadow: 0 0 25px rgba(255, 232, 31, 0.5) !important;
+    transform: translateY(-5px) !important;
+  }
+  
+  /* Service icons */
+  .service-icon {
+    filter: drop-shadow(0 0 8px var(--sw-blue));
+    transition: all 0.3s ease;
+  }
+  
+  .service-icon:hover {
+    filter: drop-shadow(0 0 12px var(--sw-yellow));
+    transform: scale(1.1);
+  }
+  
+  /* Text styling */
+  .service-title, .widget-title {
+    color: var(--sw-yellow) !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+  }
+  
+  .service-description, .widget-content {
+    color: var(--sw-blue) !important;
+    font-family: 'Orbitron', sans-serif !important;
+  }
+  
+  /* Animate stats numbers */
+  .stat-number {
+    color: var(--sw-yellow) !important;
+    font-weight: 900 !important;
+    text-shadow: 0 0 8px var(--sw-yellow);
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+  }
+  
+  /* Background pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(circle at 25% 25%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(255, 232, 31, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+  }
 
 # Layout settings
 layout:
@@ -8,9 +103,5 @@ layout:
     style: row
     columns: 3
 
-# Optional: Enable favicon
+# Optional: Custom favicon
 favicon: /images/favicon.ico
-
-# Optional: Custom CSS/JS (leave empty for now)
-customCSS: ""
-customJS: ""
