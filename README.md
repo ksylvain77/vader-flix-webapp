@@ -1,210 +1,89 @@
-# Vader Flix
+# 🎬 VaderFlix Dashboard
 
-A modern streaming platform built with Node.js, Express, and MariaDB, containerized with Docker.
+A modern, containerized dashboard solution combining Homepage and a custom portal for managing your media services.
 
-## 🚀 Features
+## 🌟 Features
 
-- User authentication and authorization
-- Media streaming capabilities
-- Content request system
-- Real-time WebSocket communication
-- RESTful API architecture
-- Secure database management
-- Docker containerization
-- Plex media server integration
-- Global search across all media libraries
-- Real-time search filtering
+- **Homepage Dashboard**: A beautiful, customizable dashboard for your services
+- **VaderFlix Portal**: Custom portal for managing media services
+- **Dockerized**: Easy deployment with Docker Compose
+- **Secure**: Built with security best practices
+- **Network Integration**: Seamless integration with Synology network
 
+## 🚀 Quick Start
 
-
-## 🛠️ Tech Stack
-
-- **Backend**: Node.js, Express.js
-- **Database**: MariaDB
-- **ORM**: Sequelize
-- **Authentication**: JWT
-- **Containerization**: Docker (via Synology Container Manager)
-- **API**: RESTful
-- **Frontend**: React.js
-- **Media Integration**: Plex Media Server
-
-## 📋 Prerequisites
-
-- Docker and Docker Compose
-- Node.js 16 or higher
-- Git
-
-## 🚀 Getting Started
-
-1. **Clone the repository**
+1. Clone the repository:
    ```bash
-   git clone https://github.com/kevinsylvain/vader-flix-webapp.git
+   git clone https://github.com/yourusername/vader-flix-webapp.git
    cd vader-flix-webapp
    ```
 
-2. **Start the Database**
+2. Configure your environment:
+   - Edit the `docker-compose.yml` file to set your desired configuration
+   - Update the `HOMEPAGE_ALLOWED_HOSTS` to match your network setup
+
+3. Start the services:
    ```bash
-   cd db
    docker-compose up -d
    ```
-   Note: This project uses Synology Container Manager for Docker orchestration, but the compose files are compatible with standard Docker Compose.
 
-3. **Start the Application**
-   ```bash
-   ./restart-docker.sh
-   ```
-   This script will:
-   - Start the backend API server
-   - Start the frontend application
-   - Configure all necessary environment variables
+4. Access the services:
+   - Homepage Dashboard: `http://localhost:3000`
+   - VaderFlix Portal: `http://localhost:3001`
 
-4. **Access the Application**
-   - Frontend: `http://localhost:3001`
-   - Backend API: `http://localhost:3000`
+## 🏗️ Architecture
 
-Note: The `restart-docker.sh` script uses the following configuration:
-- NAS IP: 192.168.50.92
-- NAS User: kevin
-- NAS SSH Port: 22
-- Project Path: /volume1/docker/projects/vader-flix-webapp
-- Container Prefix: vader-flix
+The project consists of two main components:
 
-> **Note**: Currently testing Git hook functionality to ensure proper deployment workflow.
-> **Note**: Testing post-commit hook for automated deployment verification.
-> **Note**: Running another hook test to verify deployment pipeline.
-> **Note**: Testing hook trigger with README update.
-> **Note**: Testing with core.logAllRefUpdates enabled.
-> **Note**: Currently testing iframe integration and cross-origin functionality.
+### Homepage Dashboard
+- Runs on port 3000
+- Customizable dashboard interface
+- Persistent configuration through volume mounting
+- Configurable through environment variables
 
-## 🔧 Environment Variables
+### VaderFlix Portal
+- Runs on port 3001
+- Node.js/Express backend
+- User authentication system
+- Email integration
+- Proxy middleware for service management
 
-### Backend
-- `PORT`: Server port (default: 3000)
-- `DB_HOST`: Database host
-- `DB_PORT`: Database port
-- `DB_USER`: Database user
-- `DB_PASSWORD`: Database password
-- `DB_NAME`: Database name
-- `JWT_SECRET`: Secret key for JWT
+## 🔧 Configuration
 
-### Database
-- `MYSQL_ROOT_PASSWORD`: Root password
-- `MYSQL_DATABASE`: Database name
-- `MYSQL_USER`: Database user
-- `MYSQL_PASSWORD`: Database password
+### Environment Variables
+- `PUID`: User ID for file permissions
+- `PGID`: Group ID for file permissions
+- `HOMEPAGE_VAR_TITLE`: Dashboard title
+- `HOMEPAGE_VAR_APPLICATION_NAME`: Application name
+- `HOMEPAGE_ALLOWED_HOSTS`: Allowed host addresses
 
-## 📁 Project Structure
+### Volumes
+- `./config:/app/config`: Homepage configuration
+- `./portal-data:/usr/src/app/data`: Portal data persistence
 
-```
-vader-flix-webapp/
-├── backend/
-│   ├── config/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── server.js
-│   └── compose.yaml
-├── db/
-│   ├── data/
-│   └── compose.yaml
-└── frontend/
-    ├── src/
-    │   ├── components/
-    │   │   └── PlexLibrary.js
-    │   └── services/
-    │       └── plexTokenService.js
-    └── compose.yaml
-```
+## 🔒 Security
 
-## 🔐 Security
+- No new privileges security option enabled
+- Log rotation configured
+- Session management
+- Secure password handling
 
-- JWT-based authentication
-- Secure password hashing
-- CORS enabled
-- Environment variables for sensitive data
-- Docker container isolation
+## 📝 Logging
+
+Both services are configured with JSON file logging:
+- Maximum log file size: 10MB
+- Maximum number of log files: 3
+- Automatic log rotation
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📝 License
+## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 👥 Authors
-
-- Kevin Sylvain - Initial work
-
 ## 🙏 Acknowledgments
 
-- Express.js team
-- Docker team
-- MariaDB team 
-
-
-
-## 🧪 Running Tests
-
-- Tests are located in `backend/__tests__`.
-- Tests use a separate test database configured in `backend/config/db.config.testconfig.js`.
-- The test database must exist and the test user must have privileges (see project setup).
-- The JWT secret for tests is set to `DeathStarDesignFlaw` by default.
-- To run tests:
-  ```bash
-  cd backend
-  npm test
-  ```
-
-Test push at Sat May 17 10:42:40 EDT 2025
-
-Testing hook deployment at Sat May 17 10:57:22 EDT 2025
-
-Testing hook deployment at Sat May 17 10:59:00 EDT 2025
-
-Testing hook deployment at Sat May 17 11:00:23 EDT 2025
-
-Testing hook deployment at Sat May 17 11:11:05 EDT 2025
-
-Testing hook deployment at Sat May 17 11:16:20 EDT 2025
-
-Final full integration hook at Sat May 17 11:23:16 EDT 2025
-
-Testing hook deployment at Sat May 17 11:28:46 EDT 2025
-
-Testing hook deployment at Sat May 17 11:59:36 EDT 2025
-
-test
-
-Testing hook deployment at Sat May 17 12:05:00 EDT 2025
-
-Testing hook deployment at Sat May 17 12:10:00 EDT 2025
-
-Testing hook deployment at Sat May 17 12:15:00 EDT 2025 - Testing branch configuration
-
-Testing hook deployment at Sat May 17 12:20:00 EDT 2025 - Testing new hook configuration
-
-Testing hook deployment at Sat May 17 12:25:00 EDT 2025 - Simple hook test
-
-Testing hook deployment at Sat May 17 12:30:00 EDT 2025 - Testing restored original hook
-
-Testing hook deployment at Sat May 17 12:35:00 EDT 2025 - Testing updated hook with branch detection
-
-Testing hook deployment at Sat May 17 12:40:00 EDT 2025 - Testing hook with fetch and reset
-
-Testing hook deployment at Sat May 17 12:45:00 EDT 2025 - Testing another hook iteration
-
-Testing hook deployment at Sat May 17 12:50:00 EDT 2025 - Testing hook with DSM task consideration
-
-Testing hook deployment at Sat May 17 12:55:00 EDT 2025 - Testing hook with remote origin issue
-
-Testing hook push and commit to origin at Sat May 17 13:00:00 EDT 2025
-
-Testing hook with timestamp at Sat May 17 13:05:00 EDT 2025
-
-Testing hook deployment at Sat May 17 13:10:00 EDT 2025 - Testing hook trigger
+- [Homepage](https://github.com/gethomepage/homepage) for the dashboard interface
+- All contributors and users of the project
