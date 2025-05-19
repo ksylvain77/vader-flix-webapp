@@ -106,3 +106,34 @@ a:hover {
     color: var(--empire-red);
     text-shadow: 0 0 10px var(--empire-red);
 }
+/* Make sure all panels grow to fit their content */
+.panel {
+    /* ...existing styles... */
+    min-height: 0;              /* This is key for flex containers! */
+    height: auto !important;    /* Don't force a fixed height */
+    overflow: visible !important;  /* Let contents show outside if needed */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+/* Ensure inner content doesn't get clipped */
+.panel > * {
+    flex-shrink: 0;
+    overflow: visible !important;
+    min-height: 0;
+}
+
+/* If your dashboard is using flex or grid, make sure children can grow */
+.dashboard {
+    align-items: flex-start;   /* Allow tall panels to stretch naturally */
+}
+
+/* (OPTIONAL) Remove any height/overflow rules from small cards */
+.panel .stat,
+.panel .stat-label,
+.panel .stat-value {
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+}
