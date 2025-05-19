@@ -1,0 +1,27 @@
+- Media Management:
+    - Plex:
+        href: http://192.168.50.92:32400
+        icon: plex.png
+        description: Media Server
+        widget:
+          type: plex
+          url: http://192.168.50.92:32400
+          key: KghtDhw7utRNszSA8k5n
+
+    - Sonarr:
+        href: http://192.168.50.92:8989
+        icon: sonarr.png
+        description: TV Show Management
+        widget:
+          type: sonarr
+          url: http://192.168.50.92:8989
+          key: 8709f14bd30d4924bc76349878a1a06f
+
+    - Radarr:
+        href: http://192.168.50.92:7878
+        icon: radarr.png
+        description: Movie Management
+        widget:
+          type: radarr
+          url: http://192.168.50.92:7878
+          key: 1796ecf4c4f244bfa6b7db47c6e271b0

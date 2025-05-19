@@ -1,0 +1,10 @@
+# Top-level widgets (appears at the top of the page)
+- datetime:
+    text_size: xl
+    format:
+      timeStyle: short
+      dateStyle: short
+
+- search:
+    provider: google
+    target: _blank

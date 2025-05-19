@@ -1,0 +1,16 @@
+title: VaderFlix Dashboard
+theme: dark
+color: slate
+
+# Layout settings
+layout:
+  Media Management:
+    style: row
+    columns: 3
+
+# Optional: Enable favicon
+favicon: /images/favicon.ico
+
+# Optional: Custom CSS/JS (leave empty for now)
+customCSS: ""
+customJS: ""

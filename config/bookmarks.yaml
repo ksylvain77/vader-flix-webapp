@@ -1,0 +1,11 @@
+# Quick access bookmarks (optional)
+- Media Tools:
+    - Plex:
+        - href: http://192.168.50.92:32400
+          icon: plex.png
+    - Sonarr:
+        - href: http://192.168.50.92:8989
+          icon: sonarr.png  
+    - Radarr:
+        - href: http://192.168.50.92:7878
+          icon: radarr.png
