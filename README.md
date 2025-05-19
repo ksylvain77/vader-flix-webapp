@@ -74,6 +74,7 @@ Note: The `restart-docker.sh` script uses the following configuration:
 > **Note**: Running another hook test to verify deployment pipeline.
 > **Note**: Testing hook trigger with README update.
 > **Note**: Testing with core.logAllRefUpdates enabled.
+> **Note**: Currently testing iframe integration and cross-origin functionality.
 
 ## 🔧 Environment Variables
 
