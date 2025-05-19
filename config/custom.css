@@ -1,29 +1,64 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
 
 :root {
-  --sw-yellow: #FFE81F;
-  --sw-red: #FF0000;
-  --sw-blue: #00D4FF;
-  --sw-gray: #2C2C2C;
+    --empire-red: #d90429;
+    --empire-black: #101015;
+    --empire-gray: #282a36;
+    --empire-steel: #42444a;
+    --empire-blue: #00d4ff;
+    --empire-white: #f1f1f1;
+    --empire-shadow: 0 2px 24px 0 rgba(0,0,0,0.95);
 }
 
 body {
-  background: radial-gradient(ellipse at center, #1B1B1B 0%, #000000 70%);
-  font-family: 'Orbitron', sans-serif !important;
+    background: radial-gradient(ellipse at 70% 10%, #181921 0%, #0a0b12 85%);
+    font-family: 'Orbitron', 'Segoe UI', 'Arial', sans-serif !important;
+    color: var(--empire-white);
+    margin: 0;
+    padding: 0;
 }
 
 h1, .page-title {
-  color: var(--sw-yellow) !important;
-  text-shadow: 0 0 10px var(--sw-yellow);
-  font-family: 'Orbitron', sans-serif !important;
-  font-weight: 900 !important;
-  text-transform: uppercase;
-  letter-spacing: 3px;
+    color: var(--empire-red) !important;
+    text-shadow: 0 2px 24px var(--empire-red), 0 1px 2px #000;
+    font-family: 'Orbitron', sans-serif !important;
+    font-weight: 900 !important;
+    text-transform: uppercase;
+    letter-spacing: 6px;
+    margin-bottom: 0.5em;
 }
 
 [class*="widget"], [class*="service"] {
-  background: linear-gradient(145deg, #2a2a2a, #1a1a1a) !important;
-  border: 1px solid var(--sw-blue) !important;
-  border-radius: 8px !important;
-  box-shadow: 0 0 15px rgba(0, 212, 255, 0.3) !important;
+    background: linear-gradient(125deg, var(--empire-gray) 70%, var(--empire-steel) 100%) !important;
+    border: 1.5px solid var(--empire-red) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 24px 0 rgba(0,0,0,0.75) !important;
+    padding: 1.3em 1.1em !important;
+    color: var(--empire-white) !important;
+    transition: box-shadow 0.2s, border 0.2s;
+}
+
+[class*="widget"]:hover, [class*="service"]:hover {
+    border-color: var(--empire-blue) !important;
+    box-shadow: 0 0 18px var(--empire-blue) !important;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+    background: var(--empire-black);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--empire-gray);
+    border-radius: 6px;
+    border: 2px solid var(--empire-black);
+}
+
+a, a:visited {
+    color: var(--empire-blue);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+a:hover {
+    color: var(--empire-red);
+    text-shadow: 0 0 10px var(--empire-red);
 }
