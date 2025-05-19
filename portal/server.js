@@ -62,7 +62,8 @@ const emailConfig = {
 // Helper functions
 async function readJSON(filename) {
     try {
-        const data = await fs.readFile(filename, 'utf8');
+        const filePath = path.join('/usr/src/app/data', filename);
+        const data = await fs.readFile(filePath, 'utf8');
         return JSON.parse(data);
     } catch (error) {
         return [];
@@ -70,7 +71,10 @@ async function readJSON(filename) {
 }
 
 async function writeJSON(filename, data) {
-    await fs.writeFile(filename, JSON.stringify(data, null, 2));
+    const filePath = path.join('/usr/src/app/data', filename);
+    // Ensure the data directory exists
+    await fs.mkdir('/usr/src/app/data', { recursive: true });
+    await fs.writeFile(filePath, JSON.stringify(data, null, 2));
 }
 
 async function sendVerificationEmail(email, username, token) {
