@@ -1,139 +1,69 @@
 :root {
-    --empire-red: #d90429;
-    --empire-black: #101015;
-    --empire-gray: #23242a;
-    --empire-panel: #292b35;
-    --empire-shadow: 0 4px 32px 0 rgba(0,0,0,0.8);
-    --empire-white: #f1f1f1;
-    --empire-blue: #00d4ff;
-}
-
-body {
+    --sw-yellow: #FFE81F;
+    --sw-blue: #00D4FF;
+    --sw-red: #FF3C28;
+    --sw-dark: #181A22;
+    --sw-gray: #23262F;
+    --sw-white: #F7F7F7;
+    --sw-shadow: 0 2px 18px 0 #101015;
+  }
+  
+  body {
     margin: 0;
     padding: 0;
-    background: radial-gradient(ellipse at 60% 0%, #23242a 0%, #101015 100%);
-    font-family: 'Orbitron', 'Segoe UI', 'Arial', sans-serif;
+    font-family: 'Orbitron', 'Segoe UI', Arial, sans-serif;
     min-height: 100vh;
-    color: var(--empire-white);
-}
-
-header {
-    padding: 1.7rem 1rem 1.2rem 1rem;
+    background: radial-gradient(ellipse at center, var(--sw-dark) 0%, #000 90%);
+    color: var(--sw-white);
+    letter-spacing: 0.04em;
+  }
+  
+  header, .header, .page-header {
+    background: linear-gradient(135deg, var(--sw-gray) 60%, var(--sw-dark) 100%);
+    color: var(--sw-yellow);
+    padding: 1.6rem 1.4rem 1.3rem 1.4rem;
     text-align: center;
-    background: linear-gradient(120deg, var(--empire-black) 60%, var(--empire-gray) 100%);
-    border-bottom: 2px solid var(--empire-red);
-    box-shadow: var(--empire-shadow);
-}
-
-h1 {
-    color: var(--empire-red);
-    text-shadow: 0 2px 16px var(--empire-red), 0 1px 2px #000;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 8px;
+    border-bottom: 3px solid var(--sw-blue);
+    box-shadow: var(--sw-shadow);
+  }
+  
+  h1, .page-title {
     margin: 0;
-    font-size: 2.5rem;
-}
-
-.dashboard {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 2.5rem;
-    margin-top: 2rem;
-}
-
-.panel {
-    background: linear-gradient(135deg, var(--empire-panel) 80%, var(--empire-gray) 100%);
-    border: 2px solid var(--empire-red);
-    border-radius: 18px;
-    box-shadow: 0 2px 20px rgba(0,0,0,0.7);
-    padding: 1.7em 2.1em 1.6em 2.1em;
-    margin: 0 0.8em 2em 0.8em;
-    transition: border 0.25s, box-shadow 0.25s;
-    position: relative;
-}
-
-.panel:hover,
-.panel:focus-within {
-    border-color: var(--empire-blue);
-    box-shadow: 0 0 24px var(--empire-blue), 0 2px 24px 0 rgba(0,0,0,0.7);
-}
-
-.panel h2, .panel .section-title {
-    color: var(--empire-white);
-    font-size: 1.3em;
-    margin-bottom: 0.7em;
-    letter-spacing: 4px;
-    font-weight: 700;
-    text-shadow: 0 1px 8px #000, 0 0 2px var(--empire-red);
-}
-
-.panel .stat,
-.panel .stat-label {
-    color: var(--empire-red);
-    font-family: 'Orbitron', monospace;
+    font-size: 2.4rem;
     font-weight: 900;
+    color: var(--sw-yellow);
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    text-shadow: 0 0 18px var(--sw-yellow), 0 1px 2px #000;
+  }
+  
+  main {
+    flex: 1;
+    padding: 2.5rem 1.5rem 1.5rem 1.5rem;
+  }
+  
+  .section-title, h2 {
+    color: var(--sw-blue);
     font-size: 1.3em;
-    margin: 0.2em 0;
-    text-shadow: 0 0 8px var(--empire-red), 0 1px 2px #000;
-}
-
-.panel .stat-value {
-    color: var(--empire-white);
-    font-size: 2em;
-    margin-bottom: 0.3em;
-    text-shadow: 0 2px 16px #000, 0 1px 2px var(--empire-red);
-    display: block;
-}
-
-::-webkit-scrollbar {
-    width: 12px;
-    background: var(--empire-black);
-}
-::-webkit-scrollbar-thumb {
-    background: var(--empire-gray);
-    border-radius: 6px;
-    border: 2px solid var(--empire-black);
-}
-
-a, a:visited {
-    color: var(--empire-blue);
-    text-decoration: none;
-    transition: color 0.2s;
-}
-a:hover {
-    color: var(--empire-red);
-    text-shadow: 0 0 10px var(--empire-red);
-}
-/* Make sure all panels grow to fit their content */
-.panel {
-    /* ...existing styles... */
-    min-height: 0;              /* This is key for flex containers! */
-    height: auto !important;    /* Don't force a fixed height */
-    overflow: visible !important;  /* Let contents show outside if needed */
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-}
-
-/* Ensure inner content doesn't get clipped */
-.panel > * {
-    flex-shrink: 0;
-    overflow: visible !important;
-    min-height: 0;
-}
-
-/* If your dashboard is using flex or grid, make sure children can grow */
-.dashboard {
-    align-items: flex-start;   /* Allow tall panels to stretch naturally */
-}
-
-/* (OPTIONAL) Remove any height/overflow rules from small cards */
-.panel .stat,
-.panel .stat-label,
-.panel .stat-value {
-    overflow: visible !important;
-    height: auto !important;
-    min-height: 0 !important;
-}
+    margin-bottom: 1em;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    text-shadow: 0 1px 8px #000;
+  }
+  
+  .card, .widget, [class*="service"] {
+    background: linear-gradient(120deg, var(--sw-gray) 85%, var(--sw-dark) 100%);
+    border: 2px solid var(--sw-blue);
+    border-radius: 14px;
+    box-shadow: 0 2px 16px rgba(0, 212, 255, 0.12);
+    padding: 1.2em 1.4em;
+    color: var(--sw-white);
+    margin-bottom: 2em;
+    transition: box-shadow 0.15s, border 0.15s;
+  }
+  
+  .card:hover,
+  .widget:hover {
+    box
+  
