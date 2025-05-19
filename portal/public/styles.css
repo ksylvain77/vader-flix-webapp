@@ -1,69 +1,68 @@
 :root {
-    --sw-yellow: #FFE81F;
-    --sw-blue: #00D4FF;
-    --sw-red: #FF3C28;
-    --sw-dark: #181A22;
-    --sw-gray: #23262F;
-    --sw-white: #F7F7F7;
-    --sw-shadow: 0 2px 18px 0 #101015;
-  }
-  
-  body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Orbitron', 'Segoe UI', Arial, sans-serif;
-    min-height: 100vh;
-    background: radial-gradient(ellipse at center, var(--sw-dark) 0%, #000 90%);
-    color: var(--sw-white);
-    letter-spacing: 0.04em;
-  }
-  
-  header, .header, .page-header {
-    background: linear-gradient(135deg, var(--sw-gray) 60%, var(--sw-dark) 100%);
-    color: var(--sw-yellow);
-    padding: 1.6rem 1.4rem 1.3rem 1.4rem;
-    text-align: center;
-    border-bottom: 3px solid var(--sw-blue);
-    box-shadow: var(--sw-shadow);
-  }
-  
-  h1, .page-title {
-    margin: 0;
-    font-size: 2.4rem;
-    font-weight: 900;
-    color: var(--sw-yellow);
-    letter-spacing: 8px;
-    text-transform: uppercase;
-    text-shadow: 0 0 18px var(--sw-yellow), 0 1px 2px #000;
-  }
-  
-  main {
-    flex: 1;
-    padding: 2.5rem 1.5rem 1.5rem 1.5rem;
-  }
-  
-  .section-title, h2 {
-    color: var(--sw-blue);
-    font-size: 1.3em;
-    margin-bottom: 1em;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 4px;
-    text-shadow: 0 1px 8px #000;
-  }
-  
-  .card, .widget, [class*="service"] {
-    background: linear-gradient(120deg, var(--sw-gray) 85%, var(--sw-dark) 100%);
-    border: 2px solid var(--sw-blue);
-    border-radius: 14px;
-    box-shadow: 0 2px 16px rgba(0, 212, 255, 0.12);
-    padding: 1.2em 1.4em;
-    color: var(--sw-white);
-    margin-bottom: 2em;
-    transition: box-shadow 0.15s, border 0.15s;
-  }
-  
-  .card:hover,
-  .widget:hover {
-    box
-  
+  --sw-yellow: #FFE81F;
+  --sw-blue: #00D4FF;
+  --sw-red: #FF3C28;
+  --sw-dark: #181A22;
+  --sw-gray: #23262F;
+  --sw-white: #F7F7F7;
+  --sw-shadow: 0 2px 18px 0 #101015;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Orbitron', 'Segoe UI', Arial, sans-serif;
+  min-height: 100vh;
+  background: radial-gradient(ellipse at center, var(--sw-dark) 0%, #000 90%);
+  color: var(--sw-white);
+  letter-spacing: 0.04em;
+}
+
+header, .header, .page-header {
+  background: linear-gradient(135deg, var(--sw-gray) 60%, var(--sw-dark) 100%);
+  color: var(--sw-yellow);
+  padding: 1.6rem 1.4rem 1.3rem 1.4rem;
+  text-align: center;
+  border-bottom: 3px solid var(--sw-blue);
+  box-shadow: var(--sw-shadow);
+}
+
+h1, .page-title {
+  margin: 0;
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: var(--sw-yellow);
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  text-shadow: 0 0 18px var(--sw-yellow), 0 1px 2px #000;
+}
+
+main {
+  flex: 1;
+  padding: 2.5rem 1.5rem 1.5rem 1.5rem;
+}
+
+.section-title, h2 {
+  color: var(--sw-blue);
+  font-size: 1.3em;
+  margin-bottom: 1em;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  text-shadow: 0 1px 8px #000;
+}
+
+.card, .widget, [class*="service"] {
+  background: linear-gradient(120deg, var(--sw-gray) 85%, var(--sw-dark) 100%);
+  border: 2px solid var(--sw-blue);
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(0, 212, 255, 0.12);
+  padding: 1.2em 1.4em;
+  color: var(--sw-white);
+  margin-bottom: 2em;
+  transition: box-shadow 0.15s, border 0.15s;
+}
+
+.card:hover,
+.widget:hover {
+  box
