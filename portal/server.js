@@ -26,7 +26,7 @@ app.use(session({
 }));
 
 // Overseerr proxy middleware - with connection testing
-app.use('/overseerr', createProxyMiddleware({
+const overseerrProxy = createProxyMiddleware({
     target: 'http://overseerr:5055',
     changeOrigin: true,
     pathRewrite: {
@@ -39,7 +39,10 @@ app.use('/overseerr', createProxyMiddleware({
     onProxyReq: (proxyReq, req, res) => {
         console.log('Proxying request to Overseerr:', req.url);
     }
-}));
+});
+
+// Apply proxy only to /overseerr path
+app.use('/overseerr', overseerrProxy);
 
 // Email configuration
 const emailConfig = {
