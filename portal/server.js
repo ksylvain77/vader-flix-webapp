@@ -27,7 +27,7 @@ app.use(session({
 
 // Overseerr proxy middleware - TEMPORARILY COMMENTED OUT
 app.use('/overseerr', createProxyMiddleware({
-    target: 'http://vaderflix.synology.me:5055',
+    target: 'http://192.168.50.92:5055',
     changeOrigin: true,
     pathRewrite: {
         '^/overseerr': '', // removes /overseerr from the forwarded path
