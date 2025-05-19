@@ -1,50 +1,41 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
+const PlexAPI = require('plex-api');
 const config = require('./config');
 
 const app = express();
-app.use(express.json());
+const port = process.env.PORT || 3000;
 
-// Health check route
-app.get('/health', (req, res) => {
-    res.json({ ok: true });
+// Initialize Plex client
+const plexClient = new PlexAPI({
+    hostname: config.plex.baseUrl.replace(/^https?:\/\//, ''),
+    token: config.plex.token
 });
 
-// Login route
-app.post('/login', (req, res) => {
-    const { username, password } = req.body;
-    
-    if (username === 'admin' && password === 'admin123') {
-        const token = jwt.sign({ username }, config.jwtSecret, { expiresIn: '1h' });
-        res.json({ token });
-    } else {
-        res.status(401).json({ error: 'Invalid credentials' });
+// GET /api/plex/library route
+app.get('/api/plex/library', async (req, res) => {
+    try {
+        // Get the first library section (movies)
+        const sectionId = config.plex.librarySectionIds[0];
+        
+        // Query the library section
+        const result = await plexClient.query(`/library/sections/${sectionId}/all`);
+        
+        // Transform the response to include only required fields
+        const movies = result.MediaContainer.Metadata.map(movie => ({
+            title: movie.title,
+            year: movie.year,
+            summary: movie.summary,
+            thumb: movie.thumb
+        }));
+
+        res.json(movies);
+    } catch (error) {
+        console.error('Error fetching Plex library:', error);
+        res.status(500).json({ error: 'Failed to fetch Plex library' });
     }
 });
 
-// JWT middleware
-const authenticateToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (!token) {
-        return res.status(401).json({ error: 'No token provided' });
-    }
-
-    jwt.verify(token, config.jwtSecret, (err, user) => {
-        if (err) {
-            return res.status(403).json({ error: 'Invalid token' });
-        }
-        req.user = user;
-        next();
-    });
-};
-
-// Protected route
-app.get('/protected', authenticateToken, (req, res) => {
-    res.json({ message: 'This is a protected route', user: req.user });
-});
-
-app.listen(config.port, () => {
-    console.log(`Server running on port ${config.port}`);
+// Start the server
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
 }); 
