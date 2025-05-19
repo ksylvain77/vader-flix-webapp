@@ -18,7 +18,7 @@
       <div id="overseerr-container">
         <iframe
           id="overseerr-frame"
-          src="/overseerr"
+          src="/overseerr/login"
           width="100%"
           height="800px"
           frameborder="0"
@@ -55,24 +55,27 @@
           </div>`;
       }
 
-      // Handle iframe load errors
       const iframe = document.getElementById('overseerr-frame');
+      
+      // Handle iframe load events
+      iframe.onload = function() {
+        try {
+          // Check if we're on the login page
+          const iframeUrl = iframe.contentWindow.location.pathname;
+          if (iframeUrl.includes('/login')) {
+            console.log('Overseerr login page loaded');
+          } else {
+            console.log('Overseerr main page loaded');
+          }
+        } catch (e) {
+          console.log('Cannot access iframe content - this is normal for cross-origin requests');
+        }
+      };
+
+      // Handle iframe errors
       iframe.onerror = function() {
         document.getElementById('overseerr-container').innerHTML = 
           '<div class="error-message">Failed to load Overseerr. Please try accessing it directly.</div>';
-      };
-
-      // Check if the iframe content is accessible
-      iframe.onload = function() {
-        try {
-          const iframeContent = iframe.contentWindow.document;
-          if (!iframeContent) {
-            throw new Error('Cannot access iframe content');
-          }
-        } catch (e) {
-          document.getElementById('overseerr-container').innerHTML = 
-            '<div class="error-message">Overseerr cannot be embedded. Please <a href="/overseerr" target="_blank">open in new window</a></div>';
-        }
       };
     </script>
   </body>
