@@ -28,13 +28,31 @@
           <p>Loading Overseerr...</p>
         </iframe>
       </div>
+      <div id="debug-info" style="margin-top: 20px; padding: 10px; background: #f0f0f0;">
+        <h3>Debug Information:</h3>
+        <pre id="debug-output"></pre>
+      </div>
     </main>
     <script>
-      // Prevent infinite loops by checking if we're already in an iframe
-      if (window.self !== window.top) {
-        // We're in an iframe, don't load Overseerr
+      // Debug information
+      const debugInfo = {
+        isInIframe: window.self !== window.top,
+        parentUrl: window.parent.location.href,
+        currentUrl: window.location.href,
+        referrer: document.referrer
+      };
+      
+      document.getElementById('debug-output').textContent = JSON.stringify(debugInfo, null, 2);
+
+      // Only show the iframe if we're not already in one
+      if (!debugInfo.isInIframe) {
+        document.getElementById('overseerr-container').style.display = 'block';
+      } else {
         document.getElementById('overseerr-container').innerHTML = 
-          '<div class="error-message">Please access Overseerr directly</div>';
+          `<div class="error-message">
+            <p>This page is being loaded inside an iframe from: ${debugInfo.parentUrl}</p>
+            <p>Please access Overseerr directly at: <a href="/overseerr" target="_blank">/overseerr</a></p>
+          </div>`;
       }
 
       // Handle iframe load errors
@@ -47,7 +65,6 @@
       // Check if the iframe content is accessible
       iframe.onload = function() {
         try {
-          // Try to access iframe content to check if it loaded properly
           const iframeContent = iframe.contentWindow.document;
           if (!iframeContent) {
             throw new Error('Cannot access iframe content');
