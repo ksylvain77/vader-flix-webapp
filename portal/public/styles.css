@@ -1,55 +1,90 @@
 :root {
     --empire-red: #d90429;
     --empire-black: #101015;
-    --empire-gray: #282a36;
-    --empire-steel: #42444a;
-    --empire-blue: #00d4ff;
+    --empire-gray: #23242a;
+    --empire-panel: #292b35;
+    --empire-shadow: 0 4px 32px 0 rgba(0,0,0,0.8);
     --empire-white: #f1f1f1;
-    --empire-shadow: 0 2px 24px 0 rgba(0,0,0,0.95);
+    --empire-blue: #00d4ff;
 }
 
 body {
     margin: 0;
     padding: 0;
-    background: radial-gradient(ellipse at 60% 0%, #23242a 0%, #101015 80%);
+    background: radial-gradient(ellipse at 60% 0%, #23242a 0%, #101015 100%);
     font-family: 'Orbitron', 'Segoe UI', 'Arial', sans-serif;
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
     color: var(--empire-white);
-    letter-spacing: 0.5px;
 }
 
 header {
-    padding: 1.5rem 1rem 1.2rem 1rem;
+    padding: 1.7rem 1rem 1.2rem 1rem;
     text-align: center;
-    background: linear-gradient(120deg, var(--empire-black) 70%, var(--empire-gray) 100%);
+    background: linear-gradient(120deg, var(--empire-black) 60%, var(--empire-gray) 100%);
     border-bottom: 2px solid var(--empire-red);
     box-shadow: var(--empire-shadow);
 }
 
 h1 {
     color: var(--empire-red);
-    text-shadow: 0 2px 24px var(--empire-red), 0 1px 2px #000;
+    text-shadow: 0 2px 16px var(--empire-red), 0 1px 2px #000;
     font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: 6px;
+    letter-spacing: 8px;
     margin: 0;
-    font-size: 2.8rem;
+    font-size: 2.5rem;
 }
 
-main {
-    flex: 1;
+.dashboard {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2.5rem;
+    margin-top: 2rem;
+}
+
+.panel {
+    background: linear-gradient(135deg, var(--empire-panel) 80%, var(--empire-gray) 100%);
+    border: 2px solid var(--empire-red);
+    border-radius: 18px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.7);
+    padding: 1.7em 2.1em 1.6em 2.1em;
+    margin: 0 0.8em 2em 0.8em;
+    transition: border 0.25s, box-shadow 0.25s;
     position: relative;
 }
 
-iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
+.panel:hover,
+.panel:focus-within {
+    border-color: var(--empire-blue);
+    box-shadow: 0 0 24px var(--empire-blue), 0 2px 24px 0 rgba(0,0,0,0.7);
+}
+
+.panel h2, .panel .section-title {
+    color: var(--empire-white);
+    font-size: 1.3em;
+    margin-bottom: 0.7em;
+    letter-spacing: 4px;
+    font-weight: 700;
+    text-shadow: 0 1px 8px #000, 0 0 2px var(--empire-red);
+}
+
+.panel .stat,
+.panel .stat-label {
+    color: var(--empire-red);
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 1.3em;
+    margin: 0.2em 0;
+    text-shadow: 0 0 8px var(--empire-red), 0 1px 2px #000;
+}
+
+.panel .stat-value {
+    color: var(--empire-white);
+    font-size: 2em;
+    margin-bottom: 0.3em;
+    text-shadow: 0 2px 16px #000, 0 1px 2px var(--empire-red);
+    display: block;
 }
 
 ::-webkit-scrollbar {
@@ -69,5 +104,5 @@ a, a:visited {
 }
 a:hover {
     color: var(--empire-red);
-    text-shadow: 0 0 12px var(--empire-red);
+    text-shadow: 0 0 10px var(--empire-red);
 }
