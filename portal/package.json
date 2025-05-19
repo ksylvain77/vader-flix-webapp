@@ -9,6 +9,7 @@
     "express": "^4.18.2",
     "bcryptjs": "^2.4.3",
     "express-session": "^1.17.3",
-    "nodemailer": "^6.9.7"
+    "nodemailer": "^6.9.7",
+    "http-proxy-middleware": "^2.0.6"
   }
 }
