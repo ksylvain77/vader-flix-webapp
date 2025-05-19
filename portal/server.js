@@ -29,7 +29,7 @@ const emailConfig = {
     service: 'gmail',
     auth: {
         user: 'ksylvain77@gmail.com',
-        pass: 'BenYoungHill#24'  // Replace with your Gmail App Password
+        pass: 'YOUR_GMAIL_APP_PASSWORD_HERE'  // Replace with your Gmail App Password
     }
 };
 
@@ -48,7 +48,7 @@ async function writeJSON(filename, data) {
 }
 
 async function sendVerificationEmail(email, username, token) {
-    const transporter = nodemailer.createTransporter(emailConfig);
+    const transporter = nodemailer.createTransport(emailConfig);
     
     const verificationUrl = `http://vaderflix.synology.me:3001/verify/${token}`;
     
