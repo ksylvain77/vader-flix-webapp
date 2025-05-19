@@ -23,60 +23,75 @@
           height="800px"
           frameborder="0"
           class="overseerr-frame"
-          sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+          sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation allow-downloads"
         >
           <p>Loading Overseerr...</p>
         </iframe>
       </div>
-      <div id="debug-info" style="margin-top: 20px; padding: 10px; background: #f0f0f0;">
+      <div id="debug-panel" style="margin-top: 20px; padding: 10px; background: #f0f0f0; font-family: monospace;">
         <h3>Debug Information:</h3>
-        <pre id="debug-output"></pre>
+        <div id="debug-output"></div>
       </div>
     </main>
     <script>
-      // Debug information
-      const debugInfo = {
-        isInIframe: window.self !== window.top,
-        parentUrl: window.parent.location.href,
-        currentUrl: window.location.href,
-        referrer: document.referrer
-      };
-      
-      document.getElementById('debug-output').textContent = JSON.stringify(debugInfo, null, 2);
-
-      // Only show the iframe if we're not already in one
-      if (!debugInfo.isInIframe) {
-        document.getElementById('overseerr-container').style.display = 'block';
-      } else {
-        document.getElementById('overseerr-container').innerHTML = 
-          `<div class="error-message">
-            <p>This page is being loaded inside an iframe from: ${debugInfo.parentUrl}</p>
-            <p>Please access Overseerr directly at: <a href="/overseerr" target="_blank">/overseerr</a></p>
-          </div>`;
-      }
-
+      const debugOutput = document.getElementById('debug-output');
       const iframe = document.getElementById('overseerr-frame');
       
+      function log(message) {
+        const timestamp = new Date().toISOString();
+        debugOutput.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+      }
+
+      // Initial load
+      log('Page loaded, attempting to load Overseerr login...');
+
       // Handle iframe load events
       iframe.onload = function() {
         try {
-          // Check if we're on the login page
-          const iframeUrl = iframe.contentWindow.location.pathname;
-          if (iframeUrl.includes('/login')) {
-            console.log('Overseerr login page loaded');
+          const iframeUrl = iframe.contentWindow.location.href;
+          log(`Iframe loaded: ${iframeUrl}`);
+          
+          // Try to access iframe content
+          const iframeDoc = iframe.contentWindow.document;
+          log('Successfully accessed iframe document');
+          
+          // Check for login form
+          const loginForm = iframeDoc.querySelector('form');
+          if (loginForm) {
+            log('Login form found in iframe');
           } else {
-            console.log('Overseerr main page loaded');
+            log('No login form found in iframe');
           }
+          
+          // Check for images
+          const images = iframeDoc.querySelectorAll('img');
+          log(`Found ${images.length} images in iframe`);
+          images.forEach(img => {
+            if (!img.complete || img.naturalHeight === 0) {
+              log(`Broken image found: ${img.src}`);
+            }
+          });
         } catch (e) {
-          console.log('Cannot access iframe content - this is normal for cross-origin requests');
+          log(`Error accessing iframe content: ${e.message}`);
         }
       };
 
       // Handle iframe errors
-      iframe.onerror = function() {
+      iframe.onerror = function(error) {
+        log(`Iframe error: ${error}`);
         document.getElementById('overseerr-container').innerHTML = 
           '<div class="error-message">Failed to load Overseerr. Please try accessing it directly.</div>';
       };
+
+      // Add click event listener to debug panel
+      document.getElementById('debug-panel').addEventListener('click', function() {
+        try {
+          const iframeUrl = iframe.contentWindow.location.href;
+          log(`Current iframe URL: ${iframeUrl}`);
+        } catch (e) {
+          log(`Cannot access iframe URL: ${e.message}`);
+        }
+      });
     </script>
   </body>
 </html>
