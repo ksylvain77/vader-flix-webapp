@@ -29,7 +29,7 @@ const emailConfig = {
     service: 'gmail',
     auth: {
         user: 'ksylvain77@gmail.com',
-        pass: 'YOUR_GMAIL_APP_PASSWORD_HERE'  // Replace with your Gmail App Password
+        pass: 'eovb ivbk nxka nacw'  // Replace with your Gmail App Password
     }
 };
 
