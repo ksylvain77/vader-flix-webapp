@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const session = require('express-session');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
-// const { createProxyMiddleware } = require('http-proxy-middleware');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
 
@@ -25,22 +25,14 @@ app.use(session({
     }
 }));
 
-/* Overseerr proxy middleware - with connection testing
+// Basic Overseerr proxy - testing minimal configuration
 app.use('/overseerr', createProxyMiddleware({
     target: 'http://overseerr:5055',
     changeOrigin: true,
     pathRewrite: {
-        '^/overseerr': '',
-    },
-    onError: (err, req, res) => {
-        console.log('Overseerr proxy error:', err);
-        res.send('<h1>Overseerr is not available</h1><p>Error: ' + err.message + '</p>');
-    },
-    onProxyReq: (proxyReq, req, res) => {
-        console.log('Proxying request to Overseerr:', req.url);
+        '^/overseerr': ''
     }
 }));
-*/
 
 // Email configuration
 const emailConfig = {
@@ -205,13 +197,8 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
-// Process login - ENHANCED WITH DEBUGGING
+// Process login
 app.post('/login', async (req, res) => {
-    const timestamp = new Date().toISOString();
-    console.log(`[${timestamp}] Login attempt started for user: ${req.body.username}`);
-    console.log(`[${timestamp}] Session ID before login: ${req.sessionID}`);
-    console.log(`[${timestamp}] Existing session data: ${JSON.stringify(req.session)}`);
-    
     try {
         const { username, password } = req.body;
         
@@ -219,7 +206,6 @@ app.post('/login', async (req, res) => {
         const user = users.find(u => u.username === username);
         
         if (!user || !await bcrypt.compare(password, user.password)) {
-            console.log(`[${timestamp}] Login failed - invalid credentials for: ${username}`);
             return res.status(401).json({ error: 'Invalid credentials' });
         }
         
@@ -229,23 +215,9 @@ app.post('/login', async (req, res) => {
             email: user.email
         };
         
-        console.log(`[${timestamp}] Session created successfully`);
-        console.log(`[${timestamp}] Session ID after login: ${req.sessionID}`);
-        console.log(`[${timestamp}] Session data after login: ${JSON.stringify(req.session)}`);
-        
-        // Force session save before responding
-        req.session.save((err) => {
-            if (err) {
-                console.log(`[${timestamp}] Session save error: ${err}`);
-                return res.status(500).json({ error: 'Session save failed' });
-            }
-            
-            console.log(`[${timestamp}] Session saved successfully`);
-            res.json({ success: true, redirect: '/portal' });
-        });
-        
+        res.json({ success: true, redirect: '/portal' });
     } catch (error) {
-        console.error(`[${timestamp}] Login error:`, error);
+        console.error('Login error:', error);
         res.status(500).json({ error: 'Login failed' });
     }
 });
@@ -267,62 +239,6 @@ app.get('/api/auth/status', (req, res) => {
         authenticated: !!(req.session && req.session.user),
         user: req.session?.user || null
     });
-});
-
-// DEBUG SESSION STATUS - shows what's in the session
-app.get('/debug-session', (req, res) => {
-    res.send(`
-        <html>
-        <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <style>
-                body { 
-                    background: #000; 
-                    color: #fff; 
-                    font-family: monospace; 
-                    padding: 20px; 
-                    line-height: 1.6;
-                }
-                .status { 
-                    background: #333; 
-                    padding: 15px; 
-                    margin: 10px 0; 
-                    border-radius: 5px; 
-                }
-                .good { border-left: 5px solid #0f0; }
-                .bad { border-left: 5px solid #f00; }
-                a { color: #0ff; }
-            </style>
-            <script>
-                setTimeout(() => location.reload(), 5000);
-            </script>
-        </head>
-        <body>
-            <h1>VaderFlix Debug Panel</h1>
-            <div class="status ${req.session && req.session.user ? 'good' : 'bad'}">
-                <strong>Session Status:</strong> ${req.session && req.session.user ? 'AUTHENTICATED' : 'NOT AUTHENTICATED'}
-            </div>
-            <div class="status">
-                <strong>Session ID:</strong> ${req.sessionID || 'None'}
-            </div>
-            <div class="status">
-                <strong>User Data:</strong> ${req.session && req.session.user ? JSON.stringify(req.session.user, null, 2) : 'None'}
-            </div>
-            <div class="status">
-                <strong>Session Cookie:</strong> ${req.headers.cookie || 'None'}
-            </div>
-            <div class="status">
-                <strong>Time:</strong> ${new Date().toISOString()}
-            </div>
-            <div style="margin-top: 30px;">
-                <a href="/login">Go to Login</a> | 
-                <a href="/portal">Go to Portal</a> | 
-                <a href="/logout">Logout</a>
-            </div>
-            <p><em>Auto-refreshing every 5 seconds...</em></p>
-        </body>
-        </html>
-    `);
 });
 
 const PORT = process.env.PORT || 3001;
