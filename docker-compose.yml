@@ -15,12 +15,26 @@ services:
       - HOMEPAGE_VAR_APPLICATION_NAME=homepage
       - HOMEPAGE_ALLOWED_HOSTS=192.168.50.92:3000
     restart: unless-stopped
-    # Synology specific settings
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
-    # Ensure compatibility with Synology DSM 7.2.2
+    security_opt:
+      - no-new-privileges:true
+
+  vader-portal:
+    build: ./portal
+    container_name: vader-portal
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     security_opt:
       - no-new-privileges:true
