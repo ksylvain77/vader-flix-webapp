@@ -1,166 +1,125 @@
+/* Admin Dashboard CSS - Death Star Bridge Utilitarian Theme */
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
 
 :root {
-  --empire-black: #16181c;
-  --empire-steel: #22242b;
-  --empire-gray: #30333b;
-  --empire-shadow: 0 1px 10px 0 #07080b;
-  --empire-red: #c91c22;
-  --empire-accent: #8492a6;
-  --empire-white: #e9e9ea;
+    --imperial-black: #0a0a0a;
+    --imperial-gray: #1a1a1a;
+    --imperial-silver: #2d2d2d;
+    --imperial-red: #c1272d;
+    --imperial-blue: #00bcd4;
+    --imperial-white: #e0e0e0;
+    --imperial-text-dim: #a0a0a0;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Orbitron', 'Segoe UI', Arial, sans-serif;
-  background: linear-gradient(115deg, var(--empire-black) 80%, var(--empire-steel) 100%);
-  color: var(--empire-white);
-  min-height: 100vh;
-  letter-spacing: 0.04em;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    font-family: 'Orbitron', monospace !important;
+    color: var(--imperial-white);
+    margin: 0;
+    padding: 0;
+    font-weight: 400;
 }
 
-header, .header, .page-header {
-  background: var(--empire-steel);
-  color: var(--empire-white);
-  padding: 1.3rem 1.2rem 1rem 1.2rem;
-  border-bottom: 2px solid var(--empire-red);
-  box-shadow: var(--empire-shadow);
-  text-align: left;
-}
-
+/* Main title - Imperial Command Center */
 h1, .page-title {
-  margin: 0;
-  font-size: 2rem;
-  font-weight: 900;
-  color: var(--empire-white);
-  letter-spacing: 5px;
-  text-transform: uppercase;
-  text-shadow: none;
+    color: var(--imperial-red) !important;
+    text-shadow: 0 0 10px var(--imperial-red);
+    font-family: 'Orbitron', monospace !important;
+    font-weight: 900 !important;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    border-bottom: 1px solid var(--imperial-silver);
+    padding-bottom: 10px;
 }
 
-.dashboard, .panel-container, .main-content {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  padding: 2rem;
-  justify-content: flex-start;
-  align-items: flex-start;
+/* Widget containers - Utilitarian panels */
+[class*="widget"], [class*="service"] {
+    background: linear-gradient(145deg, var(--imperial-gray), var(--imperial-black)) !important;
+    border: 1px solid var(--imperial-silver) !important;
+    border-radius: 2px !important;
+    box-shadow: 
+        0 1px 3px rgba(0,0,0,0.8),
+        inset 0 1px 0 rgba(255,255,255,0.1) !important;
+    color: var(--imperial-white) !important;
+    transition: all 0.2s ease !important;
 }
 
-.panel, .card, .widget, .service-panel {
-  background: var(--empire-gray);
-  border: 1.5px solid var(--empire-accent);
-  border-radius: 9px;
-  box-shadow: var(--empire-shadow);
-  padding: 1.4rem 1.8rem 1.2rem 1.8rem;
-  min-width: 220px;
-  min-height: 100px;
-  margin: 0 0.7em 2em 0.7em;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  transition: border 0.2s;
+[class*="widget"]:hover, [class*="service"]:hover {
+    border-color: var(--imperial-blue) !important;
+    box-shadow: 
+        0 2px 8px rgba(0,188,212,0.3),
+        inset 0 1px 0 rgba(0,188,212,0.2) !important;
 }
 
-.panel:hover,
-.card:hover,
-.widget:hover {
-  border-color: var(--empire-red);
+/* Service titles - Command terminal style */
+.service-title, .widget-title {
+    color: var(--imperial-blue) !important;
+    font-family: 'Orbitron', monospace !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 2px !important;
+    font-size: 0.9em !important;
 }
 
-.section-title, .panel-title, h2 {
-  color: var(--empire-accent);
-  font-size: 1.1em;
-  margin-bottom: 0.7em;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  text-shadow: none;
+/* Service descriptions and content */
+.service-description, .widget-content {
+    color: var(--imperial-text-dim) !important;
+    font-family: 'Orbitron', monospace !important;
+    font-size: 0.8em !important;
 }
 
-.stat,
-.stat-label {
-  color: var(--empire-red);
-  font-size: 1em;
-  font-weight: 800;
-  margin: 0.2em 0;
-  text-shadow: none;
-  letter-spacing: 2px;
+/* Stats and numbers - Critical data display */
+.stat-number, [class*="stat"] {
+    color: var(--imperial-red) !important;
+    font-weight: 900 !important;
+    font-family: 'Orbitron', monospace !important;
+    text-shadow: 0 0 5px var(--imperial-red);
 }
 
-.stat-value {
-  color: var(--empire-white);
-  font-size: 1.7em;
-  font-weight: 900;
-  margin-bottom: 0.2em;
-  letter-spacing: 1px;
-  text-shadow: none;
-  display: block;
-}
-
+/* Links and interactive elements */
 a, a:visited {
-  color: var(--empire-accent);
-  text-decoration: none;
-  transition: color 0.2s;
+    color: var(--imperial-blue);
+    text-decoration: none;
+    transition: color 0.2s;
 }
+
 a:hover {
-  color: var(--empire-red);
+    color: var(--imperial-red);
+    text-shadow: 0 0 5px var(--imperial-red);
 }
 
+/* Scrollbars - Imperial interface */
 ::-webkit-scrollbar {
-  width: 10px;
-  background: var(--empire-black);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--empire-steel);
-  border-radius: 5px;
-  border: 2px solid var(--empire-black);
+    width: 8px;
+    background: var(--imperial-black);
 }
 
-/* Utility classes */
-.util-muted {
-  color: #757981;
-  font-size: 0.95em;
-  letter-spacing: 1px;
+::-webkit-scrollbar-thumb {
+    background: var(--imperial-silver);
+    border-radius: 0px;
+    border: 1px solid var(--imperial-black);
 }
-/* Ensure dashboard panels and cards always fit content */
-.dashboard, .panel-container, .main-content {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    padding: 2rem;
-    justify-content: flex-start;
-    align-items: flex-start;
-  }
-  
-  /* Main panel/card containers: never clip, always grow */
-  .panel, .card, .widget, .service-panel {
-    background: var(--empire-gray);
-    border: 1.5px solid var(--empire-accent);
-    border-radius: 9px;
-    box-shadow: var(--empire-shadow);
-    padding: 1.4rem 1.8rem 1.2rem 1.8rem;
-    min-width: 220px;
-    min-height: 100px;
-    margin: 0 0.7em 2em 0.7em;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    height: auto !important;      /* KEY: don't force a fixed height */
-    overflow: visible !important; /* KEY: don't clip children */
-    flex-grow: 1;
-  }
-  
-  /* Prevent any stat block or subcard from being clipped */
-  .panel > *,
-  .card > *,
-  .widget > * {
-    min-height: 0 !important;
-    height: auto !important;
-    overflow: visible !important;
-    flex-shrink: 0;
-  }
-  
-  /* Remove/override any existing height, max-height, or overflow:hidden rules elsewhere */
-  
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--imperial-blue);
+}
+
+/* Date/time widgets - Command center displays */
+[class*="datetime"], [class*="time"] {
+    color: var(--imperial-blue) !important;
+    font-family: 'Orbitron', monospace !important;
+    font-weight: 700 !important;
+}
+
+/* Search elements */
+[class*="search"] input {
+    background: var(--imperial-gray) !important;
+    border: 1px solid var(--imperial-silver) !important;
+    color: var(--imperial-white) !important;
+    font-family: 'Orbitron', monospace !important;
+}
+
+[class*="search"] input:focus {
+    border-color: var(--imperial-blue) !important;
+    box-shadow: 0 0 5px rgba(0,188,212,0.3) !important;
+}
