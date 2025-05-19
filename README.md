@@ -1,3 +1,9 @@
+# Vader Flix
+
+> **Note**: Reverted to homepage-dashboard branch (May 19, 2025) to restore stable version.
+
+A modern streaming platform built with Node.js, Express, and MariaDB, containerized with Docker.
+
 # 🎬 VaderFlix Dashboard
 
 A modern, containerized dashboard solution combining Homepage and a custom portal for managing your media services.
