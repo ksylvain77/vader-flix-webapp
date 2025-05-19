@@ -14,6 +14,8 @@ services:
       - HOMEPAGE_VAR_TITLE=VaderFlix Dashboard
       - HOMEPAGE_VAR_APPLICATION_NAME=homepage
       - HOMEPAGE_ALLOWED_HOSTS=192.168.50.92:3000
+    networks:
+      - synobridge
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -32,6 +34,8 @@ services:
       - NODE_ENV=production
     volumes:
       - ./portal-data:/usr/src/app/data  # Mount data directory
+    networks:
+      - synobridge
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -40,3 +44,7 @@ services:
         max-file: "3"
     security_opt:
       - no-new-privileges:true
+
+networks:
+  synobridge:
+    external: true
