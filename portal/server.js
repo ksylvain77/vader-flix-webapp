@@ -25,30 +25,30 @@ app.use(session({
     }
 }));
 
-// Overseerr proxy middleware - add this AFTER session but BEFORE routes
-app.use('/overseerr', createProxyMiddleware({
-    target: 'http://vaderflix.synology.me:5055',
-    changeOrigin: true,
-    pathRewrite: {
-        '^/overseerr': '', // removes /overseerr from the forwarded path
-    },
-    timeout: 30000, // 30 second timeout
-    onError: (err, req, res) => {
-        console.log('Overseerr proxy error:', err);
-        res.status(500).send(`
-            <div style="background: #000; color: #ff0000; font-family: 'Orbitron', sans-serif; padding: 40px; text-align: center;">
-                <h1 style="color: #ffd700;">Overseerr Temporarily Unavailable</h1>
-                <p>The media request system is currently down. Please try again in a moment.</p>
-                <a href="/portal" style="display: inline-block; background: #cc0000; color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0;">
-                    RETURN TO PORTAL
-                </a>
-            </div>
-        `);
-    },
-    onProxyReq: (proxyReq, req, res) => {
-        console.log('Proxying request to Overseerr:', req.url);
-    }
-}));
+// Overseerr proxy middleware - TEMPORARILY COMMENTED OUT
+// app.use('/overseerr', createProxyMiddleware({
+//     target: 'http://vaderflix.synology.me:5055',
+//     changeOrigin: true,
+//     pathRewrite: {
+//         '^/overseerr': '', // removes /overseerr from the forwarded path
+//     },
+//     timeout: 30000, // 30 second timeout
+//     onError: (err, req, res) => {
+//         console.log('Overseerr proxy error:', err);
+//         res.status(500).send(`
+//             <div style="background: #000; color: #ff0000; font-family: 'Orbitron', sans-serif; padding: 40px; text-align: center;">
+//                 <h1 style="color: #ffd700;">Overseerr Temporarily Unavailable</h1>
+//                 <p>The media request system is currently down. Please try again in a moment.</p>
+//                 <a href="/portal" style="display: inline-block; background: #cc0000; color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0;">
+//                     RETURN TO PORTAL
+//                 </a>
+//             </div>
+//         `);
+//     },
+//     onProxyReq: (proxyReq, req, res) => {
+//         console.log('Proxying request to Overseerr:', req.url);
+//     }
+// }));
 
 // Email configuration
 const emailConfig = {
@@ -74,7 +74,7 @@ async function writeJSON(filename, data) {
 }
 
 async function sendVerificationEmail(email, username, token) {
-    const transporter = nodemailer.createTransporter(emailConfig);
+    const transporter = nodemailer.createTransport(emailConfig);
     
     const verificationUrl = `http://vaderflix.synology.me:3001/verify/${token}`;
     
