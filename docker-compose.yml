@@ -11,6 +11,9 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
+      - HOMEPAGE_VAR_TITLE=VaderFlix Dashboard
+      - HOMEPAGE_VAR_APPLICATION_NAME=homepage
+      - HOMEPAGE_ALLOWED_HOSTS=192.168.50.92:3000
     restart: unless-stopped
     # Synology specific settings
     logging:
