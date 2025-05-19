@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const session = require('express-session');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
-const { createProxyMiddleware } = require('http-proxy-middleware');
+const proxy = require('express-http-proxy');
 
 const app = express();
 
@@ -25,14 +25,8 @@ app.use(session({
     }
 }));
 
-// Basic Overseerr proxy - testing minimal configuration
-app.use('/overseerr', createProxyMiddleware({
-    target: 'http://overseerr:5055',
-    changeOrigin: true,
-    pathRewrite: {
-        '^/overseerr': ''
-    }
-}));
+// Simple Overseerr proxy using express-http-proxy
+app.use('/overseerr', proxy('overseerr:5055'));
 
 // Email configuration
 const emailConfig = {
