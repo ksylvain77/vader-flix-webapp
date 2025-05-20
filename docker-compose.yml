@@ -4,6 +4,8 @@ services:
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
+    ports:
+      - "3000:3000"  # Required for DSM reverse proxy
     volumes:
       - ./config:/app/config
     environment:
@@ -26,6 +28,8 @@ services:
   vader-portal:
     build: ./portal
     container_name: vader-portal
+    ports:
+      - "3001:3001"  # Required for DSM reverse proxy
     environment:
       - NODE_ENV=production
     volumes:
