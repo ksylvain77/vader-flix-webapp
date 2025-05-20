@@ -1,6 +1,6 @@
 - Media Management:
     - Plex:
-        href: https://vaderflix.synology.me
+        href: https://vaderflix.synology.me/web
         icon: plex.png
         description: Media Server
         widget:
@@ -9,21 +9,21 @@
           key: KghtDhw7utRNszSA8k5n
 
     - Sonarr:
-        href: https://vaderflix.synology.me
+        href: https://vaderflix.synology.me/sonarr
         icon: sonarr.png
         description: TV Show Management
         widget:
           type: sonarr
-          url: https://vaderflix.synology.me
+          url: https://vaderflix.synology.me/sonarr
           key: 8709f14bd30d4924bc76349878a1a06f
 
     - Radarr:
-        href: https://vaderflix.synology.me
+        href: https://vaderflix.synology.me/radarr
         icon: radarr.png
         description: Movie Management
         widget:
           type: radarr
-          url: https://vaderflix.synology.me
+          url: https://vaderflix.synology.me/radarr
           key: 1796ecf4c4f244bfa6b7db47c6e271b0
 
     - Overseerr:
