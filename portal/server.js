@@ -231,7 +231,7 @@ app.post('/login', async (req, res) => {
             email: user.email
         };
         
-        res.json({ success: true, redirect: '/portal' });
+        res.json({ success: true, redirect: 'http://vaderflix.synology.me:5055' });
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ error: 'Login failed' });
