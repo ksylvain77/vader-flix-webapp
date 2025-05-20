@@ -2,278 +2,111 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VaderFlix - Join the Empire</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
-            color: #ffffff;
-            font-family: 'Orbitron', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow-x: hidden;
-        }
-
-        .container {
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid #ff0000;
-            border-radius: 15px;
-            padding: 40px;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
-            max-width: 450px;
-            width: 90%;
-            text-align: center;
-        }
-
-        h1 {
-            color: #ffd700;
-            font-size: 2.5rem;
-            font-weight: 900;
-            margin-bottom: 10px;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
-        }
-
-        .subtitle {
-            color: #ff0000;
-            font-size: 1.1rem;
-            margin-bottom: 30px;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-            text-align: left;
-        }
-
-        label {
-            display: block;
-            color: #ffd700;
-            font-size: 1rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #333;
-            border-radius: 8px;
-            background: rgba(0, 0, 0, 0.7);
-            color: #ffffff;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="password"]:focus {
-            outline: none;
-            border-color: #ff0000;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
-            background: rgba(0, 0, 0, 0.9);
-        }
-
-        .signup-btn {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, #cc0000 0%, #ff0000 100%);
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
-        }
-
-        .signup-btn:hover {
-            background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
-            box-shadow: 0 6px 25px rgba(255, 0, 0, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .signup-btn:disabled {
-            background: #666;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .message {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            font-weight: 700;
-            text-align: center;
-        }
-
-        .success {
-            background: rgba(0, 255, 0, 0.1);
-            border: 2px solid #00ff00;
-            color: #00ff00;
-        }
-
-        .error {
-            background: rgba(255, 0, 0, 0.1);
-            border: 2px solid #ff0000;
-            color: #ff0000;
-        }
-
-        .login-link {
-            margin-top: 30px;
-            padding-top: 25px;
-            border-top: 1px solid #333;
-            color: #888;
-        }
-
-        .login-link a {
-            color: #ffd700;
-            text-decoration: none;
-            font-weight: 700;
-            transition: color 0.3s ease;
-        }
-
-        .login-link a:hover {
-            color: #ffffff;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
-        }
-
-        .requirements {
-            margin-top: 15px;
-            text-align: left;
-            font-size: 0.9rem;
-            color: #888;
-            line-height: 1.5;
-        }
-
-        .requirements ul {
-            margin-left: 20px;
-        }
-
-        .requirements li {
-            margin-bottom: 5px;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vader Flix - Sign Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/forms.css">
+    <link rel="stylesheet" href="/css/auth.css">
 </head>
 <body>
-    <div class="container">
-        <h1>VADERFLIX</h1>
-        <p class="subtitle">Join the Empire's Media Collection</p>
-        
-        <form id="signupForm">
+    <div class="container auth-container">
+        <div class="auth-header">
+            <img src="/images/vader-flix-logo.png" alt="Vader Flix Logo" class="logo">
+            <h1>Join the Empire</h1>
+            <p class="subtitle">Create your streaming account</p>
+        </div>
+
+        <form id="signupForm" class="auth-form">
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required>
             </div>
-            
+
             <div class="form-group">
-                <label for="email">Email Address</label>
+                <label for="email">Email</label>
                 <input type="email" id="email" name="email" required>
             </div>
-            
+
             <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            
-            <div class="requirements">
-                <strong>Password Requirements:</strong>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+
+            <div class="password-requirements">
+                <h3>Password Requirements:</h3>
                 <ul>
                     <li>At least 8 characters long</li>
-                    <li>Mix of letters and numbers recommended</li>
+                    <li>Include uppercase and lowercase letters</li>
+                    <li>Include at least one number</li>
+                    <li>Include at least one special character</li>
                 </ul>
             </div>
-            
-            <button type="submit" class="signup-btn" id="signupBtn">
-                Join the Empire
-            </button>
+
+            <button type="submit">Create Account</button>
         </form>
-        
-        <div id="message" class="message" style="display: none;"></div>
-        
-        <div class="login-link">
-            Already have an account? 
-            <a href="/login">Login here</a>
+
+        <div class="auth-links">
+            <p>Already have an account? <a href="/login">Login</a></p>
         </div>
+
+        <div id="message" class="auth-message" style="display: none;"></div>
     </div>
 
     <script>
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const form = e.target;
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData);
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
             const messageDiv = document.getElementById('message');
-            const submitBtn = document.getElementById('signupBtn');
             
-            // Basic validation
-            if (data.password.length < 8) {
-                showMessage('Password must be at least 8 characters long', 'error');
+            // Validate password match
+            if (password !== confirmPassword) {
+                messageDiv.className = 'auth-message error';
+                messageDiv.textContent = 'Passwords do not match';
+                messageDiv.style.display = 'block';
                 return;
             }
             
-            // Disable button and show loading
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Creating Account...';
-            
             try {
-                const response = await fetch('/signup', {
+                const response = await fetch('/api/auth/signup', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify({ username, email, password })
                 });
                 
-                const result = await response.json();
+                const data = await response.json();
                 
                 if (response.ok) {
-                    showMessage('Account created! Check your email for verification instructions.', 'success');
-                    form.reset();
+                    messageDiv.className = 'auth-message success';
+                    messageDiv.textContent = 'Account created successfully! Redirecting to login...';
+                    messageDiv.style.display = 'block';
+                    
+                    // Redirect to login page after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000);
                 } else {
-                    showMessage(result.error || 'Signup failed', 'error');
+                    messageDiv.className = 'auth-message error';
+                    messageDiv.textContent = data.message || 'Signup failed. Please try again.';
+                    messageDiv.style.display = 'block';
                 }
             } catch (error) {
-                showMessage('Network error. Please try again.', 'error');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Join the Empire';
+                messageDiv.className = 'auth-message error';
+                messageDiv.textContent = 'An error occurred. Please try again.';
+                messageDiv.style.display = 'block';
             }
         });
-        
-        function showMessage(text, type) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.textContent = text;
-            messageDiv.className = `message ${type}`;
-            messageDiv.style.display = 'block';
-            
-            // Auto-hide success messages after 5 seconds
-            if (type === 'success') {
-                setTimeout(() => {
-                    messageDiv.style.display = 'none';
-                }, 5000);
-            }
-        }
     </script>
 </body>
 </html>

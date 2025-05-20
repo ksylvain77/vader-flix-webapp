@@ -1,0 +1,108 @@
+/* Common Variables */
+:root {
+    --empire-deep-red: #8b0000;
+    --empire-bright-red: #dc143c;
+    --empire-ice-blue: #4682b4;
+    --empire-dark-blue: #191970;
+    --empire-black: #000000;
+    --empire-dark-gray: #1c1c1c;
+    --empire-medium-gray: #2f2f2f;
+    --empire-light-gray: #404040;
+    --empire-white: #f5f5f5;
+    --sw-yellow: #FFE81F;
+    --sw-red: #FF0000;
+    --sw-blue: #00D4FF;
+    --sw-gray: #2C2C2C;
+}
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+    color: var(--empire-white);
+    font-family: 'Orbitron', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+}
+
+/* Common Container */
+.container {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid var(--sw-red);
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
+    max-width: 450px;
+    width: 90%;
+    text-align: center;
+}
+
+/* Common Typography */
+h1 {
+    color: var(--sw-yellow);
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+}
+
+.subtitle {
+    color: var(--sw-red);
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+/* Common Links */
+a {
+    color: var(--sw-yellow);
+    text-decoration: none;
+    font-weight: 700;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--empire-white);
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+}
+
+/* Common Messages */
+.message {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.success {
+    background: rgba(0, 255, 0, 0.1);
+    border: 2px solid #00ff00;
+    color: #00ff00;
+}
+
+.error {
+    background: rgba(255, 0, 0, 0.1);
+    border: 2px solid var(--sw-red);
+    color: var(--sw-red);
+}
+
+/* Media Queries */
+@media screen and (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+} 

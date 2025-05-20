@@ -27,6 +27,7 @@ body {
     flex-direction: column;
     color: var(--empire-white);
     letter-spacing: 1px;
+    overflow: hidden;
 }
 
 /* Imperial header with dramatic styling */
@@ -36,6 +37,8 @@ header {
     background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
     border-bottom: 1px solid var(--sw-blue);
     box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+    position: relative;
+    z-index: 2;
 }
 
 h1 {
@@ -45,7 +48,7 @@ h1 {
     text-transform: uppercase;
     letter-spacing: 3px;
     margin: 0;
-    font-size: 2.5rem;
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
 }
 
 /* Main content area for Overseerr */
@@ -56,6 +59,8 @@ main {
     box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
     margin: 1rem;
     border-radius: 8px;
+    overflow: hidden;
+    height: calc(100vh - 80px);
 }
 
 /* Embedded Overseerr iframe */
@@ -67,6 +72,23 @@ iframe {
     height: 100%;
     border: none;
     border-radius: 8px;
+    background: var(--empire-black);
+}
+
+/* Media Queries for Mobile */
+@media screen and (max-width: 768px) {
+    main {
+        margin: 0.5rem;
+        height: calc(100vh - 60px);
+    }
+
+    header {
+        padding: 0.5rem;
+    }
+
+    iframe {
+        border-radius: 4px;
+    }
 }
 
 /* Imperial scrollbars */
