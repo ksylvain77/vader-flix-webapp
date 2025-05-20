@@ -1,36 +1,36 @@
 - Media Management:
     - Plex:
-        href: http://192.168.50.92:32400
+        href: https://vaderflix.synology.me
         icon: plex.png
         description: Media Server
         widget:
           type: plex
-          url: http://192.168.50.92:32400
+          url: https://vaderflix.synology.me
           key: KghtDhw7utRNszSA8k5n
 
     - Sonarr:
-        href: http://192.168.50.92:8989
+        href: https://vaderflix.synology.me
         icon: sonarr.png
         description: TV Show Management
         widget:
           type: sonarr
-          url: http://192.168.50.92:8989
+          url: https://vaderflix.synology.me
           key: 8709f14bd30d4924bc76349878a1a06f
 
     - Radarr:
-        href: http://192.168.50.92:7878
+        href: https://vaderflix.synology.me
         icon: radarr.png
         description: Movie Management
         widget:
           type: radarr
-          url: http://192.168.50.92:7878
+          url: https://vaderflix.synology.me
           key: 1796ecf4c4f244bfa6b7db47c6e271b0
 
     - Overseerr:
-        href: http://192.168.50.92:5055
+        href: https://vaderflix.synology.me
         icon: overseerr.png
         description: Request Management
         widget:
           type: overseerr
-          url: http://192.168.50.92:5055
+          url: https://vaderflix.synology.me
           key: MTc0NzY0ODMxOTM3NDc4NTdlYTEyLWNhN2YtNGRhYS05M2VkLTU5YzIyZWFmZDNkMQ==

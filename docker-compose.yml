@@ -4,8 +4,6 @@ services:
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
-    ports:
-      - "3000:3000"
     volumes:
       - ./config:/app/config
     environment:
@@ -13,7 +11,7 @@ services:
       - PGID=1000
       - HOMEPAGE_VAR_TITLE=VaderFlix Dashboard
       - HOMEPAGE_VAR_APPLICATION_NAME=homepage
-      - HOMEPAGE_ALLOWED_HOSTS=192.168.50.92:3000
+      - HOMEPAGE_ALLOWED_HOSTS=vaderflix.synology.me,portal.vaderflix.synology.me,dashboard.vaderflix.synology.me
     networks:
       - synobridge
     restart: unless-stopped
@@ -28,8 +26,6 @@ services:
   vader-portal:
     build: ./portal
     container_name: vader-portal
-    ports:
-      - "3001:3001"
     environment:
       - NODE_ENV=production
     volumes:

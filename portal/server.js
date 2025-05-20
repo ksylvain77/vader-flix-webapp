@@ -20,7 +20,8 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: { 
-        secure: false, // Set to true if using HTTPS
+        secure: true,
+        sameSite: 'lax',
         maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
 }));
@@ -80,7 +81,7 @@ async function writeJSON(filename, data) {
 async function sendVerificationEmail(email, username, token) {
     const transporter = nodemailer.createTransport(emailConfig);
     
-    const verificationUrl = `http://vaderflix.synology.me:3001/verify/${token}`;
+    const verificationUrl = `https://portal.vaderflix.synology.me/verify/${token}`;
     
     const mailOptions = {
         from: emailConfig.auth.user,
@@ -231,7 +232,9 @@ app.post('/login', async (req, res) => {
             email: user.email
         };
         
-        res.json({ success: true, redirect: 'http://vaderflix.synology.me:5055' });
+        // Use environment variable for redirect URL, fallback to localhost
+        const redirectUrl = 'https://vaderflix.synology.me';
+        res.json({ success: true, redirect: redirectUrl });
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ error: 'Login failed' });
@@ -260,6 +263,6 @@ app.get('/api/auth/status', (req, res) => {
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`VaderFlix Media Portal running on port ${PORT}`);
-    console.log(`Signup: http://localhost:${PORT}/signup`);
-    console.log(`Login: http://localhost:${PORT}/login`);
+    console.log(`Signup: https://portal.vaderflix.synology.me/signup`);
+    console.log(`Login: https://portal.vaderflix.synology.me/login`);
 });
