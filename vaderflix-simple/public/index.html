@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VaderFlix - Imperial Portal</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="portal-page">
+    <div class="portal-header">
+        <h1>IMPERIAL MEDIA PORTAL</h1>
+        <a href="/logout" class="logout-btn">LOGOUT</a>
+    </div>
+    <div class="portal-content">
+        <iframe src="http://overseerr:5055" frameborder="0"></iframe>
+    </div>
+
+    <script>
+        // Check authentication status
+        async function checkAuth() {
+            const response = await fetch('/auth-status');
+            const data = await response.json();
+            if (!data.authenticated) {
+                window.location.href = '/login.html';
+            }
+        }
+        checkAuth();
+    </script>
+</body>
+</html> 

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VaderFlix - Imperial Access</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-panel">
+            <h1>IMPERIAL ACCESS</h1>
+            <div class="login-form">
+                <div class="input-group">
+                    <input type="text" id="username" placeholder="TROOPER ID">
+                </div>
+                <div class="input-group">
+                    <input type="password" id="password" placeholder="ACCESS CODE">
+                </div>
+                <button onclick="login()">AUTHORIZE</button>
+            </div>
+            <div id="error-message" class="error-message"></div>
+        </div>
+    </div>
+
+    <script>
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    window.location.href = '/portal';
+                } else {
+                    document.getElementById('error-message').textContent = 'INVALID CREDENTIALS';
+                }
+            } catch (error) {
+                document.getElementById('error-message').textContent = 'SYSTEM ERROR';
+            }
+        }
+    </script>
+</body>
+</html> 
