@@ -34,6 +34,7 @@ app.use('/overseerr', createProxyMiddleware({
         '^/overseerr': '', // removes /overseerr from the forwarded path
     },
     timeout: 30000, // 30 second timeout
+    selfHandleResponse: true, // Allow us to modify the response before sending
     onError: (err, req, res) => {
         console.log('Overseerr proxy error:', err);
         res.status(500).send(`
@@ -53,6 +54,13 @@ app.use('/overseerr', createProxyMiddleware({
     },
     onProxyRes: async (proxyRes, req, res) => {
         const contentType = proxyRes.headers['content-type'] || '';
+        
+        // Set status code and copy headers before processing body
+        res.statusCode = proxyRes.statusCode;
+        Object.entries(proxyRes.headers).forEach(([key, value]) => {
+            res.setHeader(key, value);
+        });
+
         if (contentType.includes('text/html')) {
             let body = Buffer.from([]);
             proxyRes.on('data', (chunk) => {
