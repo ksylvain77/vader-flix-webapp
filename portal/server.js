@@ -47,6 +47,8 @@ app.use('/overseerr', createProxyMiddleware({
         `);
     },
     onProxyReq: (proxyReq, req, res) => {
+        // Add the API key to the request headers
+        proxyReq.setHeader('X-Api-Key', 'MTc0NzY0ODMxOTM3NDc4NTdlYTEyLWNhN2YtNGRhYS05M2VkLTU5YzIyZWFmZDNkMQ==');
         console.log('Proxying request to Overseerr:', req.url);
     }
 }));
