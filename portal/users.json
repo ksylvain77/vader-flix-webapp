@@ -1,27 +1,27 @@
 [
     {
         "username": "vader",
-        "password": "imperial123",
+        "password": "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
         "email": "vader@empire.com"
     },
     {
         "username": "tarkin",
-        "password": "deathstar456",
+        "password": "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
         "email": "tarkin@empire.com"
     },
     {
         "username": "thrawn",
-        "password": "art789",
+        "password": "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
         "email": "thrawn@empire.com"
     },
     {
         "username": "piett",
-        "password": "admiral123",
+        "password": "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
         "email": "piett@empire.com"
     },
     {
         "username": "veers",
-        "password": "at-at456",
+        "password": "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
         "email": "veers@empire.com"
     }
 ]
