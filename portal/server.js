@@ -50,6 +50,25 @@ app.use('/overseerr', createProxyMiddleware({
         // Add the API key to the request headers
         proxyReq.setHeader('X-Api-Key', 'MTc0NzY0ODMxOTM3NDc4NTdlYTEyLWNhN2YtNGRhYS05M2VkLTU5YzIyZWFmZDNkMQ==');
         console.log('Proxying request to Overseerr:', req.url);
+    },
+    onProxyRes: async (proxyRes, req, res) => {
+        const contentType = proxyRes.headers['content-type'] || '';
+        if (contentType.includes('text/html')) {
+            let body = Buffer.from([]);
+            proxyRes.on('data', (chunk) => {
+                body = Buffer.concat([body, chunk]);
+            });
+            proxyRes.on('end', () => {
+                let html = body.toString('utf8');
+                // Inject custom CSS to hide the sidebar
+                const customCSS = `<style>div.sidebar.flex.w-64.flex-col { display: none !important; }</style>`;
+                html = html.replace('</head>', `${customCSS}</head>`);
+                res.setHeader('content-type', 'text/html');
+                res.end(html);
+            });
+        } else {
+            proxyRes.pipe(res);
+        }
     }
 }));
 
