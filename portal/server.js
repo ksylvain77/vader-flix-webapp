@@ -289,6 +289,39 @@ app.get('/api/auth/status', (req, res) => {
     });
 });
 
+// Simple portal routes
+app.get('/simple-login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'simple-login.html'));
+});
+
+app.post('/simple-auth', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        
+        const users = await readJSON('users.json');
+        const user = users.find(u => u.username === username);
+        
+        if (!user || !await bcrypt.compare(password, user.password)) {
+            return res.status(401).json({ success: false, message: 'Invalid credentials' });
+        }
+        
+        // Create session
+        req.session.user = {
+            username: user.username,
+            email: user.email
+        };
+        
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Simple auth error:', error);
+        res.status(500).json({ success: false, message: 'Authentication failed' });
+    }
+});
+
+app.get('/simple', requireAuth, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'simple.html'));
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`VaderFlix Media Portal running on port ${PORT}`);

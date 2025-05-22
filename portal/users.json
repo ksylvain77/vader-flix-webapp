@@ -1,0 +1,27 @@
+[
+    {
+        "username": "vader",
+        "password": "imperial123",
+        "email": "vader@empire.com"
+    },
+    {
+        "username": "tarkin",
+        "password": "deathstar456",
+        "email": "tarkin@empire.com"
+    },
+    {
+        "username": "thrawn",
+        "password": "art789",
+        "email": "thrawn@empire.com"
+    },
+    {
+        "username": "piett",
+        "password": "admiral123",
+        "email": "piett@empire.com"
+    },
+    {
+        "username": "veers",
+        "password": "at-at456",
+        "email": "veers@empire.com"
+    }
+]

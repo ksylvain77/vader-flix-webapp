@@ -1,0 +1,123 @@
+:root {
+    --imperial-red: #c41e3a;
+    --imperial-gray: #2b2b2b;
+    --imperial-dark: #1a1a1a;
+    --imperial-light: #e0e0e0;
+}
+
+/* Empire Login Page Styles */
+.empire-login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(45deg, var(--imperial-dark), var(--imperial-gray));
+    min-height: 100vh;
+}
+
+.empire-login-container {
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 2rem;
+    border-radius: 5px;
+    box-shadow: 0 0 20px rgba(196, 30, 58, 0.3);
+    border: 1px solid var(--imperial-red);
+}
+
+.empire-login-panel h1 {
+    color: var(--imperial-red);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.empire-input-group {
+    margin-bottom: 1rem;
+}
+
+.empire-input {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: var(--imperial-gray);
+    border: 1px solid var(--imperial-red);
+    color: var(--imperial-light);
+    font-size: 1rem;
+}
+
+.empire-input::placeholder {
+    color: #666;
+}
+
+.empire-button {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: var(--imperial-red);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: background-color 0.3s;
+}
+
+.empire-button:hover {
+    background-color: #a01830;
+}
+
+.empire-error-message {
+    color: var(--imperial-red);
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+/* Empire Portal Page Styles */
+.empire-portal-page {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.empire-portal-header {
+    background-color: var(--imperial-gray);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--imperial-red);
+}
+
+.empire-portal-header h1 {
+    color: var(--imperial-red);
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.empire-logout-btn {
+    color: var(--imperial-light);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--imperial-red);
+    transition: all 0.3s;
+}
+
+.empire-logout-btn:hover {
+    background-color: var(--imperial-red);
+    color: white;
+}
+
+.empire-portal-content {
+    flex: 1;
+    position: relative;
+}
+
+.empire-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+} 

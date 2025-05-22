@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VaderFlix - Imperial Access</title>
+    <link rel="stylesheet" href="empire.css">
+</head>
+<body class="empire-login-page">
+    <div class="empire-login-container">
+        <div class="empire-login-panel">
+            <h1>IMPERIAL ACCESS</h1>
+            <div class="empire-login-form">
+                <div class="empire-input-group">
+                    <input type="text" id="username" class="empire-input" placeholder="TROOPER ID">
+                </div>
+                <div class="empire-input-group">
+                    <input type="password" id="password" class="empire-input" placeholder="ACCESS CODE">
+                </div>
+                <button onclick="login()" class="empire-button">AUTHORIZE</button>
+            </div>
+            <div id="error-message" class="empire-error-message"></div>
+        </div>
+    </div>
+
+    <script>
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('/simple-auth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    window.location.href = '/simple';
+                } else {
+                    document.getElementById('error-message').textContent = 'INVALID CREDENTIALS';
+                }
+            } catch (error) {
+                document.getElementById('error-message').textContent = 'SYSTEM ERROR';
+            }
+        }
+    </script>
+</body>
+</html> 
