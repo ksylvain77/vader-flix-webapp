@@ -120,4 +120,35 @@
     width: 100%;
     height: 100%;
     border: none;
+}
+
+/* Password Toggle Styles */
+.password-group {
+    position: relative;
+}
+
+.empire-password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--imperial-light);
+    cursor: pointer;
+    padding: 5px;
+    width: auto;
+}
+
+.empire-password-toggle:hover {
+    color: var(--imperial-red);
+}
+
+.empire-password-toggle i {
+    font-size: 1.2rem;
+}
+
+/* Adjust input padding to make room for the eye icon */
+.password-group .empire-input {
+    padding-right: 40px;
 } 

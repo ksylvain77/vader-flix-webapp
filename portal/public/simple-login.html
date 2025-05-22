@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VaderFlix - Imperial Access</title>
     <link rel="stylesheet" href="empire.css">
+    <!-- Add Font Awesome for the eye icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="empire-login-page">
     <div class="empire-login-container">
@@ -14,8 +16,11 @@
                 <div class="empire-input-group">
                     <input type="text" id="username" class="empire-input" placeholder="TROOPER ID">
                 </div>
-                <div class="empire-input-group">
+                <div class="empire-input-group password-group">
                     <input type="password" id="password" class="empire-input" placeholder="ACCESS CODE">
+                    <button type="button" class="empire-password-toggle" onclick="togglePassword()">
+                        <i class="fas fa-eye"></i>
+                    </button>
                 </div>
                 <button onclick="login()" class="empire-button">AUTHORIZE</button>
             </div>
@@ -24,6 +29,21 @@
     </div>
 
     <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleButton = document.querySelector('.empire-password-toggle i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleButton.classList.remove('fa-eye');
+                toggleButton.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleButton.classList.remove('fa-eye-slash');
+                toggleButton.classList.add('fa-eye');
+            }
+        }
+
         async function login() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
