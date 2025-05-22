@@ -27,5 +27,23 @@
         <p>Loading Overseerr...</p>
       </iframe>
     </main>
+    <script>
+    // Hide Overseerr sidebar after iframe loads
+    document.addEventListener('DOMContentLoaded', function() {
+        const iframe = document.querySelector('iframe');
+        if (iframe) {
+            iframe.addEventListener('load', function() {
+                try {
+                    const sidebar = iframe.contentDocument.querySelector('.sidebar, nav[class*="flex"], aside');
+                    if (sidebar) {
+                        sidebar.style.display = 'none';
+                    }
+                } catch(e) {
+                    console.log('Could not hide sidebar:', e);
+                }
+            });
+        }
+    });
+    </script>
   </body>
 </html>
