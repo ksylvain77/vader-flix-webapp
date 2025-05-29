@@ -159,6 +159,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
   cd backend
   npm test
   ```
+- Git hooks are configured to run tests automatically before commits and pushes to ensure code quality.
 
 Test push at Sat May 17 10:42:40 EDT 2025
 
