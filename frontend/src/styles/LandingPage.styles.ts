@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import bgImage from '../assets/ds_bg.png';
 
 const background = '#0D0D0D';
 const foreground = '#1C1C1E';
@@ -9,6 +10,10 @@ const mutedText = '#A0A0A0';
 export const StyledContainer = styled.div`
   position: relative;
   background-color: ${background};
+  background-image: url(${bgImage});
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   color: ${textColor};
   min-height: 100vh;
   padding: 2rem;
